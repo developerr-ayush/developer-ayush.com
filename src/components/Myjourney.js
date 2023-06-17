@@ -14,7 +14,7 @@ export default function Myjourney(props) {
                     </h2>
                     <p>
                         <b>
-                            Skills matters more then degree.
+                        Skills matter more than a degree.
                         </b>
                     </p>
                     <div className="timeline " id="timelineDynamic" data-aos="fade-right" data-aos-duration="500" data-aos-delay="400">

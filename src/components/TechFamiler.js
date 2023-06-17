@@ -20,42 +20,42 @@ export default function TechFamiler() {
                     <img src={html} alt=""/>
                 </div>
                 <h3>HTML</h3>
-                <p>HyperText Markup Language is used for creating structure for website.</p>
+                <p>HyperText Markup Language (HTML) is used to create the structure of a website.</p>
             </div>
             <div className="div knowingDetails purple" data-aos="fade-down" data-aos-duration="500">
                 <div className="iconOrImage">
                     <img src={css} alt=""/>
                 </div>
                 <h3>CSS</h3>
-                <p>Cascading style sheet is used for styling elements on webiste.</p>
+                <p>Cascading Style Sheets (CSS) is used to style elements on a website.</p>
             </div>
             <div className="div knowingDetails red" data-aos="fade-up" data-aos-duration="500">
                 <div className="iconOrImage">
                     <img src={bootstrap} alt=""/>
                 </div>
                 <h3>Bootstrap</h3>
-                <p>CSS library used to make work very easy. you just have to use classes.  </p>
+                <p>A CSS library makes work easier by using classes for styling elements.</p>
             </div>
             <div className="div knowingDetails purple" data-aos="fade-down" data-aos-duration="500">
                 <div className="iconOrImage">
                     <img src={js} alt=""/>
                 </div>
                 <h3>JS</h3>
-                <p>Javascript is used for adding logic to our webisite and also used for dynamic data using API.</p>
+                <p>JavaScript is used for adding logic to websites and handling dynamic data through APIs.</p>
             </div>
             <div className="div knowingDetails red" data-aos="fade-up" data-aos-duration="500">
                 <div className="iconOrImage">
                     <img src={jquery} alt=""/>
                 </div>
                 <h3>jquery</h3>
-                <p>Javascript library used to write javascript logic very easily.</p>
+                <p>A JavaScript library is used to simplify the process of writing JavaScript logic.</p>
             </div>
             <div className="div knowingDetails purple" data-aos="fade-down" data-aos-duration="500">
                 <div className="iconOrImage">
                     <img src={scss} alt=""/>
                 </div>
                 <h3>Scss</h3>
-                <p>Preprocessor used to write css very fast and easily also its fast too.</p>
+                <p>A preprocessor is used to write CSS more quickly and easily, and it also helps improve performance.</p>
             </div>
             <div className="div knowingDetails red" data-aos="fade-down" data-aos-duration="500">
                 <div className="iconOrImage">
