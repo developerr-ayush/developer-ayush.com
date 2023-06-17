@@ -19,7 +19,7 @@ import Finexo from './images/finexo.jpg'
 import Wanderon from './images/wanderon.jpg'
 import Wireframe from './images/wireframe.jpg'
 import Dataviv from './images/dataviv.jpg'
-import Rixero from './images/rixero.jpg'
+// import Rixero from './images/rixero.jpg'
 import Yoga from './images/yoga.jpg'
 // threre skills 
 let Threeskills = [
@@ -100,7 +100,7 @@ let timelineDate = [
 let mywork = [
   {
     title: "Yoga",
-    skillsUsed: ['HTML5', 'Bootstrap', 'css3','javascript', 'jquery'],
+    skillsUsed: ['HTML5', 'Bootstrap', 'css3', 'javascript', 'jquery'],
     url: Yoga,
     detail: 'This website is also an assignment given by some company. most important thing in this website is animation created using pure css the leaf moving animation which also makes this website very fast.',
     redirectLink: 'https://www.ayushshah.in/work/yoga/index.html'
@@ -133,7 +133,7 @@ let mywork = [
     detail: 'This is a freelace project in which i was a team member and almost 50-60% ui is developed by me only and others also contributed over here also 90% of logical part is written by me on this website.',
     redirectLink: 'https://greetingglobe-web.web.app/'
   },
-  
+
   {
     title: "Finexo",
     skillsUsed: ['HTML5', 'javascript', 'jquery', 'scss'],
@@ -148,7 +148,7 @@ let mywork = [
     detail: 'This was layout given by some company as assignment and i created it and it is really good although it is also a replication of websit only it is cuvee website clone just home page is been replicated with some customised thing too.',
     redirectLink: 'https://www.ayushshah.in/work/cuvee/index.html'
   },
-  
+
   {
     title: "Wanderon",
     skillsUsed: ['HTML5', 'javascript', 'jquery', 'scss'],
@@ -163,7 +163,7 @@ let mywork = [
     detail: 'This website is also an assignment given by some company in this layout i actually learn many things about owl carousel which is really facinating thing to do.',
     redirectLink: 'https://www.ayushshah.in/work/wireframe/index.html'
   },
-  
+
 
 ]
 // function app(){
