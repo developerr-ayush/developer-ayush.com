@@ -50,6 +50,13 @@ let Threeskills = [
 // timeline 
 let timelineDate = [
   {
+    sno: 0,
+    iconName: 'work',
+    yearMonth: 'November 2022 - Present',
+    heading: 'Sportz Interactive - Front end Developer',
+    paragraph: 'Using SCSS Preprocessor and make beautiful websites. Enhanced Project setup to easity make things work and to start a project easily',
+  },
+  {
     sno: 1,
     iconName: 'school',
     yearMonth: 'July 2022 - Present',
@@ -66,7 +73,7 @@ let timelineDate = [
   {
     sno: 3,
     iconName: 'work',
-    yearMonth: 'October 2021 - Present',
+    yearMonth: 'October 2021 - October 2022',
     heading: 'Front End Developer - Dataviv Technologies',
     paragraph: 'Make responsive website and help in integration of website with backend developer. Also work on API related project like calling api and integrating it on website',
   },
