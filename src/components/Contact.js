@@ -7,7 +7,7 @@ export default function Contact() {
         <div className="header">
             <h3>Contact Me</h3>
         </div>
-        <a href="" className="designBox red" data-aos="fade-right" data-aos-duration="500">
+        <a href="/" className="designBox red" data-aos="fade-right" data-aos-duration="500">
             <div className="iconBox">
                 <span className="material-symbols-outlined">
                     person_pin_circle
