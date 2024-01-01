@@ -24,7 +24,7 @@ export default function Myjourney(props) {
                             return <TimelineDataItem key={TimelineData.sno} TimelineDatas={TimelineData} />
                         })}
                     </div>
-                    <a href="img/resume.pdf" className="learnMoreTimeline">
+                    <a href="/resume.pdf" className="learnMoreTimeline" download>
                         Resume
                     </a>
                 </div>
