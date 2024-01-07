@@ -1,0 +1,34 @@
+@use "../config/" as *;
+@use "sass:color" as *;
+.btn {
+  padding: var(--space-2) var(--space-3);
+  border: 0.1rem solid var(--btn-border, var(--primary-500));
+  border-radius: var(--btn-radius, 0.5rem);
+  background-color: var(--btn-bg, var(--primary-500));
+  color: var(--btn-color, var(--neutral-900));
+  transition: 0.3s;
+  font-size: 1.2rem;
+
+  &:focus-visible {
+    outline: 1px solid var(--neutral-900);
+  }
+  &-hamburger {
+    --btn-bg: transparent;
+    --btn-border: transparent;
+    padding: var(--space-2);
+    width: 5.5rem;
+    height: 5.5rem;
+    display: grid;
+    align-content: center;
+    gap: var(--space-2);
+    @include mq(md) {
+      display: none;
+    }
+    .line {
+      width: 100%;
+      height: 0.1rem;
+      display: block;
+      background-color: var(--neutral-900);
+    }
+  }
+}

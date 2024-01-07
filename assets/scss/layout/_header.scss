@@ -1,0 +1,55 @@
+@use "../config/" as *;
+header {
+  padding-block: var(--space-3);
+  height: var(--header-height);
+  background-color: var(--neutral-300);
+  width: 100%;
+}
+.site-nav {
+  transform: translateX(100%);
+  transition: transform 300ms, opacity 300ms;
+  opacity: 0;
+  visibility: visible;
+  background-color: var(--neutral-300);
+  position: fixed;
+  top: var(--header-height);
+  height: calc(100dvh - var(--header-height));
+  overflow: auto;
+  width: 100%;
+  left: 0;
+  text-align: center;
+  @include mq(md) {
+    position: unset;
+    height: unset;
+    transform: unset;
+    visibility: unset;
+    opacity: unset;
+  }
+  &-list {
+    list-style: none;
+    display: grid;
+    @include mq(md) {
+      grid-auto-flow: column;
+      justify-content: end;
+      gap: var(--space-3);
+    }
+  }
+  &__item {
+    font-size: 2rem;
+    opacity: 0.5;
+  }
+  &__anchor {
+    padding: var(--space-2);
+    display: block;
+  }
+  &__active {
+    opacity: 1;
+  }
+}
+.btn-hamburger[aria-expanded="true"] {
+  & ~ .site-nav {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+  }
+}

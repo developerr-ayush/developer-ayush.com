@@ -1,0 +1,55 @@
+$colors: (
+  "primary": (
+    100: #c2ebff,
+    300: #5b78f6,
+    500: #0a58ca,
+  ),
+  "neutral": (
+    100: #fff,
+    300: #bcbcbc,
+    500: #a8a8a8,
+    700: #0f0f0f,
+    900: #000,
+  ),
+  "function": (
+    "text": #fff,
+    "title": #a8a8a8,
+    "body": #0f0f0f,
+  ),
+);
+$darkModeColors: (
+  "primary": (
+    100: #c2ebff,
+    300: #5b78f6,
+    500: #0a58ca,
+  ),
+  "neutral": (
+    900: #fff,
+    700: #bcbcbc,
+    500: #a8a8a8,
+    300: #0f0f0f,
+    100: #000,
+  ),
+  "function": (
+    "text": #fff,
+    "title": #a8a8a8,
+    "body": #0f0f0f,
+  ),
+);
+
+$breakpoints: (
+  xs: 300px,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+);
+$container: (
+  xs: 100%,
+  sm: 54rem,
+  md: 72rem,
+  lg: 96rem,
+  xl: 114rem,
+  xxl: 132rem,
+);
