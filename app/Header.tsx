@@ -25,7 +25,7 @@ const Header = () => {
                         })}
                     </ul>
                 </nav>
-                <Button >Lets Talk</Button>
+                <Button exCla="btn-contact">Lets Talk</Button>
             </div>
         </header >
     )

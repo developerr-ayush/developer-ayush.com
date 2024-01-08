@@ -4,6 +4,12 @@ header {
   height: var(--header-height);
   background-color: var(--neutral-300);
   width: 100%;
+  .btn-contact {
+    display: none;
+    @include mq(lg) {
+      display: block;
+    }
+  }
   .container {
     @include mq(lg) {
       justify-content: space-between;
