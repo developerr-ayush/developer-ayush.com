@@ -4,6 +4,15 @@ header {
   height: var(--header-height);
   background-color: var(--neutral-300);
   width: 100%;
+  .container {
+    @include mq(lg) {
+      justify-content: space-between;
+    }
+  }
+  .logo {
+    font-size: 4rem;
+    font-weight: 600;
+  }
 }
 .site-nav {
   transform: translateX(100%);
@@ -25,18 +34,28 @@ header {
     visibility: unset;
     opacity: unset;
   }
+  @include mq(lg) {
+    width: max-content;
+  }
   &-list {
     list-style: none;
     display: grid;
+    padding: 0;
     @include mq(md) {
       grid-auto-flow: column;
       justify-content: end;
-      gap: var(--space-3);
+      gap: var(--space-5);
+      width: max-content;
     }
   }
   &__item {
     font-size: 2rem;
-    opacity: 0.5;
+    opacity: 0.3;
+    @include mq(md) {
+      font-size: 1.6rem;
+      font-weight: 500;
+      letter-spacing: 0.1rem;
+    }
   }
   &__anchor {
     padding: var(--space-2);
