@@ -1,0 +1,88 @@
+@use "../config/" as *;
+.card {
+  background-color: var(--function-body);
+  background-image: url("../../img/bg1.png");
+  position: relative;
+  border-radius: 3rem;
+  overflow: hidden;
+  isolation: isolate;
+  border: 0.1rem solid rgba(255, 255, 255, 0.1);
+  display: grid;
+  gap: 3rem;
+  padding: 3rem 2rem;
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+  }
+  &::after {
+    opacity: 0.3;
+    background: linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0.3),
+      rgba(255, 255, 255, 0.05)
+    );
+  }
+  &-image {
+    text-align: center;
+  }
+  &-profile {
+    padding: 4rem 3rem;
+
+    img {
+      border-radius: 3rem 0 3rem 0;
+    }
+  }
+  &-sub-title {
+    font-size: 1.2rem;
+    color: var(--neutral-700);
+    opacity: 0.7;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+  }
+  &-title {
+    font-size: 2rem;
+    margin-block: 1rem 0;
+    font-weight: 500;
+    color: var(--neutral-900);
+  }
+  &-name {
+    font-size: 3.6rem;
+    margin-bottom: 1.5rem;
+  }
+  &-text {
+    color: var(--neutral-700);
+    font-size: 1.4rem;
+    letter-spacing: 0.05rem;
+  }
+  &-marquee {
+    padding: 2rem;
+  }
+  &-sign {
+    img {
+      filter: invert(1);
+    }
+  }
+  &-list {
+    display: grid;
+    gap: 3rem;
+  }
+  .redirect-anchor {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding: 2.5rem 3rem;
+    opacity: 0.2;
+    transition: opacity 300ms;
+  }
+  &:hover {
+    .redirect-anchor {
+      opacity: 1;
+    }
+  }
+}

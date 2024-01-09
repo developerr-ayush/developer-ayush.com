@@ -1,8 +1,11 @@
 import React from 'react'
-
-const Card = () => {
+interface CardType {
+  className?: string,
+  children: React.ReactNode,
+}
+const Card = ({ className, children }: CardType) => {
   return (
-    <div className="card">Card</div>
+    <div className={`card ${className}`}>{children}</div>
   )
 }
 

@@ -1,0 +1,15 @@
+@use "../config/" as *;
+.marquee {
+  overflow: hidden;
+  &-list {
+    display: flex;
+    gap: 3rem;
+    width: max-content;
+    animation: marquee 40s linear infinite alternate;
+  }
+}
+@keyframes marquee {
+  100% {
+    transform: translateX(calc(-100% + 100vw));
+  }
+}

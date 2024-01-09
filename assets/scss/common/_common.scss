@@ -1,6 +1,9 @@
 @use "../config/" as *;
+main {
+  padding-top: 6rem;
+}
 .container {
-  padding-inline: var(--space-3);
+  padding-inline: var(--space-4);
   max-width: var(--container);
   margin: auto;
   width: 100%;
@@ -26,9 +29,6 @@
   @include mq(md) {
     display: block;
   }
-}
-svg {
-  width: 100%;
 }
 
 .top-shape {
