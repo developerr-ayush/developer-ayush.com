@@ -54,6 +54,16 @@ export default function Home() {
         </div>
         <RedirectAnchor href="/" />
       </Card>
+      <Card className="card-service">
+        <div className="card-icons">
+            
+        </div>
+        <div className="card-content">
+          <p className="card-sub-title">Specilization</p>
+          <h3 className="card-title">Service Offering</h3>
+        </div>
+        <RedirectAnchor href="/" />
+      </Card>
     </CardList>
   )
 }
