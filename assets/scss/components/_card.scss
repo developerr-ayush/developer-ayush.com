@@ -55,6 +55,10 @@
     font-size: 3.6rem;
     margin-bottom: 1rem;
   }
+  img {
+    max-width: 100%;
+    object-fit: cover;
+  }
   &-text {
     color: var(--neutral-700);
     font-size: 1.4rem;

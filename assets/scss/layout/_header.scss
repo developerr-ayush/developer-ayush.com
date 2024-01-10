@@ -54,6 +54,7 @@ header {
     padding-block: 5rem;
     height: 100%;
     @include mq(md) {
+      padding: 0;
       grid-auto-flow: column;
       justify-content: end;
       gap: var(--space-5);
