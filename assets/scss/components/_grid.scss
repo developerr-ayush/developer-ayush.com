@@ -1,0 +1,13 @@
+@use "../config/" as *;
+@include mq(md) {
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .col-2 {
+    grid-column: span 2;
+  }
+  .row-2 {
+    grid-row: span 2;
+  }
+}

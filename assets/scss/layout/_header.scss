@@ -5,6 +5,8 @@ header {
   background-color: var(--neutral-300);
   width: 100%;
   z-index: 2;
+  position: sticky;
+  top: 0;
   .btn-contact {
     display: none;
     @include mq(lg) {
@@ -35,7 +37,6 @@ header {
   left: 0;
   text-align: center;
   z-index: 2;
-
   @include mq(md) {
     position: unset;
     height: unset;
@@ -50,6 +51,8 @@ header {
     list-style: none;
     display: grid;
     padding: 0;
+    padding-block: 5rem;
+    height: 100%;
     @include mq(md) {
       grid-auto-flow: column;
       justify-content: end;
@@ -58,7 +61,7 @@ header {
     }
   }
   &__item {
-    font-size: 2rem;
+    font-size: 4rem;
     opacity: 0.3;
     @include mq(md) {
       font-size: 1.6rem;
@@ -72,6 +75,7 @@ header {
   }
   &__active {
     opacity: 1;
+    color: var(--primary-300);
   }
 }
 .btn-hamburger[aria-expanded="true"] {
@@ -79,5 +83,18 @@ header {
     transform: translateX(0);
     opacity: 1;
     visibility: visible;
+  }
+  .line {
+    &:first-child {
+      transform: rotatez(45deg) translate(7px, 8px);
+      width: 100%;
+    }
+    &:nth-child(2) {
+      opacity: 0;
+    }
+    &:last-child {
+      width: 100%;
+      transform: rotate(-45deg) translate(6px, -9px);
+    }
   }
 }

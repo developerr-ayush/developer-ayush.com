@@ -1,15 +1,13 @@
 import React from 'react'
-
-const Marquee = () => {
+interface marquee {
+    children: React.ReactNode
+}
+const Marquee = ({ children }: marquee) => {
     return (
         <div className="marquee">
             <div className="marquee-list">
-                <div className="marquee-item"><p>Latest Work and Feature</p></div>
-                <div className="marquee-item"><p>Latest Work and Feature</p></div>
-                <div className="marquee-item"><p>Latest Work and Feature</p></div>
-                <div className="marquee-item"><p>Latest Work and Feature</p></div>
-                <div className="marquee-item"><p>Latest Work and Feature</p></div>
-                <div className="marquee-item"><p>Latest Work and Feature</p></div>
+                {children}
+                {children}
             </div>
         </div>
     )

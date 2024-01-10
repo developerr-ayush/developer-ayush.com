@@ -1,8 +1,7 @@
 @use "map" as *;
 @use "mixin" as *;
 
-$font-primary: "Gilroy", sans-serif;
-$font-icon: "custom-icons";
+$font-primary: "__Inter_e66fe9", "__Inter_Fallback_e66fe9", sans-serif;
 $grid-columns: 12; // max grid columns
 $base-space: 0.5rem; //5px
 $max-space: 5; // this is maximun number for creating of spacing variables, margins and paddings utility classes

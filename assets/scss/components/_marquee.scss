@@ -5,11 +5,11 @@
     display: flex;
     gap: 3rem;
     width: max-content;
-    animation: marquee 40s linear infinite alternate;
+    animation: marquee 20s linear infinite;
   }
 }
 @keyframes marquee {
   100% {
-    transform: translateX(calc(-100% + 100vw));
+    transform: translateX(calc(-50% - 1.5rem));
   }
 }

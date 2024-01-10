@@ -3,7 +3,7 @@ interface cardListData {
     children: React.ReactNode
     className?: string
 }
-const CardList = ({ className, children }: cardListData) => {
+const CardList = ({ className = "", children }: cardListData) => {
     return (
         <div className={`card-list ${className}`}>
             {children}

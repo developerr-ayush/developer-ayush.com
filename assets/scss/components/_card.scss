@@ -30,15 +30,17 @@
   }
   &-profile {
     padding: 4rem 3rem;
-
     img {
       border-radius: 3rem 0 3rem 0;
+    }
+    @include mq(md) {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
     }
   }
   &-sub-title {
     font-size: 1.2rem;
     color: var(--neutral-700);
-    opacity: 0.7;
     margin-bottom: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.1rem;
@@ -51,15 +53,24 @@
   }
   &-name {
     font-size: 3.6rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
   &-text {
     color: var(--neutral-700);
     font-size: 1.4rem;
     letter-spacing: 0.05rem;
+    line-height: 1.5;
   }
   &-marquee {
     padding: 2rem;
+  }
+  &-content {
+    padding-right: 5rem;
+  }
+  &-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
   }
   &-sign {
     img {
@@ -69,6 +80,36 @@
   &-list {
     display: grid;
     gap: 3rem;
+  }
+  &-contact {
+    padding-top: 7rem;
+    gap: 0;
+    .star {
+      position: absolute;
+      top: 0;
+      left: 4rem;
+    }
+    .card-title {
+      font-size: 3rem;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+  &-exp {
+    text-align: center;
+    .card {
+      gap: 1rem;
+      &-text {
+        display: grid;
+      }
+      &-title {
+        font-size: 2.6rem;
+        margin: 0;
+      }
+    }
+    @include mq(md) {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
   .redirect-anchor {
     position: absolute;
@@ -85,4 +126,22 @@
       opacity: 1;
     }
   }
+  &-social {
+    display: flex;
+    justify-content: center;
+  }
+}
+.social-link {
+  width: 5rem;
+  height: 5rem;
+  flex-shrink: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  border: 0.1rem solid rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
 }

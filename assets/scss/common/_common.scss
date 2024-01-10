@@ -2,6 +2,9 @@
 main {
   padding-top: 6rem;
 }
+.highlight {
+  color: var(--primary-300);
+}
 .container {
   padding-inline: var(--space-4);
   max-width: var(--container);

@@ -3,7 +3,7 @@ interface CardType {
   className?: string,
   children: React.ReactNode,
 }
-const Card = ({ className, children }: CardType) => {
+const Card = ({ className = "", children }: CardType) => {
   return (
     <div className={`card ${className}`}>{children}</div>
   )
