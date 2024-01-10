@@ -6,7 +6,7 @@ import { FaTwitter, FaYoutube, FaLinkedin, FaGithub } from "react-icons/fa";
 
 const CardShare = () => {
     return (
-        <Card className="card-share">
+        <Card className="card-share col-2">
             <Card className="card-social">
                 <a href="https://instagram.com" target="_blank" className="social-link"><FaTwitter size={25} /></a>
                 <a href="https://youtube.com" target="_blank" className="social-link"><FaYoutube size={25} /></a>

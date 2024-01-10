@@ -6,16 +6,18 @@ $colors: (
   ),
   "neutral": (
     100: #fff,
-    300: #bcbcbc,
+    200: #fdfdfd,
+    300: #e0e0e0,
+    350: #c3c3c3,
     400: #a8a8a8,
     500: #323232,
     700: #0f0f0f,
     900: #000,
   ),
   "function": (
-    "text": #fff,
-    "title": #a8a8a8,
-    "body": #0f0f0f,
+    "text": #000,
+    "title": #000,
+    "body": #e0e0e0,
   ),
 );
 $darkModeColors: (
@@ -30,6 +32,8 @@ $darkModeColors: (
     500: #a8a8a8,
     400: #323232,
     300: #0f0f0f,
+    350: #060606,
+    200: #181818,
     100: #000,
   ),
   "function": (

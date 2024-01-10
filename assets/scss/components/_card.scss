@@ -1,30 +1,18 @@
 @use "../config/" as *;
 .card {
   background-color: var(--function-body);
-  background-image: url("../../img/bg1.png");
+  // background-image: url("../../img/bg1.png");
   position: relative;
   border-radius: 3rem;
   overflow: hidden;
   isolation: isolate;
-  border: 0.1rem solid rgba(255, 255, 255, 0.1);
   display: grid;
   gap: 3rem;
   padding: 3rem 2rem;
-  &::before,
-  &::after {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    inset: 0;
-  }
-  &::after {
-    opacity: 0.3;
-    background: linear-gradient(
-      120deg,
-      rgba(255, 255, 255, 0.3),
-      rgba(255, 255, 255, 0.05)
-    );
-  }
+  // background: var(--function-body);
+  // box-shadow: 5px 5px 20px var(--neutral-350), -5px -5px 20px var(--neutral-200);
+  box-shadow: inset 5px 5px 10px var(--neutral-350),
+    inset -5px -5px 10px var(--neutral-200);
   &-image {
     text-align: center;
   }
@@ -36,6 +24,12 @@
     @include mq(md) {
       grid-template-columns: 1fr 1fr;
       align-items: center;
+    }
+  }
+  &:not(.card-profile) {
+    img {
+      height: 10rem;
+      object-fit: contain;
     }
   }
   &-sub-title {
@@ -78,7 +72,9 @@
   }
   &-sign {
     img {
-      filter: invert(1);
+      @include mq(darkMode) {
+        filter: invert(1);
+      }
     }
   }
   &-list {
@@ -88,10 +84,24 @@
   &-contact {
     padding-top: 7rem;
     gap: 0;
+    align-items: flex-end;
+    padding-right: 7rem;
+    @include mq(md) {
+      padding-top: 3rem;
+    }
     .star {
       position: absolute;
       top: 0;
       left: 4rem;
+      filter: invert(1);
+      @include mq(md) {
+        width: 3rem;
+        object-fit: contain;
+        object-position: top;
+      }
+      @include mq(darkMode) {
+        filter: unset;
+      }
     }
     .card-title {
       font-size: 3rem;
@@ -102,13 +112,18 @@
   &-exp {
     text-align: center;
     .card {
+      align-content: center;
       gap: 1rem;
+
       &-text {
         display: grid;
       }
       &-title {
         font-size: 2.6rem;
         margin: 0;
+        @include mq(md) {
+          font-size: 4rem;
+        }
       }
     }
     @include mq(md) {
@@ -125,9 +140,11 @@
     opacity: 0.2;
     transition: opacity 300ms;
   }
-  &:hover {
-    .redirect-anchor {
-      opacity: 1;
+  @include mq(hover) {
+    &:hover {
+      .redirect-anchor {
+        opacity: 1;
+      }
     }
   }
   &-social {
@@ -139,13 +156,9 @@
   width: 5rem;
   height: 5rem;
   flex-shrink: 0;
-  background: linear-gradient(
-    120deg,
-    rgba(255, 255, 255, 0.1),
-    rgba(255, 255, 255, 0.05)
-  );
-  border: 0.1rem solid rgba(255, 255, 255, 0.05);
   border-radius: 50%;
   display: grid;
   place-items: center;
+  box-shadow: inset 5px 5px 10px var(--neutral-350),
+    inset -5px -5px 10px var(--neutral-200);
 }

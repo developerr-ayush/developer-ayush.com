@@ -15,9 +15,9 @@ export default function Home() {
       <CardMarquee />
       <CardSign />
       <CardWork />
-      <CardBlog />
       <CardService />
       <CardShare />
+      <CardBlog />
       <CardExp />
       <CardContact />
     </CardList>

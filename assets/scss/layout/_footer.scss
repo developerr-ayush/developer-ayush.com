@@ -2,6 +2,9 @@
 .footer {
   text-align: center;
   padding: 5rem 2rem;
+  @include mq(md) {
+    padding-block: 7rem;
+  }
   ul {
     list-style: none;
     padding: 0;
@@ -21,6 +24,9 @@
   }
   &-nav {
     margin-bottom: 2rem;
+    @include mq(md) {
+      margin-block: 3rem;
+    }
   }
   &-copy {
     .text {
