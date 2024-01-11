@@ -4,7 +4,7 @@ import Card from './Card'
 const CardEdu = () => {
     return (
         <Card>
-            <h3 className="title">Experience</h3>
+            <h3 className="title">Education</h3>
             <Card>
                 <h3 className="card-title">Amity Univercity</h3>
                 <p className="card-text">2022 - <span className="highlight">2025</span></p>
