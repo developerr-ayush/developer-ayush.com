@@ -11,18 +11,42 @@ const CardService = () => {
     return (
         <Card className="card-service col-2">
             <Marquee>
-                <FaHtml5 size={55} />
-                <FaCss3 size={55} />
-                <IoLogoJavascript size={55} />
-                <TbBrandNextjs size={55} />
-                <FaReact size={55} />
-                <SiMongodb size={55} />
-                <SiExpress size={55} />
-                <FaNodeJs size={55} />
-                <FaGitAlt size={55} />
-                <FaSass size={55} />
-                <SiTailwindcss size={55} />
-                <TbBrandTypescript size={55} />
+                <div className="card-icon">
+                    <FaHtml5 size={40} />
+                </div>
+                <div className="card-icon">
+                    <FaCss3 size={40} />
+                </div>
+                <div className="card-icon">
+                    <IoLogoJavascript size={40} />
+                </div>
+                <div className="card-icon">
+                    <TbBrandNextjs size={40} />
+                </div>
+                <div className="card-icon">
+                    <FaReact size={40} />
+                </div>
+                <div className="card-icon">
+                    <SiMongodb size={40} />
+                </div>
+                <div className="card-icon">
+                    <SiExpress size={40} />
+                </div>
+                <div className="card-icon">
+                    <FaNodeJs size={40} />
+                </div>
+                <div className="card-icon">
+                    <FaGitAlt size={40} />
+                </div>
+                <div className="card-icon">
+                    <FaSass size={40} />
+                </div>
+                <div className="card-icon">
+                    <SiTailwindcss size={40} />
+                </div>
+                <div className="card-icon"> 
+                    <TbBrandTypescript size={40} />
+                </div>
             </Marquee>
 
             <div className="card-content">

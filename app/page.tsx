@@ -10,7 +10,7 @@ import CardContact from "./component/card/CardContact";
 import CardService from "./component/card/CardService";
 export default function Home() {
   return (
-    <CardList className="grid">
+    <CardList className="grid grid-4">
       <CardProfile />
       <CardMarquee />
       <CardSign />

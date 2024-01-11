@@ -21,7 +21,6 @@ main {
   justify-content: center;
   align-items: center;
 }
-
 .mobile {
   @include mq(md) {
     display: none;
@@ -43,7 +42,5 @@ main {
   filter: blur(4rem);
   @include mq(md) {
     filter: blur(8rem);
-  }
-  svg {
   }
 }

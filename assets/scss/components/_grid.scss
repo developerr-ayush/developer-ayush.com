@@ -2,7 +2,18 @@
 @include mq(md) {
   .grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    &-4{
+      grid-template-columns: repeat(4, 1fr);
+      margin-bottom: 3rem;
+    }
+    &-3{
+      grid-template-columns: repeat(3, 1fr);
+      margin-bottom: 3rem;
+    }
+    &-2{
+      grid-template-columns: repeat(2, 1fr);
+      margin-bottom: 3rem;
+    }
   }
   .col-2 {
     grid-column: span 2;
