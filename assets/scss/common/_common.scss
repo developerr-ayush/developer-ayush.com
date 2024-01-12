@@ -5,6 +5,11 @@ main {
 .highlight {
   color: var(--primary-300);
 }
+img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
 .container {
   padding-inline: var(--space-4);
   max-width: var(--container);

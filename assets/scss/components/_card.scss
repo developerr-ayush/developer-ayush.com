@@ -51,10 +51,10 @@
       margin-bottom: -4rem;
     }
   }
-  &-knowledge{
-    .card{
+  &-knowledge {
+    .card .card {
       gap: 1rem;
-      &-title{
+      &-title {
         margin: 0;
       }
     }
@@ -196,6 +196,10 @@
   }
   &-about {
     gap: 1rem;
+  }
+  &-img {
+    aspect-ratio: 1/1;
+    height: auto;
   }
 }
 .social-link {

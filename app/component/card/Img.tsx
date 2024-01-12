@@ -3,15 +3,16 @@ import Image from 'next/image'
 import React from 'react'
 interface img {
     src: StaticImport,
+    width: number,
     alt: string,
-    width?: number
+    className?: string
 }
-const CardImg = ({ src, alt, width }: img) => {
+const Img = ({ src, width, alt, className }: img) => {
     return (
-        <div className="card-image row-2">
+        <div className={"card-img" + className ? className : ""}>
             <Image src={src} width={width} alt={alt} />
         </div>
     )
 }
 
-export default CardImg
+export default Img

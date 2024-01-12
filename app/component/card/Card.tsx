@@ -5,7 +5,9 @@ interface CardType {
 }
 const Card = ({ className = "", children }: CardType) => {
   return (
-    <div className={`card ${className}`}>{children}</div>
+    <div className={`card ${className}`}>
+      {children}
+    </div>
   )
 }
 
