@@ -117,7 +117,6 @@ const page = () => {
                             </BasicCard>
                         })}
                     </CardList>
-
                 </div>
             </CardList>
         </>

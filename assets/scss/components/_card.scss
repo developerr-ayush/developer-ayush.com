@@ -146,7 +146,12 @@
     flex-wrap: wrap;
     gap: 2rem;
   }
-
+  &-project {
+    img {
+      aspect-ratio: 1/1;
+      object-position: top;
+    }
+  }
   &-list {
     display: grid;
     gap: 3rem;

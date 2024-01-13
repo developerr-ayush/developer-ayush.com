@@ -7,7 +7,7 @@ const CardContact = () => {
     return (
         <Card className='card-contact '>
             <h3 className='card-title'>Let&apos;s <br /> Work <span className="highlight">Together</span></h3>
-            <RedirectAnchor href='/' />
+            <RedirectAnchor href='/contact' />
             <Image src={star} width={30} alt='star' className='star' />
         </Card>
     )

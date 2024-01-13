@@ -1,3 +1,14 @@
+import DataWeb from "@/assets/img/work/datawebDesktop.jpg";
+import Cuvee from "@/assets/img/work/cuvee.jpg";
+import GG from "@/assets/img/work/gg.jpg";
+import Finexo from "@/assets/img/work/finexo.jpg";
+import Wanderon from "@/assets/img/work/wanderon.jpg";
+import Wireframe from "@/assets/img/work/wireframe.jpg";
+import Dataviv from "@/assets/img/work/dataviv.jpg";
+import Yoga from "@/assets/img/work/yoga.jpg";
+import Aonix from "@/assets/img/work/aonix.png";
+import Netflix from "@/assets/img/work/netflix.png";
+import Slack from "@/assets/img/work/slack.png";
 let exp = [
   {
     id: 1,
@@ -66,4 +77,97 @@ let edu = [
     data: "Currently enrolled in the SIGMA batch at Apna College, where I am focusing on Data Structures and Algorithms (DSA). The program also includes web development, which seems somewhat familiar to what I've learned previously. However, I am confident in my ability to grasp DSA concepts, and I am particularly excited about working with Java in this context. Looking forward to enhancing my skills in these areas.",
   },
 ];
-export { exp, edu };
+
+// Works
+let mywork = [
+  {
+    title: "Aonix",
+    skillsUsed: ["React", "JavaScript", "HTML5", "SCSS", "CSS3"],
+    url: Aonix,
+    detail:
+      "I built a website using React, and the toughest part was designing it and making dynamic pages. After that, I integrated EmailJs into it. Additionally, I added some small animations throughout the website.",
+    redirectLink: "https://aonix-website.netlify.app/",
+  },
+  {
+    title: "Netflix Landing Page",
+    skillsUsed: ["React", "JavaScript", "HTML5", "SCSS", "CSS3"],
+    url: Netflix,
+    detail:
+      "I created a Netflix landing page clone using React. Most of my focus went into the section where videos play. While keeping the design simple, I also addressed some flaws present in the actual Netflix website within this clone.",
+    redirectLink: "https://ayush-web-notflix.netlify.app/",
+  },
+  {
+    title: "Slack Landing page",
+    skillsUsed: ["React", "JavaScript", "HTML5", "SCSS", "CSS3"],
+    url: Slack,
+    detail:
+      "I made a Slack landing page clone using React. The most challenging aspect was the design, particularly the navbar, which took nearly 10 days to perfect. Additionally, I incorporated debouncing functionality into the clone.",
+    redirectLink: "https://slack-by-ayush.netlify.app/",
+  },
+  {
+    title: "Yoga",
+    skillsUsed: ["HTML5", "Bootstrap", "CSS3", "JavaScript", "jQuery"],
+    url: Yoga,
+    detail:
+      "This website is an assignment given by a company, and one of its notable features is the use of pure CSS to create animated leaf movement. This animation contributes to the website's overall speed and performance.",
+    redirectLink: "https://developerr-ayush.github.io/yoga/",
+  },
+  {
+    title: "Dataviv Technologies",
+    skillsUsed: ["HTML5", "Bootstrap", "JavaScript", "jQuery", "SCSS"],
+    url: Dataviv,
+    detail:
+      "This website is my own creation for a company, and I must say it turned out to be a visually appealing and impressive website. The animation used in the layout is absolutely fabulous, and I take great pride in designing the color combination and implementing the animations throughout the website.",
+    redirectLink: "https://dataviv-technologies.web.app/",
+  },
+  {
+    title: "Data Web",
+    skillsUsed: ["HTML5", "JavaScript", "jQuery", "SCSS"],
+    url: DataWeb,
+    detail:
+      "I came across this website long after my course, and I decided to replicate it exactly as it is seen. I added a few of my own modifications, such as a sticky navigation and some hover animations.",
+    redirectLink: "https://developerr-ayush.github.io/dataweb/",
+  },
+  {
+    title: "Greeting Globe",
+    skillsUsed: ["HTML5", "CSS3", "JavaScript", "jQuery", "Bootstrap"],
+    url: GG,
+    detail:
+      "I worked as a team member on this freelance project. I developed approximately 50-60% of the UI, and I also wrote about 90% of the logical parts on this website.",
+    redirectLink: "https://greetingglobe-web.web.app/",
+  },
+  {
+    title: "Finexo",
+    skillsUsed: ["HTML5", "JavaScript", "jQuery", "SCSS"],
+    url: Finexo,
+    detail:
+      "I created the layout for this website because I liked the UI parts and animations used in it. I personally love the website's layout, design, and UI. I also learned more about CSS animation while working on it.",
+    redirectLink: "https://developerr-ayush.github.io/finexo/",
+  },
+  {
+    title: "Cuvee",
+    skillsUsed: ["HTML5", "JavaScript", "jQuery", "SCSS"],
+    url: Cuvee,
+    detail:
+      "This was a layout given by a company as an assignment, and I successfully created a clone of the Cuvee website. I replicated the home page with some customized elements as well.",
+    redirectLink: "https://developerr-ayush.github.io/cuvee/",
+  },
+  {
+    title: "Wanderon",
+    skillsUsed: ["HTML5", "JavaScript", "jQuery", "SCSS"],
+    url: Wanderon,
+    detail:
+      "This website was assigned by a company during an interview round. I learned many new things about the logical part and used various techniques like loops in this layout.",
+    redirectLink: "https://developerr-ayush.github.io/wanderon/",
+  },
+  {
+    title: "Wireframe",
+    skillsUsed: ["HTML5", "CSS3", "JavaScript", "jQuery", "SCSS"],
+    url: Wireframe,
+    detail:
+      "This website was assigned by a company, and I learned many things about the Owl Carousel while working on this layout. It was a fascinating thing to do.",
+    redirectLink: "https://developerr-ayush.github.io/wireframe/",
+  },
+];
+
+export { exp, edu, mywork };

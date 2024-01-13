@@ -6,114 +6,72 @@ import Image from 'next/image'
 import project from "@/assets/img/project.jpeg"
 import BasicCard from '../component/card/BasicCard'
 import Title from '../component/Title'
+import { mywork } from '../data/data'
 
 const page = () => {
+    let len = Math.ceil(mywork.length / 3)
+    const filterData = {
+        data1: mywork.slice(0, len),
+        data2: mywork.slice(len, 2 * len),
+        data3: mywork.slice(2 * len),
+    }
+    console.log(filterData)
     return (
-        <CardList className='grid grid-lg-3 align-start'>
+        <CardList className='grid grid-lg-3 align-start card-project'>
 
-            <CardList className='col-lg-2'>
+            <CardList className='col-lg-2 align-start'>
                 <div className="col-lg-2">
                     <Title>Projects</Title>
-
                 </div>
-                <div>
-                    <BasicCard img={{
-                        src: project,
-                        alt: "profile"
-                    }}
-                        content={{
-                            title: "Dynamic",
-                            subTitle: "Web Development"
-                        }}
-                        redirect='/'
-                        className="card-project" />
-                </div>
-                <div>
-                    <BasicCard img={{
-                        src: project,
-                        alt: "profile"
-                    }}
-                        content={{
-                            title: "Dynamic",
-                            subTitle: "Web Development"
-                        }}
-                        redirect='/'
-                        className="card-project" />
-                </div>
-                <div>
-                    <BasicCard img={{
-                        src: project,
-                        alt: "profile"
-                    }}
-                        content={{
-                            title: "Dynamic",
-                            subTitle: "Web Development"
-                        }}
-                        redirect='/'
-                        className="card-project" />
-                </div>
-                <div>
-                    <BasicCard img={{
-                        src: project,
-                        alt: "profile"
-                    }}
-                        content={{
-                            title: "Dynamic",
-                            subTitle: "Web Development"
-                        }}
-                        redirect='/'
-                        className="card-project" />
-                </div>
-                <div>
-                    <BasicCard img={{
-                        src: project,
-                        alt: "profile"
-                    }}
-                        content={{
-                            title: "Dynamic",
-                            subTitle: "Web Development"
-                        }}
-                        redirect='/'
-                        className="card-project" />
-                </div>
-                <div>
-                    <BasicCard img={{
-                        src: project,
-                        alt: "profile"
-                    }}
-                        content={{
-                            title: "Dynamic",
-                            subTitle: "Web Development"
-                        }}
-                        redirect='/'
-                        className="card-project" />
-                </div>
+                <CardList className="col-lg-1">
+                    {filterData.data3.map((e, i) => {
+                        return <div key={i}>
+                            <BasicCard img={{
+                                src: e.url,
+                                alt: e.title
+                            }}
+                                content={{
+                                    title: e.title,
+                                    text: e.detail
+                                }}
+                                redirect={e.redirectLink}
+                                className="card-project" />
+                        </div>
+                    })}
+                </CardList>
+                <CardList className="col-lg-1">
+                    {filterData.data2.map((e, i) => {
+                        return <div key={i}>
+                            <BasicCard img={{
+                                src: e.url,
+                                alt: e.title
+                            }}
+                                content={{
+                                    title: e.title,
+                                    text: e.detail
+                                }}
+                                redirect={e.redirectLink}
+                                className="card-project" />
+                        </div>
+                    })}
+                </CardList>
             </CardList>
             <CardList className='col-lg-1'>
-                <div>
-                    <BasicCard img={{
-                        src: project,
-                        alt: "profile"
-                    }}
-                        content={{
-                            title: "Dynamic",
-                            subTitle: "Web Development"
+                {filterData.data1.map((e, i) => {
+                    return <div key={i}>
+                        <BasicCard img={{
+                            src: e.url,
+                            alt: e.title
                         }}
-                        redirect='/'
-                        className="card-project" />
-                </div>
-                <div>
-                    <BasicCard img={{
-                        src: project,
-                        alt: "profile"
-                    }}
-                        content={{
-                            title: "Dynamic",
-                            subTitle: "Web Development"
-                        }}
-                        redirect='/'
-                        className="card-project" />
-                </div>
+                            content={{
+                                title: e.title,
+                                text: e.detail
+                            }}
+                            redirect={e.redirectLink}
+
+                            className="card-project" />
+                    </div>
+                })}
             </CardList>
         </CardList>
     )
