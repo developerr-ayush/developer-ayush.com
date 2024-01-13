@@ -52,7 +52,7 @@ const page = () => {
                 <div className='contact-form col-lg-2'>
                     <CardList>
                         <Title>Lets Work <span className="highlight">Together</span></Title>
-                        <Card >
+                        <Card>
                             <form action="#">
                                 <div className="form-group">
                                     <input type="text" className="form-control" placeholder='' name='name' id="name" />
@@ -60,15 +60,15 @@ const page = () => {
                                 </div>
                                 <div className="form-group">
                                     <input type="text" className="form-control" placeholder='' name='email' id="email" />
-                                    <label className="form-label" htmlFor="email">email</label>
+                                    <label className="form-label" htmlFor="email">Email</label>
                                 </div>
                                 <div className="form-group">
                                     <input type="text" className="form-control" placeholder='' name='subject' id="subject" />
-                                    <label className="form-label" htmlFor="subject">subject</label>
+                                    <label className="form-label" htmlFor="subject">Subject</label>
                                 </div>
                                 <div className="form-group">
                                     <textarea className="form-control" placeholder='' name='message' id="message"></textarea>
-                                    <label className="form-label" htmlFor="message">message</label>
+                                    <label className="form-label" htmlFor="message">Message</label>
                                 </div>
                                 <div className="form-group">
                                     <Button>Submit</Button>

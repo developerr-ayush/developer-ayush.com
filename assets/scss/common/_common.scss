@@ -5,6 +5,10 @@ main {
 .dark-mode {
   color-scheme: dark;
 }
+.text {
+  opacity: 0.8;
+  line-height: 2;
+}
 .highlight {
   color: var(--primary-300);
 }

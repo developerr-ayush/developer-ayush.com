@@ -5,7 +5,7 @@ header {
   background-color: var(--neutral-300);
   width: 100%;
   z-index: 2;
-  position: sticky;
+  position: relative;
   top: 0;
   @include mq(darkMode) {
     .logo-img {
@@ -51,7 +51,7 @@ header {
   opacity: 0;
   visibility: visible;
   background-color: var(--neutral-300);
-  position: fixed;
+  position: absolute;
   top: var(--header-height);
   height: calc(100dvh - var(--header-height));
   overflow: auto;
