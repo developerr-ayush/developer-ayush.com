@@ -1,5 +1,4 @@
 import CardList from "./component/card/CardList";
-import CardShare from "./component/card/CardShare";
 import CardExp from "./component/card/CardExp";
 import CardContact from "./component/card/CardContact";
 import CardService from "./component/card/CardService";
@@ -9,11 +8,14 @@ import sign from "@/assets/img/signature.png"
 import blog from "@/assets/img/gfonts.png"
 import profile from "@/assets/img/profile.jpg"
 import Marquee from "./component/Marquee";
+import Social from "./component/Social";
+import Card from "./component/card/Card";
 
 
 export default function Home() {
   return (
     <CardList className="grid grid-md-2 grid-lg-4">
+      {/* Profile */}
       <div className="col-md-2  row-lg-2">
 
         <BasicCard img={{
@@ -25,8 +27,9 @@ export default function Home() {
             subTitle: "Full Stack Web Developer",
             name: "Ayush Shah",
           }}
-          className="card-profile" redirect="/about" />
+          className="card-profile" redirect="/about" ></BasicCard>
       </div>
+      {/* marquee */}
       <div className="col-md-2 col-lg-2">
         <BasicCard className="card-marquee" >
           <Marquee>
@@ -35,6 +38,7 @@ export default function Home() {
           </Marquee>
         </BasicCard>
       </div>
+      {/* credentials */}
       <div className="col-md-1 col-lg-1">
 
         <BasicCard img={{
@@ -46,8 +50,9 @@ export default function Home() {
             subTitle: "More about me"
           }}
           redirect="/credentials"
-          className="card-sign" />
+          className="card-sign" ></BasicCard>
       </div>
+      {/* Work */}
       <div className="col-md-1 col-lg-1">
 
         <BasicCard img={{
@@ -59,16 +64,19 @@ export default function Home() {
             subTitle: "Showcase"
           }}
           redirect="/work"
-          className="card-work" />
+          className="card-work" ></BasicCard>
       </div>
+      {/* services */}
       <div className="col-md-2 col-lg-2">
 
         <CardService />
 
       </div>
+      {/* Experience */}
       <div className="col-md-2 col-lg-2">
         <CardExp />
       </div>
+      {/* blog */}
       <div className="col-md-2 col-lg-1">
         <BasicCard img={{
           src: blog,
@@ -79,11 +87,20 @@ export default function Home() {
             subTitle: "Blog"
           }}
           redirect="/blog"
-          className="card-blog" />
+          className="card-blog" ></BasicCard>
       </div>
+      {/* share */}
       <div className="col-md-2 col-lg-2">
-        <CardShare />
+        <BasicCard content={{
+          title: "Profile",
+          subTitle: "Stay With me"
+        }} redirect="/contact">
+          <Card className="card-social">
+            <Social />
+          </Card>
+        </BasicCard>
       </div>
+      {/* contact */}
       <div className="col-md-2 col-lg-1">
         <CardContact />
       </div>

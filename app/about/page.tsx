@@ -3,10 +3,11 @@ import BasicCard from "../component/card/BasicCard";
 import CardEdu from "../component/card/CardEdu";
 import CardExperience from "../component/card/CardExperience";
 import CardList from "../component/card/CardList";
-import CardShare from "../component/card/CardShare";
 import sign from "@/assets/img/signature.png"
 import blog from "@/assets/img/gfonts.png"
 import profile from "@/assets/img/profile.jpg"
+import Card from "../component/card/Card";
+import Social from "../component/Social";
 
 export default function About() {
     return (
@@ -52,7 +53,14 @@ export default function About() {
 
                 <div className="col-lg-2">
 
-                    <CardShare />
+                    <BasicCard content={{
+                        title: "Profile",
+                        subTitle: "Stay With me"
+                    }} redirect="/contact">
+                        <Card className="card-social">
+                            <Social />
+                        </Card>
+                    </BasicCard>
                 </div>
                 <div className="col-lg-1">
 

@@ -3,7 +3,7 @@ import Card from './Card'
 
 const CardExp = () => {
     return (
-        <Card className='card-exp col-2'>
+        <Card className='card-exp'>
             <Card>
                 <h3 className="card-title">03</h3>
                 <p className="card-text"><span>Years</span><span>Experience</span></p>
