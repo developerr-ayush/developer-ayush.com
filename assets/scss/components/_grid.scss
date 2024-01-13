@@ -1,24 +1,49 @@
 @use "../config/" as *;
+.align-start {
+  align-items: start;
+}
+.align-end {
+  align-items: end;
+}
 @include mq(md) {
   .grid {
     display: grid;
-    &-4{
-      grid-template-columns: repeat(4, 1fr);
-      margin-bottom: 3rem;
-    }
-    &-3{
-      grid-template-columns: repeat(3, 1fr);
-      margin-bottom: 3rem;
-    }
-    &-2{
+    &-md-2 {
       grid-template-columns: repeat(2, 1fr);
-      margin-bottom: 3rem;
     }
   }
-  .col-2 {
-    grid-column: span 2;
+  .col-md {
+    &-1 {
+      grid-column: span 2;
+    }
+    &-2 {
+      grid-column: span 2;
+    }
   }
-  .row-2 {
-    grid-row: span 2;
+}
+@include mq(lg) {
+  .grid-lg {
+    &-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    &-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    &-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .col-lg {
+    &-1 {
+      grid-column: span 1;
+    }
+    &-2 {
+      grid-column: span 2;
+    }
+  }
+  .row-lg {
+    &-2 {
+      grid-row: span 2;
+    }
   }
 }

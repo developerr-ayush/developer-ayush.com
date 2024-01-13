@@ -15,7 +15,7 @@ interface basicCard {
         name?: string,
         text?: string
     },
-    redirect?: "",
+    redirect?: string,
     children?: React.ReactNode,
     className?: string
 }
@@ -23,8 +23,8 @@ const BasicCard = ({ img, content, children, redirect, className }: basicCard) =
     return (
         <Card className={className ? className : ""}>
             {img && <Img src={img.src} alt={img.alt} width={500} />}
-            {content && <Content title={content.title} subTitle={content.subTitle} text={content.text} name={content.name} />}
             {children}
+            {content && <Content title={content.title} subTitle={content.subTitle} text={content.text} name={content.name} />}
             {redirect && <RedirectAnchor href={redirect} />}
         </Card>
     )

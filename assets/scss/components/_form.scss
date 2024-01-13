@@ -1,0 +1,33 @@
+@use "../config/" as *;
+.form {
+  &-control {
+    box-shadow: inset 5px 5px 10px var(--neutral-350),
+      inset -5px -5px 10px var(--neutral-200);
+    background-color: var(--function-body);
+    padding: 2rem;
+    border: 0;
+    width: 100%;
+    color: unset;
+    padding-top: 3rem;
+    &:placeholder-shown {
+      & + .form-label {
+        font-size: 2rem;
+        padding-top: 2rem;
+      }
+    }
+  }
+  &-group {
+    position: relative;
+    margin-bottom: 2rem;
+  }
+  &-label {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    padding: 2rem;
+    padding-top: 1.3rem;
+    font-size: 1rem;
+    transition: font-size 300ms;
+  }
+}

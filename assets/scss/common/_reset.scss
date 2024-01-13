@@ -73,6 +73,12 @@ a {
   &:hover {
     text-decoration: none;
   }
+  &:focus-within {
+    outline: none;
+  }
+  &:focus-visible {
+    outline: 1px solid var(--neutral-900);
+  }
 }
 ul,
 ol {
@@ -101,9 +107,13 @@ button {
 textarea {
   resize: vertical; // 1
 }
-input {
+input,
+textarea {
   &:focus-within {
     outline: none;
+  }
+  &:focus-visible {
+    outline: 1px solid var(--neutral-900);
   }
 }
 iframe {

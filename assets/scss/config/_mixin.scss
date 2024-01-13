@@ -5,7 +5,7 @@
       @content;
     }
   } @else if ($breakpoint == darkMode) {
-    @media (prefers-color-scheme: dark) {
+    @at-root .dark-mode {
       @content;
     }
   } @else {

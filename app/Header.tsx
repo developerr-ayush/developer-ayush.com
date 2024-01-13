@@ -1,20 +1,24 @@
 import Image from 'next/image'
-import logo from "@/assets/img/logo.png"
+import { FaRegLightbulb } from "react-icons/fa";
 import React from 'react'
 import Link from 'next/link'
 import Button from './component/Button'
 import NavLink from './component/NavLink'
+import sign from "@/assets/img/signature.png"
+import DarkmodeToggle from './component/DarkmodeToggle';
+
 const navLinks = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
     { name: "Work", href: "/work" },
     { name: "Contact", href: "/contact" },
 ]
+
 const Header = () => {
     return (
         <header>
             <div className="container flex">
-                <Link href="/" className='logo'>Ayush</Link>
+                <Link href="/" className='logo'><Image src={sign} width={100} alt="profile" className="logo-img" /></Link>
                 <Button exCla="btn-hamburger" ariaExpanded={false}>
                     <span className="line"></span><span className="line"></span><span className="line"></span>
                 </Button>
@@ -25,7 +29,7 @@ const Header = () => {
                         })}
                     </ul>
                 </nav>
-                <Button exCla="btn-contact">Lets Talk</Button>
+                <DarkmodeToggle />
             </div>
         </header >
     )

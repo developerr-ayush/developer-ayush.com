@@ -7,6 +7,11 @@ header {
   z-index: 2;
   position: sticky;
   top: 0;
+  @include mq(darkMode) {
+    .logo-img {
+      filter: invert(1);
+    }
+  }
   .btn-contact {
     display: none;
     @include mq(lg) {
@@ -21,6 +26,23 @@ header {
   .logo {
     font-size: 4rem;
     font-weight: 600;
+  }
+  .dark-mode {
+    &-toggler {
+      display: none;
+      &:checked ~ .dark-mode-label {
+        box-shadow: 5px 5px 10px var(--neutral-350),
+          -5px -5px 10px var(--neutral-200);
+      }
+    }
+    &-label {
+      display: block;
+      padding: 1rem;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: inset 5px 5px 10px var(--neutral-350),
+        inset -5px -5px 10px var(--neutral-200);
+    }
   }
 }
 .site-nav {
@@ -54,6 +76,7 @@ header {
     padding-block: 5rem;
     height: 100%;
     @include mq(md) {
+      margin-left: auto;
       padding: 0;
       grid-auto-flow: column;
       justify-content: end;

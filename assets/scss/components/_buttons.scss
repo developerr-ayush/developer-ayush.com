@@ -2,26 +2,31 @@
 @use "sass:color" as *;
 .btn {
   padding: var(--space-2) var(--space-5);
-  border: 0.1rem solid var(--btn-border, var(--neutral-400));
   border-radius: var(--btn-radius, 1.5rem);
-  background-color: var(--btn-bg, var(--neutral-400));
+  background-color: var(--btn-bg, var(--function-body));
   color: var(--btn-color, var(--neutral-900));
-  transition: 300ms;
+  box-shadow: 5px 5px 10px var(--neutral-350), -5px -5px 10px var(--neutral-200);
   font-size: 1.6rem;
   font-weight: 500;
   min-width: max-content;
+  transition: box-shadow 0.3s ease-in-out;
+  &:hover {
+    box-shadow: inset 5px 5px 10px var(--neutral-350),
+      inset -5px -5px 10px var(--neutral-200);
+  }
   &:focus-visible {
     outline: 1px solid var(--neutral-900);
   }
   &-hamburger {
     --btn-bg: transparent;
-    --btn-border: transparent;
     padding: var(--space-2);
     width: 5.5rem;
     height: 5.5rem;
     display: grid;
     align-content: center;
     gap: var(--space-2);
+    box-shadow: unset;
+    margin-inline: auto 2rem;
     @include mq(md) {
       display: none;
     }

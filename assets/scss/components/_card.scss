@@ -9,6 +9,7 @@
   display: grid;
   gap: 3rem;
   padding: 3rem;
+  min-height: 100%;
   // background: var(--function-body);
   // box-shadow: 5px 5px 20px var(--neutral-350), -5px -5px 20px var(--neutral-200);
   box-shadow: inset 5px 5px 10px var(--neutral-350),
@@ -27,7 +28,19 @@
       align-items: center;
     }
   }
-  &:not(.card-profile, .card-image) {
+  &-about-profile {
+    padding: 4rem 3rem;
+    img {
+      border-radius: 3rem 0 3rem 0;
+      filter: grayscale(100%);
+    }
+  }
+  &-project {
+    img {
+      border-radius: 0 3rem 0 3rem;
+    }
+  }
+  &:not(.card-profile, .card-about-profile, .card-image, .card-project) {
     img {
       height: 10rem;
       object-fit: contain;
@@ -40,15 +53,16 @@
     }
   }
   &-heading {
+    width: 100%;
     gap: 1rem;
     font-size: 2.4rem;
+    margin-bottom: 0;
     text-align: center;
     text-transform: uppercase;
     @include mq(md) {
       font-size: 5rem;
       line-height: 1;
       margin: 0;
-      margin-bottom: -4rem;
     }
   }
   &-knowledge {
@@ -107,16 +121,11 @@
     flex-wrap: wrap;
     gap: 2rem;
   }
-  &-sign {
-    img {
-      @include mq(darkMode) {
-        filter: invert(1);
-      }
-    }
-  }
+
   &-list {
     display: grid;
     gap: 3rem;
+    margin-bottom: 3rem;
     &-about {
       @include mq(md) {
         display: grid;
@@ -125,14 +134,16 @@
     }
   }
   &-contact {
-    padding-top: 7rem;
+    padding-top: 12rem;
     gap: 0;
     align-items: flex-end;
     padding-right: 7rem;
-    @include mq(md) {
-      padding-top: 3rem;
+    @include mq(lg) {
+      padding-top: 7rem;
     }
     .star {
+      width: auto;
+      height: auto;
       position: absolute;
       top: 0;
       left: 4rem;
@@ -142,7 +153,9 @@
         object-fit: contain;
         object-position: top;
       }
-      @include mq(darkMode) {
+    }
+    @include mq(darkMode) {
+      .star {
         filter: unset;
       }
     }
@@ -182,6 +195,9 @@
     padding: 2.5rem 3rem;
     opacity: 0.2;
     transition: opacity 300ms;
+    &:hover {
+      opacity: 1;
+    }
   }
   @include mq(hover) {
     &:hover {
@@ -198,7 +214,6 @@
     gap: 1rem;
   }
   &-img {
-    aspect-ratio: 1/1;
     height: auto;
   }
 }
@@ -217,6 +232,13 @@
       &:hover {
         color: $v;
       }
+    }
+  }
+}
+@include mq(darkMode) {
+  .card-sign {
+    img {
+      filter: invert(1);
     }
   }
 }

@@ -1,11 +1,14 @@
-import React from 'react'
-import { FaStarOfDavid } from "react-icons/fa6";
-const Title = () => {
+import React from 'react';
+import { GiJusticeStar } from "react-icons/gi";
+interface title {
+    children:React.ReactNode
+}
+const Title = ({ children }: title) => {
     return (
         <h3 className="flex-center card-heading col-2">
-            <FaStarOfDavid style={{ opacity: 0.5 }} />
-            Self Summary
-            <FaStarOfDavid style={{ opacity: 0.5 }} />
+            <GiJusticeStar style={{ opacity: 0.5 }} />
+            {children}
+            <GiJusticeStar style={{ opacity: 0.5 }} />
         </h3>
     )
 }
