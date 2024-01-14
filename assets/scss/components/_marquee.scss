@@ -6,6 +6,9 @@
     gap: 3rem;
     width: max-content;
     animation: marquee 20s linear infinite;
+    &:hover {
+      animation-play-state: paused;
+    }
   }
 }
 @keyframes marquee {

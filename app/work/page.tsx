@@ -15,9 +15,8 @@ const page = () => {
         data2: mywork.slice(len, 2 * len),
         data3: mywork.slice(2 * len),
     }
-    console.log(filterData)
     return (
-        <CardList className='grid grid-lg-3 align-start card-project'>
+        <CardList className='grid grid-lg-3 align-start '>
 
             <CardList className='col-lg-2 align-start'>
                 <div className="col-lg-2">

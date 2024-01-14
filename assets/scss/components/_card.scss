@@ -26,6 +26,7 @@
     gap: 1rem;
     justify-content: center;
   }
+
   &-image {
     text-align: center;
   }
@@ -91,7 +92,7 @@
     }
   }
   &-knowledge {
-    .card .card {
+    .card  {
       gap: 1rem;
       &-title {
         margin: 0;
@@ -149,7 +150,13 @@
   &-project {
     img {
       aspect-ratio: 1/1;
+      transition: 5s linear;
       object-position: top;
+    }
+    &:hover {
+      img {
+        object-position: bottom;
+      }
     }
   }
   &-list {
@@ -164,6 +171,17 @@
     }
     &.mb-0 {
       margin-bottom: 0;
+    }
+  }
+  &-service {
+    .marquee {
+      z-index: 2;
+    }
+    .card-icon {
+      transition: 300ms;
+      &:hover {
+        color: var(--brand-color, inherit);
+      }
     }
   }
   &-contact {
@@ -260,12 +278,11 @@
   box-shadow: inset 5px 5px 10px var(--neutral-350),
     inset -5px -5px 10px var(--neutral-200);
   transition: 300ms;
-  @each $k, $v in $social {
-    &-#{$k} {
-      &:hover {
-        color: $v;
-      }
-    }
+  a {
+    display: block;
+  }
+  &:hover {
+    color: var(--brand-color, inherit);
   }
 }
 @include mq(darkMode) {

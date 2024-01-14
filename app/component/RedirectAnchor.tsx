@@ -5,7 +5,7 @@ interface RedirectType {
 }
 const RedirectAnchor = ({ href }: RedirectType) => {
     return (
-        <Link href={href} className='redirect-anchor'>
+        <Link href={href} className='redirect-anchor' title={href.split("/")[1]}>
             <svg width="46" height="42" viewBox="0 0 46 42" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M30.9224 21.2014C25.1291 21.2014 24.618 24.7796 24.618 27.3354C24.618 21.5421 21.5509 21.2014 17.9727 21.2014C24.618 21.2014 24.618 17.2824 24.618 14.8969C24.618 20.3494 27.8554 21.2014 30.9224 21.2014Z" fill="var(--neutral-900,#F4F4F4)" stroke="var(--neutral-900,#F4F4F4)" />
                 <rect y="21.6981" width="0.999999" height="18" transform="rotate(-90 0 21.6981)" fill="var(--neutral-900,#F4F4F4)" />
