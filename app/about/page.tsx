@@ -22,7 +22,7 @@ export default function About() {
                         <div className="card-social-wrap">
                             <Social />
                         </div>
-                        <Button>Contact Me</Button>
+                        <Button label="Contact me">Contact Me</Button>
                     </BasicCard>
                 </div>
                 <div className="col-lg-2">

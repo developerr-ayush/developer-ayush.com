@@ -71,14 +71,14 @@ const page = () => {
                                     <label className="form-label" htmlFor="message">Message</label>
                                 </div>
                                 <div className="form-group">
-                                    <Button>Submit</Button>
+                                    <Button label="submit">Submit</Button>
                                 </div>
                             </form>
                         </Card>
                     </CardList>
 
-                </div>
-            </CardList>
+                </div >
+            </CardList >
         </>
     )
 }

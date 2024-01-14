@@ -27,7 +27,7 @@ const page = () => {
                         <div className="card-social-wrap">
                             <Social />
                         </div>
-                        <Button>Contact Me</Button>
+                        <Button label="contact">Contact Me</Button>
                     </BasicCard>
                 </div>
                 <div className="col-lg-2">
