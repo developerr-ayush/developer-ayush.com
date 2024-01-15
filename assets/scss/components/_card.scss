@@ -17,8 +17,15 @@
   @include mq(lg) {
     &-md-sticky {
       position: sticky;
-      top: 2rem;
+      top: var(--header-height);
     }
+  }
+  &-service-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3rem;
+    justify-content: center;
+    z-index: 2;
   }
   &-social-wrap {
     order: 2;
@@ -92,7 +99,7 @@
     }
   }
   &-knowledge {
-    .card  {
+    .card {
       gap: 1rem;
       &-title {
         margin: 0;
@@ -174,6 +181,11 @@
     }
   }
   &-service {
+    &-item {
+      .card-title {
+        margin-bottom: 1rem;
+      }
+    }
     .marquee {
       z-index: 2;
     }

@@ -9,6 +9,21 @@ import Yoga from "@/assets/img/work/yoga.jpg";
 import Aonix from "@/assets/img/work/aonix.png";
 import Netflix from "@/assets/img/work/netflix.png";
 import Slack from "@/assets/img/work/slack.png";
+import {
+  FaHtml5,
+  FaCss3,
+  FaReact,
+  FaNodeJs,
+  FaGitAlt,
+  FaSass,
+  FaTwitter,
+  FaYoutube,
+  FaLinkedin,
+  FaGithub,
+} from "react-icons/fa";
+import { SiMongodb, SiExpress, SiTailwindcss } from "react-icons/si";
+import { IoLogoJavascript } from "react-icons/io5";
+import { TbBrandNextjs, TbBrandTypescript } from "react-icons/tb";
 let exp = [
   {
     id: 3,
@@ -169,5 +184,117 @@ let mywork = [
     redirectLink: "https://developerr-ayush.github.io/wireframe/",
   },
 ];
+let serviceData = [
+  {
+    title: "NextJS",
+    svg: TbBrandNextjs,
+    color: "#0070f3", // Add the color value for NextJS
+  },
+  {
+    title: "Typescript",
+    svg: TbBrandTypescript,
+    color: "#3178c6", // Add the color value for Typescript
+  },
+  {
+    title: "JavaScript",
+    svg: IoLogoJavascript,
+    color: "#f7df1e", // Add the color value for JavaScript
+  },
+  {
+    title: "ReactJS",
+    svg: FaReact,
+    color: "#61dafb", // Add the color value for ReactJS
+  },
+  {
+    title: "MongoDB",
+    svg: SiMongodb,
+    color: "#4db33d", // Add the color value for MongoDB
+  },
+  {
+    title: "Express",
+    svg: SiExpress,
+  },
+  {
+    title: "Node JS",
+    svg: FaNodeJs,
+    color: "#68a063", // Add the color value for Node JS
+  },
+  {
+    title: "GIT",
+    svg: FaGitAlt,
+    color: "#f1502f", // Add the color value for GIT
+  },
+  {
+    title: "HTML",
+    svg: FaHtml5,
+    color: "#e44d26", // Add the color value for HTML
+  },
+  {
+    title: "CSS",
+    svg: FaCss3,
+    color: "#264de4", // Add the color value for CSS
+  },
+  {
+    title: "SCSS",
+    svg: FaSass,
+    color: "#c6538c", // Add the color value for SCSS
+  },
+  {
+    title: "Tailwind",
+    svg: SiTailwindcss,
+    color: "#38b2ac", // Add the color value for Tailwind
+  },
+];
+const servicesArray = [
+  {
+    heading: "Website Creation",
+    paragraph:
+      "Crafting visually appealing and functional websites from scratch that align with your vision and goals. Our team of skilled front-end developers ensures a seamless user experience.",
+  },
+  {
+    heading: "Optimization",
+    paragraph:
+      "Boosting the performance of existing websites through strategic optimization. From enhancing loading speeds to refining user interfaces, we improve search engine rankings and user satisfaction.",
+  },
+  {
+    heading: "Component-Based Approach",
+    paragraph:
+      "Implementing a component-based approach in web development for modular and efficient design. This ensures scalability, maintainability, and reusability of code components across the website.",
+  },
+  {
+    heading: "Color Theming with Variables",
+    paragraph:
+      "Utilizing variables throughout the website for color theming. This allows for easy customization and consistency in maintaining the visual aesthetics of your brand or project.",
+  },
+  {
+    heading: "Dark Mode Options",
+    paragraph:
+      "Providing users with the option to switch to dark mode for a comfortable and visually pleasing experience, especially in low-light environments. Enhancing accessibility and user preference.",
+  },
+  {
+    heading: "Responsive Designs",
+    paragraph:
+      "Creating websites with responsive designs that seamlessly adapt to various devices. Ensuring a consistent and optimal user experience, whether accessed on a desktop, tablet, or smartphone.",
+  },
+  {
+    heading: "Bug Fixing",
+    paragraph:
+      "Diligently identifying and resolving bugs on your website. Our expert developers ensure a bug-free environment, contributing to the smooth and flawless operation of your site.",
+  },
+  {
+    heading: "Next.js Framework",
+    paragraph:
+      "Utilizing Next.js as the chosen framework for web development. Leveraging its capabilities for server-side rendering, routing, and seamless integration, enhancing the overall performance of your website.",
+  },
+  {
+    heading: "MERN Stack Availability",
+    paragraph:
+      "Offering MERN (MongoDB, Express.js, React, Node.js) stack development services. This comprehensive stack covers the entire development process, from front-end to back-end, ensuring a robust and scalable solution for your project.",
+  },
+];
 
-export { exp, edu, mywork };
+// Accessing a specific service example:
+console.log(servicesArray[0].heading); // Outputs: "Website Creation"
+console.log(servicesArray[0].paragraph); // Outputs: "Crafting visually appealing and functional..."
+
+export { exp, edu, mywork, serviceData, servicesArray };

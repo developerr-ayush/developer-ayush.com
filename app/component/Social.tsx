@@ -31,7 +31,7 @@ const social: SocialItem[] = [
         title: "GitHub",
         url: "https://github.com",
         element: FaGithub,
-        color: "#181717" // Color for GitHub
+        color: "#7034a2" // Color for GitHub
     },
 ];
 

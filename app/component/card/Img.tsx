@@ -1,6 +1,7 @@
 import { StaticImport } from 'next/dist/shared/lib/get-img-props'
 import Image from 'next/image'
 import React from 'react'
+import loadingImg from '@/assets/img/loading.gif'
 interface img {
     src: StaticImport,
     width: number,
@@ -10,7 +11,7 @@ interface img {
 const Img = ({ src, width, alt, className }: img) => {
     return (
         <div className={`card-img ${className ? className : ""}`}>
-            <Image src={src} width={width} alt={alt} />
+            <Image src={src} width={width} alt={alt} placeholder='blur' />
         </div>
     )
 }
