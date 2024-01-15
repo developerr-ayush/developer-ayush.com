@@ -6,7 +6,7 @@ import BasicCard from "./component/card/BasicCard";
 import myWork from "@/assets/img/my-works.png"
 import sign from "@/assets/img/signature.png"
 import blog from "@/assets/img/gfonts.png"
-import profile from "@/assets/img/profile.jpg"
+import profile from "@/assets/img/home-proifile.png"
 import Marquee from "./component/Marquee";
 import Social from "./component/Social";
 import Card from "./component/card/Card";

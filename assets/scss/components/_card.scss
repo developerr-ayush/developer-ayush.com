@@ -40,8 +40,11 @@
   &-profile {
     padding: 4rem 3rem;
     img {
+      background-image: radial-gradient(var(--neutral-700), var(--primary-500));
       border-radius: 3rem 0 3rem 0;
-      filter: grayscale(100%);
+      aspect-ratio: 1/1;
+      object-position: top;
+      // filter: grayscale(100%);
     }
     @include mq(md) {
       grid-template-columns: 1fr 1fr;
@@ -64,8 +67,10 @@
       order: 3;
     }
     img {
+      background-image: radial-gradient(var(--neutral-700), var(--primary-500));
+      aspect-ratio: 1/1;
       border-radius: 3rem 0 3rem 0;
-      filter: grayscale(100%);
+      object-position: top;
     }
   }
   &-project {
