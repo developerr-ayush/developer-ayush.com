@@ -1,0 +1,124 @@
+@use "../config/" as *;
+header {
+  padding-block: var(--space-3);
+  height: var(--header-height);
+  background-color: var(--neutral-300);
+  width: 100%;
+  z-index: 2;
+  position: sticky;
+  top: 0;
+  @include mq(darkMode) {
+    .logo-img {
+      filter: invert(1);
+    }
+  }
+  .btn-contact {
+    display: none;
+    @include mq(lg) {
+      display: block;
+    }
+  }
+  .container {
+    @include mq(lg) {
+      justify-content: space-between;
+    }
+  }
+  .logo {
+    font-size: 4rem;
+    font-weight: 600;
+  }
+  .dark-mode {
+    &-toggler {
+      display: none;
+      &:checked ~ .dark-mode-label {
+        box-shadow: 5px 5px 10px var(--neutral-350),
+          -5px -5px 10px var(--neutral-200);
+      }
+    }
+    &-label {
+      display: block;
+      padding: 1rem;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: inset 5px 5px 10px var(--neutral-350),
+        inset -5px -5px 10px var(--neutral-200);
+    }
+  }
+}
+.site-nav {
+  transform: translateX(100%);
+  transition: transform 300ms, opacity 300ms;
+  opacity: 0;
+  visibility: visible;
+  background-color: var(--neutral-300);
+  position: fixed;
+  top: var(--header-height);
+  height: calc(100dvh - var(--header-height));
+  overflow: auto;
+  width: 100%;
+  left: 0;
+  text-align: center;
+  z-index: 2;
+  @include mq(md) {
+    position: unset;
+    height: unset;
+    transform: unset;
+    visibility: unset;
+    opacity: unset;
+  }
+  @include mq(lg) {
+    width: max-content;
+  }
+  &-list {
+    list-style: none;
+    display: grid;
+    padding: 0;
+    padding-block: 5rem;
+    height: 100%;
+    @include mq(md) {
+      margin-left: auto;
+      padding: 0;
+      grid-auto-flow: column;
+      justify-content: end;
+      gap: var(--space-5);
+      width: max-content;
+    }
+  }
+  &__item {
+    font-size: 4rem;
+    opacity: 0.3;
+    @include mq(md) {
+      font-size: 1.6rem;
+      font-weight: 500;
+      letter-spacing: 0.1rem;
+    }
+  }
+  &__anchor {
+    padding: var(--space-2);
+    display: block;
+  }
+  &__active {
+    opacity: 1;
+    color: var(--primary-300);
+  }
+}
+.btn-hamburger[aria-expanded="true"] {
+  & ~ .site-nav {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+  }
+  .line {
+    &:first-child {
+      transform: rotatez(45deg) translate(7px, 8px);
+      width: 100%;
+    }
+    &:nth-child(2) {
+      opacity: 0;
+    }
+    &:last-child {
+      width: 100%;
+      transform: rotate(-45deg) translate(6px, -9px);
+    }
+  }
+}

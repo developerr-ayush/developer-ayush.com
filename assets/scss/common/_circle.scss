@@ -1,0 +1,32 @@
+// filter
+.filter-8{
+    filter: blur(8px);
+
+}
+.filter-2{
+    filter: blur(2px);
+}
+.filter-4{
+    filter: blur(4px);
+
+}
+// circle
+.circle-parent{
+    .circle{
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        background-color: orange;
+        border-radius: 100vh;
+        position: absolute;
+    }
+    .orange{
+        background-color: var(--primary);
+    }
+    .black{
+        background-color: var(--circle-black);
+    }
+    .white{
+        background-color: var(--white);
+    }
+}

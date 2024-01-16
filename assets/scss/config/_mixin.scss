@@ -1,0 +1,20 @@
+@use "./map" as *;
+@mixin mq($breakpoint) {
+  @if ($breakpoint == hover) {
+    @media (hover: hover) and (pointer: fine) {
+      @content;
+    }
+  } @else if ($breakpoint == darkMode) {
+    @at-root .dark-mode {
+      @content;
+    }
+  } @else {
+    $size: map-get(
+      $map: $breakpoints,
+      $key: $breakpoint,
+    );
+    @media (min-width: $size) {
+      @content;
+    }
+  }
+}
