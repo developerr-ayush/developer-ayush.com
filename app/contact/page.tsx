@@ -31,7 +31,7 @@ const page = () => {
                             </Card>
                             <div className="contact-data">
                                 <h5 className="contact-sub-title">contact us</h5>
-                                <p><a href="/">9049877048</a></p>
+                                <p><a href="/">+91 00000 00000</a></p>
                             </div>
                         </div>
                         <div className="contact-item">
