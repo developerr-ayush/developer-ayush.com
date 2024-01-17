@@ -13,13 +13,13 @@ const page = () => {
         <>
             <CardList className='grid align-start grid-lg-3'>
                 <div className="contact col-lg-1">
-                    <h3 className="title">Contact Info</h3>
+                    <h3 className="title" data-aos="fade-right">Contact Info</h3>
                     <div className="contact-list">
                         <div className="contact-item">
                             <Card className='contact-icon'>
                                 <CiMail size={25} />
                             </Card>
-                            <div className="contact-data">
+                            <div className="contact-data" data-aos="fade-left">
                                 <h5 className="contact-sub-title">mail us</h5>
                                 <p><a href="/">developerr.ayush@gmail.com</a></p>
                                 <p><a href="/">ayush@ayushshah.in</a></p>
@@ -29,7 +29,7 @@ const page = () => {
                             <Card className='contact-icon'>
                                 <IoCallOutline size={25} />
                             </Card>
-                            <div className="contact-data">
+                            <div className="contact-data" data-aos="fade-left">
                                 <h5 className="contact-sub-title">contact us</h5>
                                 <p><a href="/">+91 00000 00000</a></p>
                             </div>
@@ -38,14 +38,14 @@ const page = () => {
                             <Card className='contact-icon'>
                                 <CiLocationArrow1 size={25} />
                             </Card>
-                            <div className="contact-data">
+                            <div className="contact-data" data-aos="fade-left">
                                 <h5 className="contact-sub-title">location</h5>
                                 <p><a href="/">Mumbai, Maharashtra</a></p>
                             </div>
                         </div>
                     </div>
-                    <h3 className="title">Social info</h3>
-                    <div className="contact-social-list">
+                    <h3 className="title" data-aos="fade-right">Social info</h3>
+                    <div className="contact-social-list" data-aos="zoom-in">
                         <Social />
                     </div>
                 </div>

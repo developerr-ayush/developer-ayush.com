@@ -5,7 +5,7 @@ import Header from './Header'
 import Footer from './Footer'
 
 const inter = Inter({ subsets: ['latin'] })
-
+import { AOSInit } from './aosinit'
 export const metadata: Metadata = {
   title: 'Ayush Shah',
   description: 'Created using NextJs by Ayush Shah',
@@ -27,6 +27,7 @@ export default function RootLayout({
         </main>
         <Footer />
       </body>
+      <AOSInit />
     </html>
   )
 }

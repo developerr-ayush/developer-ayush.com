@@ -5,7 +5,7 @@ interface CardType {
 }
 const Card = ({ className = "", children }: CardType) => {
   return (
-    <div className={`card ${className}`}>
+    <div className={`card ${className}`} data-aos="zoom-in">
       {children}
     </div>
   )

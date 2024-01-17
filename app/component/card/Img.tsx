@@ -11,7 +11,7 @@ interface img {
 const Img = ({ src, width, alt, className }: img) => {
     return (
         <div className={`card-img ${className ? className : ""}`}>
-            <Image src={src} width={width} alt={alt} placeholder='blur' />
+            <Image src={src} width={width} alt={alt} />
         </div>
     )
 }
