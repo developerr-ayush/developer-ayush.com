@@ -9,6 +9,7 @@ import Social from "../component/Social";
 import Cardknowledege from "../component/card/Cardknowledege";
 import { edu, exp } from "../data/data";
 import Button from "../component/Button";
+import Link from "next/link";
 
 export default function About() {
     return (
@@ -22,7 +23,7 @@ export default function About() {
                         <div className="card-social-wrap">
                             <Social />
                         </div>
-                        <Button label="Contact me">Contact Me</Button>
+                        <Link className="btn" title="Contact me" href="/contact">Contact Me</Link>
                     </BasicCard>
                 </div>
                 <div className="col-lg-2">
