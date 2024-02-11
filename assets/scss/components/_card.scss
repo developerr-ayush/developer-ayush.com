@@ -195,10 +195,15 @@
       z-index: 2;
     }
     .card-icon {
-      transition: 300ms;
       &:hover {
         color: var(--brand-color, inherit);
       }
+    }
+  }
+  &-work {
+    .clock {
+      margin: auto;
+      width: 50%;
     }
   }
   &-contact {

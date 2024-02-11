@@ -2,6 +2,8 @@
 header {
   padding-block: var(--space-3);
   height: var(--header-height);
+  transition: 300ms background-color;
+
   background-color: var(--neutral-300);
   width: 100%;
   z-index: 2;
@@ -33,6 +35,7 @@ header {
       &:checked ~ .dark-mode-label {
         box-shadow: 5px 5px 10px var(--neutral-350),
           -5px -5px 10px var(--neutral-200);
+        color: var(--neutral-900);
       }
     }
     &-label {
@@ -42,6 +45,7 @@ header {
       cursor: pointer;
       box-shadow: inset 5px 5px 10px var(--neutral-350),
         inset -5px -5px 10px var(--neutral-200);
+      color: var(--function-warning);
     }
   }
 }
@@ -63,6 +67,7 @@ header {
     position: unset;
     height: unset;
     transform: unset;
+    background-color: transparent;
     visibility: unset;
     opacity: unset;
   }

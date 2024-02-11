@@ -18,6 +18,9 @@ $colors: (
     "text": #000,
     "title": #000,
     "body": #e0e0e0,
+    "warning": #ffbb33,
+    "error": #ff4444,
+    "success": #00c851,
   ),
 );
 $darkModeColors: (
@@ -31,15 +34,15 @@ $darkModeColors: (
     700: #bcbcbc,
     500: #a8a8a8,
     400: #323232,
-    300: #0f0f0f,
-    350: #060606,
-    200: #181818,
+    350: #0e0e0e,
+    300: #1b1b1b,
+    200: #282828,
     100: #000,
   ),
   "function": (
     "text": #fff,
     "title": #fff,
-    "body": #0f0f0f,
+    "body": #1b1b1b,
   ),
 );
 
@@ -65,6 +68,4 @@ $social: (
   linkedin: #5b78f6,
   youtube: #fd4444,
 );
-$service:(
-  
-)
+$service: ();

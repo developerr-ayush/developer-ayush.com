@@ -10,6 +10,7 @@ import profile from "@/assets/img/home-proifile.png"
 import Marquee from "./component/Marquee";
 import Social from "./component/Social";
 import Card from "./component/card/Card";
+import Clock from "./component/Clock";
 
 
 export default function Home() {
@@ -55,16 +56,17 @@ export default function Home() {
       {/* Work */}
       <div className="col-md-1 col-lg-1">
 
-        <BasicCard img={{
-          src: myWork,
-          alt: "MyWork"
-        }}
+        <BasicCard
           content={{
             title: "Projects",
             subTitle: "Showcase"
           }}
           redirect="/work"
-          className="card-work" ></BasicCard>
+          className="card-work" >
+
+          <Clock />
+
+        </BasicCard>
       </div>
       {/* services */}
       <div className="col-md-2 col-lg-2">

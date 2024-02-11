@@ -1,8 +1,8 @@
 @use "../config/" as *;
 .form {
   &-control {
-    box-shadow: inset 5px 5px 10px var(--neutral-350),
-      inset -5px -5px 10px var(--neutral-200);
+    box-shadow: inset 2px 2px 10px var(--neutral-350),
+      inset -2px -2px 10px var(--neutral-200);
     background-color: var(--function-body);
     border: 0;
     width: 100%;
@@ -11,7 +11,7 @@
     height: 6.5rem;
     padding: 3rem 2rem 1rem;
     &:placeholder-shown {
-        padding: 2rem;
+      padding: 2rem;
       & + .form-label {
         font-size: 2rem;
         padding-top: 2rem;
