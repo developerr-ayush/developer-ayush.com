@@ -1,9 +1,13 @@
-import React from 'react'
+import { FormControl } from '../component/FormControl'
+import Button from '../component/Button'
+import Card from '../component/card/Card'
 import Image from 'next/image'
 import login from "@/assets/img/gfonts.png"
-import Card from '../component/card/Card'
-import Button from '../component/Button'
-import { FormControl } from '../component/FormControl'
+import React from 'react'
+let initialState = {
+    mail: "",
+    pass: ""
+}
 const page = () => {
     return (
         <Card className="login-wrapper">

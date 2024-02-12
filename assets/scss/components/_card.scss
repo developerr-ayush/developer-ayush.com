@@ -78,7 +78,13 @@
       border-radius: 0 3rem 0 3rem;
     }
   }
-  &:not(.card-profile, .card-about-profile, .card-image, .card-project) {
+  &:not(
+      .card-profile,
+      .card-about-profile,
+      .card-image,
+      .card-project,
+      .card-blog
+    ) {
     img {
       height: 10rem;
       object-fit: contain;

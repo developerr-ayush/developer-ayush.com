@@ -1,3 +1,4 @@
+"use client"
 import React from 'react'
 interface formControlType {
     className?: string,
@@ -6,13 +7,14 @@ interface formControlType {
     type?: string,
     name?: string,
     id: string,
-    label: string
+    label: string,
+    value?: string
 }
 
-export const FormControl = ({ className, type = "text", name, id, label }: formControlType) => {
+export const FormControl = ({ className, type = "text", name, id, label, onInput, value }: formControlType) => {
     return (
         <div className={`form-group ${className}`}>
-            <input type={type} className="form-control" placeholder='' name={name} id={id} />
+            <input type={type} className="form-control" placeholder='' name={name} value={value} id={id} onChange={e => onInput} />
             <label className="form-label" htmlFor={id}>{label}</label>
         </div>
     )

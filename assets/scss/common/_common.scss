@@ -33,6 +33,14 @@ img {
   justify-content: center;
   align-items: center;
 }
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.gap-2 {
+  gap: 2rem;
+}
 .mobile {
   @include mq(md) {
     display: none;

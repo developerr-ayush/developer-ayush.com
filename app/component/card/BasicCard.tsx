@@ -6,8 +6,10 @@ import Content from './Content'
 import RedirectAnchor from '../RedirectAnchor'
 interface basicCard {
     img?: {
-        src: StaticImport,
-        alt: string
+        src: StaticImport | string,
+        alt: string,
+        width?: number,
+        height?: number
     },
     content?: {
         title?: string,
@@ -22,7 +24,7 @@ interface basicCard {
 const BasicCard = ({ img, content, children, redirect, className }: basicCard) => {
     return (
         <Card className={className ? className : ""}>
-            {img && <Img src={img.src} alt={img.alt} width={500} />}
+            {img && <Img src={img.src} alt={img.alt} width={500} height={img.height} />}
             {children}
             {content && <Content title={content.title} subTitle={content.subTitle} text={content.text} name={content.name} />}
             {redirect && <RedirectAnchor href={redirect} />}
