@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^5.9.1",
     "aos": "^2.3.4",
     "autoprefixer": "^10.4.16",
     "cssnano": "^6.0.3",
@@ -22,11 +23,14 @@
   },
   "devDependencies": {
     "@types/aos": "^3.0.7",
-    "@types/node": "^20",
+    "@types/node": "^20.11.17",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
-    "typescript": "^5"
+    "prisma": "^5.9.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5",
+    "zod": "^3.22.4"
   }
 }
