@@ -9,13 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^1.3.3",
     "@hookform/resolvers": "^3.3.4",
     "@prisma/client": "^5.9.1",
     "aos": "^2.3.4",
     "autoprefixer": "^10.4.16",
+    "bcrypt": "^5.1.1",
     "cssnano": "^6.0.3",
     "next": "14.0.4",
-    "next-auth": "^4.24.5",
+    "next-auth": "^5.0.0-beta.9",
     "postcss": "^8.4.33",
     "postcss-combine-media-query": "^1.0.1",
     "react": "^18",
@@ -26,6 +28,7 @@
   },
   "devDependencies": {
     "@types/aos": "^3.0.7",
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.11.17",
     "@types/react": "^18",
     "@types/react-dom": "^18",

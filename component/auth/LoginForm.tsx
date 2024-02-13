@@ -10,6 +10,8 @@ let defaultValues = {
     password: ''
 }
 const LoginForm = () => {
+    const [globalError, setGlobalError] = useState<string | boolean>('')
+    const [globalSuccess, setGlobalSuccess] = useState<string | boolean>('')
     const [isPending, startTransition] = useTransition();
     const [form, setForm] = useState(defaultValues)
     const [error, setError] = useState(defaultValues)
@@ -25,7 +27,14 @@ const LoginForm = () => {
             }, {}))
         } else {
             startTransition(() => {
-                login(form)
+                login(form).then((res) => {
+                    if (res.error) {
+                        setGlobalError(res.error)
+                    }
+                    if (res.success) {
+                        setGlobalSuccess(res.success)
+                    }
+                })
             })
         }
 
@@ -36,6 +45,8 @@ const LoginForm = () => {
             <form action="" onSubmit={handleSubmit} className='login-form'>
                 <FormControl disable={isPending} label='Email' id='email' value={form.email} name='email' setForm={setForm} error={error.email} />
                 <FormControl disable={isPending} label='Password' id='Password' type='password' name='password' value={form.password} setForm={setForm} error={error.password} />
+                {globalError && <p className="form-error-global">{globalError}</p>}
+                {globalSuccess && <p className="form-success-global">{globalSuccess}</p>}
                 <Button disable={isPending} label='login' >Login</Button>
             </form>
         </div>

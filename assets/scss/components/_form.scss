@@ -34,6 +34,28 @@
   }
   &-error {
     color: var(--function-error);
+    &-global {
+      margin-bottom: 2rem;
+      font-weight: 600;
+      color: var(--function-error);
+      &:empty {
+        display: none;
+      }
+    }
+    &:empty {
+      display: none;
+    }
+  }
+  &-success {
+    color: var(--function-success);
+    &-global {
+      margin-bottom: 2rem;
+      font-weight: 600;
+      color: var(--function-success);
+      &:empty {
+        display: none;
+      }
+    }
     &:empty {
       display: none;
     }
