@@ -10,12 +10,15 @@
   font-size: 1.6rem;
   font-weight: 500;
   min-width: max-content;
-  &:hover {
+  &:hover:not(:disabled) {
     box-shadow: inset 5px 5px 10px var(--neutral-350),
       inset -5px -5px 10px var(--neutral-200);
   }
   &:focus-visible {
     outline: 1px solid var(--neutral-900);
+  }
+  &:disabled {
+    cursor: not-allowed;
   }
   &-hamburger {
     --btn-bg: transparent;

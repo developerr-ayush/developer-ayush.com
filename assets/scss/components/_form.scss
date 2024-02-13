@@ -32,4 +32,10 @@
     font-size: 1.2rem;
     transition: font-size 300ms;
   }
+  &-error {
+    color: var(--function-error);
+    &:empty {
+      display: none;
+    }
+  }
 }

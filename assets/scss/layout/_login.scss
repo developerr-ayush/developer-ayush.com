@@ -1,5 +1,16 @@
 @use "../config" as *;
-.login-wrapper {
-  max-width: 40rem;
-  margin: auto;
+.login {
+  &-page {
+    min-height: calc(100vh - var(--header-height));
+    display: flex;
+    align-items: center;
+  }
+  &-wrapper {
+    width: 100%;
+    max-width: 40rem;
+    margin: auto;
+  }
+  &-form {
+    margin-top: 2rem;
+  }
 }
