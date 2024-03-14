@@ -22,16 +22,16 @@ export const ContactForm = () => {
             setGlobalMsg('Please fill all the fields')
             return
         }
-        if (process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID === undefined || process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID === undefined || process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY === undefined) {
+        if (process.env.EMAILJS_SERVICE_ID === undefined || process.env.EMAILJS_TEMPLATE_ID === undefined || process.env.EMAILJS_PUBLIC_KEY === undefined) {
             setGlobalMsg('Email service not configured')
             return
         }
 
         emailjs.send(
-            process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
-            process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+            process.env.EMAILJS_SERVICE_ID,
+            process.env.EMAILJS_TEMPLATE_ID,
             formData,
-            process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY,
+            process.env.EMAILJS_PUBLIC_KEY,
         ).then((result) => {
             setGlobalMsg('Message sent successfully')
         }).catch((error) => {
