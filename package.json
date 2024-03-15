@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "aos": "^2.3.4",
+    "@emailjs/browser": "^4.3.3",
     "autoprefixer": "^10.4.16",
     "cssnano": "^6.0.3",
+    "emailjs": "^4.0.3",
     "next": "14.0.4",
     "next-auth": "^5.0.0-beta.9",
     "postcss": "^8.4.33",

@@ -48,13 +48,13 @@ let exp = [
   },
 ];
 let edu = [
-  {
-    id: 6,
-    from: "Apna College",
-    position: "Full Stack + DSA (Sigma Batch)",
-    date: "June 2023 - December 2023",
-    para: "Currently enrolled in the SIGMA batch at Apna College, where I am focusing on Data Structures and Algorithms (DSA). The program also includes web development, which seems somewhat familiar to what I've learned previously. However, I am confident in my ability to grasp DSA concepts, and I am particularly excited about working with Java in this context. Looking forward to enhancing my skills in these areas.",
-  },
+  // {
+  //   id: 6,
+  //   from: "Apna College",
+  //   position: "Full Stack + DSA (Sigma Batch)",
+  //   date: "June 2023 - December 2023",
+  //   para: "Currently enrolled in the SIGMA batch at Apna College, where I am focusing on Data Structures and Algorithms (DSA). The program also includes web development, which seems somewhat familiar to what I've learned previously. However, I am confident in my ability to grasp DSA concepts, and I am particularly excited about working with Java in this context. Looking forward to enhancing my skills in these areas.",
+  // },
 
   {
     id: 5,

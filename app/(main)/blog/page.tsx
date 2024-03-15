@@ -2,60 +2,55 @@ import React from 'react'
 import CardList from '@/component/card/CardList'
 import Title from '@/component/Title'
 import BasicCard from '@/component/card/BasicCard'
-let articleData = [
-  {
-    id: 1,
-    title: "Best websites to learn Javascript",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente deserunt quasi, quaerat praesentium iure vel ratione animi harum ipsam ad, culpa consequatur necessitatibus similique! Modi, officia. Eos tenetur quae delectus!",
-    img: "https://picsum.photos/seed/picsum/200/200"
+
+async function getData() {
+  const res = await fetch("https://auth-sigma-two.vercel.app/api/blog", { cache: "no-store" })
+  // The return value is *not* serialized
+  // You can return Date, Map, Set, etc.
+
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error('Failed to fetch data')
   }
-]
-const page = () => {
+
+  return res.json()
+}
+interface Article {
+  id: string,
+  title: string,
+  createdAt: Date,
+  updatedAt: Date,
+  status: string,
+  banner: string
+  description?: string
+  author: {
+    name: string,
+  }
+}
+const page = async () => {
+  const data = await getData()
+  console.log(data)
   return (
     <CardList className='grid grid-lg-3 align-start '>
       <div className="col-lg-3">
         <Title>Blogs</Title>
       </div>
       <CardList className='col-lg-3 grid-lg-3 align-start'>
-        <div>
-          <BasicCard img={{
-            src: articleData[0].img,
-            alt: articleData[0].title,
-            height: 500
-          }}
-            content={{
-              title: articleData[0].title,
-              text: articleData[0].description
+        {data.map((article: Article) =>
+          <div key={article.id}>
+            <BasicCard img={{
+              src: article.banner,
+              alt: article.title,
+              height: 500
             }}
-            redirect={`/blog/${articleData[0].id}`}
-            className="card-blog" />
-        </div>
-        <div>
-          <BasicCard img={{
-            src: articleData[0].img,
-            alt: articleData[0].title,
-            height: 500
-          }}
-            content={{
-              title: articleData[0].title,
-              text: articleData[0].description
-            }}
-            redirect={`/blog/${articleData[0].id}`}
-            className="card-blog" />
-        </div>
-        <div>
-          <BasicCard img={{
-            src: articleData[0].img,
-            alt: articleData[0].title,
-            height: 500
-          }}
-            content={{
-              title: articleData[0].title,
-              text: articleData[0].description
-            }}
-            redirect={`/blog/${articleData[0].id}`}
-            className="card-blog" />
-        </div>
+              content={{
+                title: article.title,
+                text: article.description
+              }}
+              redirect={`/blog/${article.id}`}
+              className="card-blog" />
+          </div>
+        )}
       </CardList>
     </CardList>
   )

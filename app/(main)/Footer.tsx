@@ -8,9 +8,9 @@ const Footer = () => {
             <div className="footer-nav">
                 <ul>
                     <li><Link href="/">Home</Link></li>
-                    <li><Link href="/">About</Link></li>
-                    <li><Link href="/">Work</Link></li>
-                    <li><Link href="/">Contact</Link></li>
+                    <li><Link href="/about">About</Link></li>
+                    <li><Link href="/work">Work</Link></li>
+                    <li><Link href="/contact">Contact</Link></li>
                 </ul>
             </div>
             <div className="footer-copy">

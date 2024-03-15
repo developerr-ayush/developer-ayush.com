@@ -1,21 +1,42 @@
 import Image from "next/image"
 import { FaFacebook, FaFacebookF, FaTwitter, FaWhatsapp } from "react-icons/fa"
 import { FaThreads, FaXTwitter } from "react-icons/fa6";
-
-const page = () => {
+interface Article {
+    id: string,
+    title: string,
+    createdAt: Date,
+    updatedAt: Date,
+    status: string,
+    content: string,
+    banner: string
+    description?: string
+    author: {
+        name: string,
+    }
+}
+async function getData(id: string) {
+    const res = await fetch(`https://auth-sigma-two.vercel.app/api/blog/${id}`, { cache: "no-store" })
+    if (!res.ok) {
+        // This will activate the closest `error.js` Error Boundary
+        throw new Error('Failed to fetch data')
+    }
+    return res.json()
+}
+const page = async ({ params }: { params: { id: string } }) => {
+    const data = await getData(params.id)
+    console.log(data)
     return (
         <div className="blog-page">
             <div className="blog-image">
-                <Image src="https://picsum.photos/seed/picsum/1920/1080" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"  alt="blog-details" width="1920" height="720" />
+                <Image src={data.banner} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" alt="blog-details" width="1920" height="720" />
             </div>
             <div className="blog-content">
                 <div className="blog-head">
-
-                    <h3 className="title">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Est aspernatur molestiae provident perferendis ducimus laudantium. Atque ipsum eaque nihil possimus.</h3>
+                    <h3 className="title">{data.title}</h3>
                     <div className="blog-data ">
                         <div className="blog-meta">
-                            <p className="meta meta-date">05th Nov, 2023</p>
-                            <p className="meta meta-author">Ayush Shah</p>
+                            <p className="meta meta-date">{new Date(data.updatedAt).toLocaleDateString()}</p>
+                            <p className="meta meta-author">{data.author.name}</p>
                         </div>
                         <div className="blog-social">
                             <button className="social-link"><FaFacebookF size={20} /></button>
@@ -26,8 +47,7 @@ const page = () => {
                     </div>
                 </div>
                 <div className="blog-body">
-
-                    <p className="desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet eum consequatur maiores similique iure illum nesciunt, dolores eveniet commodi. Commodi fugiat nemo odio sed tempora, aliquid quos corrupti quae provident repellat eos voluptates ducimus necessitatibus, at expedita porro voluptatibus. Est quo aliquam, iure qui quae distinctio molestias adipisci praesentium consequatur expedita quos facilis eum nemo maxime? Consequuntur rem tenetur, dolores praesentium distinctio quos. Provident hic placeat a iure incidunt omnis nobis accusantium dolorem voluptates? Ipsam, ipsum recusandae fugiat corporis non suscipit tenetur iusto id laborum fugit nesciunt sunt laudantium quos quia sequi et nobis repellendus odit laboriosam assumenda? Vitae eum a quo nulla accusamus, possimus facere nisi, iste dignissimos odit accusantium nostrum aspernatur minus qui ullam veritatis? Obcaecati, perferendis. Eius hic voluptas, atque a odio possimus, maiores quo provident qui itaque mollitia porro accusamus nisi cumque saepe, iste vel doloremque veritatis! Dicta, deserunt rem veniam eos, quos molestiae aut ad ipsum alias earum repudiandae modi suscipit expedita fuga cum ducimus quasi adipisci eius nisi sequi? Praesentium deleniti voluptatem dolore recusandae, dolor accusamus velit illum corporis quos distinctio incidunt minima fuga veniam ea laborum, suscipit nostrum enim! Ad temporibus quisquam facere autem perspiciatis reiciendis corrupti laborum blanditiis nostrum facilis, minima aperiam, maiores fuga placeat distinctio vel ipsum deserunt asperiores illum consequuntur officiis voluptate suscipit tempora! Reiciendis ipsam, suscipit voluptatibus incidunt ullam exercitationem architecto! Natus magnam provident aut quos excepturi praesentium omnis facere necessitatibus harum suscipit corrupti voluptate ipsam, ratione assumenda saepe! Rem illum ullam nisi perferendis officia mollitia magni placeat inventore consectetur et. Recusandae distinctio voluptatum reiciendis laudantium tenetur dolorem nihil saepe fuga rem dolor quidem, tempore a magnam delectus unde omnis voluptatem! Recusandae numquam quibusdam quae nostrum commodi vel fugiat a, cum, impedit, ducimus nihil modi dolorem necessitatibus error iste? Illo hic natus ullam dolores non perferendis provident obcaecati facilis suscipit repellendus. Consectetur dolorum quidem dolore atque maiores molestias culpa voluptas veniam placeat ex aliquam vitae consequatur at, laborum architecto impedit ea qui iure maxime delectus rerum neque nobis eveniet. Quae voluptatem iste fugiat repudiandae excepturi culpa, a dicta tenetur esse voluptas. Porro ipsam iste tenetur laboriosam aut error cumque recusandae architecto sapiente! Laboriosam, necessitatibus. Laudantium voluptatem aspernatur quidem provident, exercitationem in veritatis asperiores minima impedit nostrum accusamus dolores cupiditate consequuntur facere iusto quasi a inventore, eaque quibusdam est recusandae sint pariatur ipsam. Odio nisi, dicta esse natus blanditiis, beatae illum aperiam laudantium necessitatibus dolores tempora, maiores praesentium libero ex! Facere, eaque ad aperiam eligendi fugit possimus rerum nulla reprehenderit excepturi incidunt, amet libero esse quidem fugiat temporibus quas facilis nihil? Incidunt, illum ipsum blanditiis debitis omnis et quas voluptate sint earum laborum ex quisquam iste, velit vero nostrum magnam minus aspernatur placeat, eum maxime nemo assumenda iure! Cumque sint voluptate mollitia voluptas esse quas quo, doloremque natus veritatis fuga animi repellendus dolores dolorem? Temporibus, harum ullam. Laboriosam vitae velit aut corrupti id tempore quibusdam pariatur non! Unde eaque, quos doloremque reiciendis voluptatum consectetur debitis nihil id nobis. Vel sit laudantium earum explicabo repudiandae ea itaque tenetur voluptates, autem sunt delectus consectetur saepe doloribus nihil facilis omnis deserunt blanditiis? Vero sint eius ea sed? Incidunt dignissimos enim, consequatur cumque totam exercitationem, reprehenderit placeat dolore qui amet ab quisquam, adipisci in cupiditate quos. Nemo quidem commodi vel veritatis voluptatibus quisquam iste ipsam sed modi iusto, rem doloremque ratione blanditiis, voluptatem recusandae quibusdam, veniam totam odio neque id. Facere, saepe expedita illo ut beatae perferendis corporis atque. Sequi numquam tempora fugiat! Qui doloremque, incidunt ea expedita mollitia porro animi nobis suscipit hic veniam, illum omnis praesentium, tempore excepturi inventore neque! Nesciunt sunt repellat, placeat repudiandae quo commodi vitae a tempore consectetur dolor dignissimos maiores voluptatum eum explicabo sed ab minus asperiores, ratione architecto deleniti labore dolores enim. Dignissimos quos, animi veritatis aliquid delectus, iure rem asperiores beatae vitae a maiores harum neque non rerum nulla debitis facere quis, quasi soluta aliquam sed! Quidem aut beatae eos laudantium modi a quae atque soluta, impedit error inventore exercitationem tempore sequi esse. Magni vitae itaque nesciunt minus vero, odit exercitationem quia? Iusto ut rem neque et tempore assumenda sapiente nisi ex veritatis, dignissimos laudantium ad consequatur beatae officiis earum libero maxime accusamus a voluptatibus dolore cumque distinctio! Ab rem assumenda dolorum ratione quod rerum ad qui similique? Voluptatibus dolorem consequatur nobis aspernatur dolore ut voluptates laudantium cum eligendi nihil. Ipsa commodi impedit laborum voluptates error modi mollitia exercitationem porro consequuntur at, quidem voluptate reprehenderit obcaecati alias facilis fugiat sed ut! Facere architecto harum impedit dolorum necessitatibus laborum eaque explicabo labore optio nemo, minima rerum est amet obcaecati molestias minus quam, alias error consequatur autem, illo ipsum. Voluptatibus tempora, pariatur officia nihil quasi reiciendis blanditiis amet consequuntur fuga. Soluta rerum expedita eius doloribus asperiores molestiae quos voluptatem sed iure facilis. Dolor necessitatibus impedit, consectetur at id odit provident tenetur in beatae a mollitia dolores praesentium, animi, ex omnis ratione eius iusto quos facere soluta blanditiis! Dolorem voluptas esse dolorum eaque porro atque excepturi, aliquam, rerum, architecto facere mollitia aspernatur eligendi necessitatibus a expedita sed ex earum voluptatibus! Tenetur ducimus, temporibus voluptatum soluta sequi corrupti ullam a provident necessitatibus earum nostrum culpa laborum distinctio illum perferendis neque cumque! Qui molestiae ipsam quo sequi veniam porro. Maxime explicabo repellat accusantium asperiores quam iusto fuga modi. Consectetur, reprehenderit ut, eum unde suscipit nemo autem officia repellendus iure libero quibusdam quo accusamus illo provident praesentium! Alias voluptatum delectus quisquam magnam, unde laudantium quidem minima ipsam deserunt. Atque laudantium illum eius sunt ea! Facere debitis enim quis odio dolorum saepe repellendus alias nobis illo vitae, omnis maiores praesentium modi temporibus ullam quibusdam voluptatem nisi consequatur consectetur optio dolores cumque labore corrupti voluptas? At, labore et nesciunt deserunt quasi minus cumque iste non recusandae harum tenetur aut dolore velit, cupiditate eligendi tempora pariatur vel esse officiis minima repellendus iure. Vitae suscipit at assumenda. Ipsum similique, recusandae distinctio sunt, delectus quod natus dolores omnis magnam voluptates reprehenderit dicta dolor explicabo, obcaecati cum harum eveniet debitis? Quisquam id illo quaerat unde incidunt et quos eaque recusandae harum corrupti, vel blanditiis laboriosam eligendi voluptate magni?</p>
+                    <form dangerouslySetInnerHTML={{ __html: data.content }}></form>
                 </div>
             </div>
 
