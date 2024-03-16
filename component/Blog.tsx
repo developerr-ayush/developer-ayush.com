@@ -23,7 +23,9 @@ const Blog = () => {
     useEffect(() => {
         const getData = async () => {
             const apiData = await fetch("https://auth-sigma-two.vercel.app/api/blog", { cache: "no-cache" })
-            setData(await apiData.json())
+            let data = await apiData.json()
+            console.log(data)
+            setData(data)
         }
         getData()
     }, [])
