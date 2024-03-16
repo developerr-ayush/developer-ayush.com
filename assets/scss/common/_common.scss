@@ -10,7 +10,7 @@ main {
   line-height: 2;
 }
 .highlight {
-  color: var(--primary-500);
+  color: var(--primary-300);
 }
 img {
   display: block;
@@ -32,6 +32,14 @@ img {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.gap-2 {
+  gap: 2rem;
 }
 .mobile {
   @include mq(md) {

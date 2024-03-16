@@ -3,6 +3,9 @@ const nextConfig = {
   sassOptions: {
     includePaths: ["*"],
   },
+  images: {
+    domains: ["auth-sigma-two.vercel.app"],
+  },
   env: {
     EMAILJS_SERVICE_ID: process.env.EMAILJS_SERVICE_ID,
     EMAILJS_TEMPLATE_ID: process.env.EMAILJS_TEMPLATE_ID,

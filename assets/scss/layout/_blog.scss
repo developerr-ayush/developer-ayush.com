@@ -1,0 +1,48 @@
+@use "../config/" as *;
+.blog-page {
+  max-width: 80rem;
+  margin-inline: auto;
+  h3 {
+    margin-top: 2rem;
+    text-align: center;
+    @include mq(md) {
+      text-align: left;
+    }
+  }
+  p {
+    line-height: 2;
+    text-align: justify;
+  }
+  .blog {
+    &-social {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+    }
+    &-meta {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+      gap: 1rem;
+      @include mq(md) {
+        margin-bottom: 0;
+      }
+      .meta {
+        &:not(:last-child)::after {
+          content: "|";
+          padding-left: 1rem;
+        }
+      }
+    }
+    &-data {
+      @include mq(md) {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+    &-body {
+      margin-top: 2rem;
+    }
+  }
+}

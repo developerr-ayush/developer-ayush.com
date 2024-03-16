@@ -1,8 +1,8 @@
 @use "../config/" as *;
 .form {
   &-control {
-    box-shadow: inset 5px 5px 10px var(--neutral-350),
-      inset -5px -5px 10px var(--neutral-200);
+    box-shadow: inset 2px 2px 10px var(--neutral-350),
+      inset -2px -2px 10px var(--neutral-200);
     background-color: var(--function-body);
     border: 0;
     width: 100%;
@@ -31,5 +31,33 @@
     padding-top: 1rem;
     font-size: 1.2rem;
     transition: 300ms;
+  }
+  &-error {
+    color: var(--function-error);
+    &-global {
+      margin-bottom: 2rem;
+      font-weight: 600;
+      color: var(--function-error);
+      &:empty {
+        display: none;
+      }
+    }
+    &:empty {
+      display: none;
+    }
+  }
+  &-success {
+    color: var(--function-success);
+    &-global {
+      margin-bottom: 2rem;
+      font-weight: 600;
+      color: var(--function-success);
+      &:empty {
+        display: none;
+      }
+    }
+    &:empty {
+      display: none;
+    }
   }
 }
