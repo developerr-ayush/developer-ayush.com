@@ -4,7 +4,7 @@ const nextConfig = {
     includePaths: ["*"],
   },
   images: {
-    domains: ["auth-sigma-two.vercel.app"],
+    domains: ["auth-sigma-two.vercel.app","ayva-hub.s3.ap-south-1.amazonaws.com"],
   },
   env: {
     EMAILJS_SERVICE_ID: process.env.EMAILJS_SERVICE_ID,
