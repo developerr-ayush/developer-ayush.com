@@ -1,4 +1,3 @@
-"use client"
 import React, { useEffect, useState } from 'react'
 import CardList from '@/component/card/CardList'
 import Title from '@/component/Title'
@@ -18,17 +17,15 @@ interface Article {
 interface apiErr {
     error: string
 }
-const Blog = () => {
-    const [data, setData] = useState<apiErr | null | Article[]>(null)
-    useEffect(() => {
-        const getData = async () => {
-            const apiData = await fetch("https://auth-sigma-two.vercel.app/api/blog", { cache: "no-cache" })
-            let data = await apiData.json()
-            console.log(data)
-            setData(data)
-        }
-        getData()
-    }, [])
+const getBlogs = async function () {
+    const apiData = await fetch("https://auth-sigma-two.vercel.app/api/blog", { cache: "no-cache" })
+    let data = await apiData.json()
+    console.log(data)
+    return data
+
+}
+const Blog = async () => {
+    const data = await getBlogs()
 
     if (data == null) return (
         <div>loading...</div>
@@ -38,7 +35,7 @@ const Blog = () => {
         <div>No data found</div>
     )
     return (
-        <CardList className='grid grid-lg-3 align-start '>
+        <CardList className='grid grid-lg-3 align-start card-list-wrap '>
             <div className="col-lg-3">
                 <Title>Blogs</Title>
             </div>
@@ -52,9 +49,10 @@ const Blog = () => {
                         }}
                             content={{
                                 title: article.title,
-                                text: article.description
+                                text: article.description,
                             }}
                             redirect={`/blog/${article.id}`}
+                            redirectTitle={article.title}
                             className="card-blog" />
                     </div>
                 )}
