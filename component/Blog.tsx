@@ -20,7 +20,6 @@ interface apiErr {
 const getBlogs = async function () {
     const apiData = await fetch("https://auth-sigma-two.vercel.app/api/blog", { cache: "no-cache" })
     let data = await apiData.json()
-    console.log(data)
     return data
 
 }
@@ -53,7 +52,7 @@ const Blog = async () => {
                             }}
                             redirect={`/blog/${article.id}`}
                             redirectTitle={article.title}
-                            className="card-blog" />
+                            className="card-blog card-blog-list" />
                     </div>
                 )}
             </CardList>
