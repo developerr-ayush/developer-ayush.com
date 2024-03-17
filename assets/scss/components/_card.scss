@@ -57,6 +57,29 @@
       margin-bottom: 1rem;
     }
   }
+  &-blog {
+    .card-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-text {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-img {
+      img {
+        border-radius: 3rem 0 3rem 0;
+        aspect-ratio: 1/1;
+        object-position: center;
+      }
+    }
+  }
   &-about-profile {
     padding: 4rem 3rem;
     text-align: center;

@@ -294,7 +294,7 @@ const servicesArray = [
 ];
 
 // Accessing a specific service example:
-console.log(servicesArray[0].heading); // Outputs: "Website Creation"
-console.log(servicesArray[0].paragraph); // Outputs: "Crafting visually appealing and functional..."
+// console.log(servicesArray[0].heading); // Outputs: "Website Creation"
+// console.log(servicesArray[0].paragraph); // Outputs: "Crafting visually appealing and functional..."
 
 export { exp, edu, mywork, serviceData, servicesArray };
