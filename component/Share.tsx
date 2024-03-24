@@ -19,7 +19,9 @@ export const Share = ({ title }: { title: string }) => {
                 else {
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(shareData.url)
-                        alert("hello")
+                        alert("Link copied to clipboard")
+                    } else {
+                        alert("your browser does not support sharing or copying link")
                     }
                 }
             }}><FaShare size={20} /></button>
