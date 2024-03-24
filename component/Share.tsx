@@ -14,7 +14,6 @@ export const Share = ({ title }: { title: string }) => {
                 if (navigator.share && navigator.canShare(shareData)) {
 
                     let data = await navigator.share(shareData)
-                    alert(data)
                 }
                 else {
                     if (navigator.clipboard) {
