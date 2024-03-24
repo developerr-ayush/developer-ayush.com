@@ -1,6 +1,7 @@
+import { Share } from "@/component/Share";
 import Image from "next/image"
 import { redirect } from "next/navigation";
-import { FaFacebook, FaFacebookF, FaTwitter, FaWhatsapp } from "react-icons/fa"
+import { FaFacebook, FaFacebookF, FaShare, FaTwitter, FaWhatsapp } from "react-icons/fa"
 import { FaThreads, FaXTwitter } from "react-icons/fa6";
 interface Article {
     id: string,
@@ -40,12 +41,7 @@ const page = async ({ params }: { params: { id: string } }) => {
                                 <p className="meta meta-date">{new Date(data.updatedAt).toLocaleDateString()}</p>
                                 <p className="meta meta-author">{data.author.name}</p>
                             </div>
-                            <div className="blog-social">
-                                <button className="social-link"><FaFacebookF size={20} /></button>
-                                <button className="social-link"><FaXTwitter size={20} /></button>
-                                <button className="social-link"><FaWhatsapp size={20} /></button>
-                                <button className="social-link"><FaThreads size={20} /></button>
-                            </div>
+                            <Share title={data.title} />
                         </div>
                     </div>
                     <div className="blog-body">

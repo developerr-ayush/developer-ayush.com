@@ -2,14 +2,14 @@
 import React, { useState } from 'react'
 import Button from './Button'
 import emailjs from "@emailjs/browser";
-
+let initialVal = {
+    name: "",
+    email: "",
+    subject: "",
+    message: ""
+}
 export const ContactForm = () => {
-    let [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        subject: "",
-        message: ""
-    })
+    let [formData, setFormData] = useState(initialVal)
     const [globalMsg, setGlobalMsg] = useState('')
     const handleChange = (e: any) => {
         let { name, value } = e.target
@@ -34,6 +34,7 @@ export const ContactForm = () => {
             process.env.EMAILJS_PUBLIC_KEY,
         ).then((result) => {
             setGlobalMsg('Message sent successfully')
+            setFormData(initialVal)
         }).catch((error) => {
             setGlobalMsg('Error sending message')
         })

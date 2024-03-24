@@ -28,7 +28,7 @@ let exp = [
   {
     id: 3,
     from: "Sportz Interactive",
-    position: "Junior Front End Developer",
+    position: "Associate Front End Developer",
     date: "November 2022 - Present",
     para: "Now, at Sportz Interactive, I'm still a Front End Developer. I use a tool called SCSS to make websites look nice. I've taken sessions on coding practices and optimizing our code to improve our skills. Additionally, I've contributed to various internal Sportz projects, bringing my expertise to the team and ensuring our work meets high standards.",
   },
