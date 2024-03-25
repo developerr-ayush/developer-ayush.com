@@ -12,7 +12,6 @@ export const Share = ({ title }: { title: string }) => {
         <div className="blog-social">
             <button className="social-link" onClick={async () => {
                 if (navigator.share && navigator.canShare(shareData)) {
-
                     let data = await navigator.share(shareData)
                 }
                 else {

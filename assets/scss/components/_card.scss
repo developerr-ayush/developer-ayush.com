@@ -164,6 +164,7 @@
   &-social {
     position: relative;
     z-index: 4;
+    flex-wrap: wrap;
   }
   &-icon {
     box-shadow: inset 5px 5px 10px var(--neutral-350),
@@ -320,8 +321,8 @@
   }
 }
 .social-link {
-  width: 5rem;
-  height: 5rem;
+  width: 4rem;
+  height: 4rem;
   flex-shrink: 0;
   border-radius: 50%;
   display: grid;
@@ -342,4 +343,7 @@
       filter: invert(1);
     }
   }
+}
+.shimmer {
+  background-color: #fff;
 }

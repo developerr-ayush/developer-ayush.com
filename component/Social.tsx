@@ -48,7 +48,7 @@ const Social = () => {
                         style={{ "--brand-color": e.color } as CSSProperties}
                         title={e.title}
                     >
-                        <e.element size={25} />
+                        <e.element size={20} />
                     </a>
                 );
             })}
