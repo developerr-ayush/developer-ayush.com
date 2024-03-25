@@ -12,7 +12,7 @@ interface img {
 const Img = ({ src, width, alt, className, height }: img) => {
     return (
         <div className={`card-img ${className ? className : ""}`}>
-            <Image src={src} width={width} alt={alt} height={height} />
+            <Image src={src} width={width} alt={alt} height={height} placeholder='blur' blurDataURL="@/assets/img/loading.gif" />
         </div>
     )
 }
