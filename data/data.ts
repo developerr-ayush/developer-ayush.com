@@ -117,7 +117,7 @@ let mywork = [
     url: Slack,
     detail:
       "I made a Slack landing page clone using React. The most challenging aspect was the design, particularly the navbar, which took nearly 10 days to perfect. Additionally, I incorporated debouncing functionality into the clone.",
-    redirectLink: "https://slack-by-ayush.netlify.app/",
+    redirectLink: "https://slack-bg-ayush.netlify.app/",
   },
   {
     title: "Yoga",
