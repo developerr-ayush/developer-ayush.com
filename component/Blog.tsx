@@ -25,7 +25,6 @@ const getBlogs = async function () {
 }
 const Blog = async () => {
     const data = await getBlogs()
-
     if (data == null) return (
         <div>loading...</div>
     )
