@@ -64,3 +64,14 @@ img {
     filter: blur(8rem);
   }
 }
+
+pre {
+  background-color: #4e4e4e; /* Light gray background */
+  padding: 10px; /* Padding around the content */
+  border: 1px solid #ccc; /* Light gray border */
+  border-radius: 5px; /* Rounded corners */
+  white-space: pre-wrap; /* Preserves whitespace and line breaks */
+  font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace; /* Monospaced font */
+  font-size: 14px; /* Font size */
+  line-height: 1.5; /* Line height */
+}
