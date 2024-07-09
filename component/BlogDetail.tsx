@@ -4,6 +4,7 @@ import { Share } from "@/component/Share";
 import Image from "next/image"
 import { redirect } from "next/navigation";
 import exp from 'constants';
+import { metadata } from '@/app/(main)/layout';
 interface Article {
     id: string,
     title: string,
@@ -17,11 +18,10 @@ interface Article {
         name: string,
     }
 }
+
 async function getData(id: string) {
     const res = await fetch(`https://auth-sigma-two.vercel.app/api/blog/${id}`, {
-        next: {
-            revalidate: 3600
-        }
+        cache: 'no-cache',
     })
     if (!res.ok) {
         // This will activate the closest `error.js` Error Boundary
@@ -29,9 +29,13 @@ async function getData(id: string) {
     }
     return res.json()
 }
+
 const BlogDetail = async ({ params }: { params: { id: string } }) => {
     try {
         const data = await getData(params.id)
+        metadata.title = data.title
+        metadata.description = data.description
+
         return (
             <Suspense fallback={<div>loading...</div>}>
                 <div className="blog-page">

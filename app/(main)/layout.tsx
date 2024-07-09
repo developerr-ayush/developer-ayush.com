@@ -9,6 +9,7 @@ import { AOSInit } from './aosinit'
 export const metadata: Metadata = {
   title: 'Ayush Shah',
   description: 'Created using NextJs by Ayush Shah',
+
 }
 
 export default function RootLayout({
