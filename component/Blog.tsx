@@ -18,7 +18,11 @@ interface apiErr {
     error: string
 }
 const getBlogs = async function () {
-    const apiData = await fetch("https://auth-sigma-two.vercel.app/api/blog", { cache: "no-cache" })
+    const apiData = await fetch("https://auth-sigma-two.vercel.app/api/blog", {
+        next: {
+            revalidate: 3600
+        }
+    })
     let data = await apiData.json()
     return data
 
