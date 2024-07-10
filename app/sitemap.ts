@@ -5,14 +5,14 @@ export default async function sitemap() {
     "https://admin-panel-eta-ten.vercel.app/api/blog",
     {
       next: {
-        revalidate: 3600,
+        revalidate: 1000,
       },
     }
   );
   let data = await apiData.json();
   data = data.map((article: any) => {
     return {
-      url: `${process.env.NEXT_PUBLIC_BASE_URL}/blog/${article.id}`,
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/blog/${article.slug}`,
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.8,
