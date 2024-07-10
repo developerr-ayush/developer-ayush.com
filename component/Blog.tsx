@@ -10,6 +10,7 @@ interface Article {
     status: string,
     banner: string
     description?: string
+    slug: string,
     author: {
         name: string,
     }
@@ -18,12 +19,13 @@ interface apiErr {
     error: string
 }
 const getBlogs = async function () {
-    const apiData = await fetch("https://auth-sigma-two.vercel.app/api/blog", {
+    const apiData = await fetch("https://admin-panel-eta-ten.vercel.app/api/blog", {
         next: {
-            revalidate: 3600
+            revalidate: 100
         }
     })
     let data = await apiData.json()
+    console.log(data)
     return data
 }
 
@@ -54,7 +56,7 @@ const Blog = async () => {
                                     title: article.title,
                                     text: article.description,
                                 }}
-                                redirect={`/blog/${article.id}`}
+                                redirect={`/blog/${article.slug}`}
                                 redirectTitle={article.title}
                                 className="card-blog card-blog-list" />
                         </div>

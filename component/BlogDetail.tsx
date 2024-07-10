@@ -19,8 +19,8 @@ interface Article {
     }
 }
 
-async function getData(id: string) {
-    const res = await fetch(`https://auth-sigma-two.vercel.app/api/blog/${id}`, {
+async function getData(slug: string) {
+    const res = await fetch(`https://admin-panel-eta-ten.vercel.app/api/blog/${slug}`, {
         next: {
             revalidate: 3600
         },
@@ -32,9 +32,10 @@ async function getData(id: string) {
     return res.json()
 }
 
-const BlogDetail = async ({ params }: { params: { id: string } }) => {
+const BlogDetail = async ({ params }: { params: { slug: string } }) => {
     try {
-        const data = await getData(params.id)
+        const data = await getData(params.slug)
+        console.log(data)
         metadata.title = data.title
         metadata.description = data.description
 
@@ -64,6 +65,7 @@ const BlogDetail = async ({ params }: { params: { id: string } }) => {
             </Suspense>
         )
     } catch {
+        console.log("error")
         redirect('/404')
     }
 
