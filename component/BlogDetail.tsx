@@ -38,9 +38,16 @@ const BlogDetail = async ({ params }: { params: { slug: string } }) => {
         metadata.title = data.title
         metadata.description = data.description
         metadata.openGraph = {
+            url: `https://developerayush.com/blog/${params.slug}`,
             title: data.title,
             description: data.description,
-            images: data.banner,
+            images: [{
+                url: data.banner,
+                secureUrl: data.banner,
+                alt: data.title,
+                width: 1080,
+                height: 720
+            }],
             type: 'article',
         }
         metadata.twitter = {
