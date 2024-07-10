@@ -43,6 +43,14 @@ const BlogDetail = async ({ params }: { params: { slug: string } }) => {
             images: data.banner,
             type: 'article',
         }
+        metadata.twitter = {
+            card: 'summary_large_image',
+            title: data.title,
+            description: data.description,
+            images: data.banner,
+            site: '@developerayush',
+            creator: '@developerayush',
+        }
 
         return (
             <Suspense fallback={<div>loading...</div>}>
