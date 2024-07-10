@@ -21,7 +21,9 @@ interface Article {
 
 async function getData(id: string) {
     const res = await fetch(`https://auth-sigma-two.vercel.app/api/blog/${id}`, {
-        cache: 'no-cache',
+        next: {
+            revalidate: 3600
+        },
     })
     if (!res.ok) {
         // This will activate the closest `error.js` Error Boundary
