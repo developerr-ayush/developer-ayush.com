@@ -47,7 +47,10 @@ const BlogDetail = async ({ params }: { params: { slug: string } }) => {
             card: 'summary_large_image',
             title: data.title,
             description: data.description,
-            images: data.banner,
+            images: [{
+                url: data.banner,
+                secureUrl: data.banner
+            }],
             site: '@developerayush',
             creator: '@developerayush',
         }
