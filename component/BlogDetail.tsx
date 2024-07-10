@@ -35,9 +35,14 @@ async function getData(slug: string) {
 const BlogDetail = async ({ params }: { params: { slug: string } }) => {
     try {
         const data = await getData(params.slug)
-        console.log(data)
         metadata.title = data.title
         metadata.description = data.description
+        metadata.openGraph = {
+            title: data.title,
+            description: data.description,
+            images: data.banner,
+            type: 'article',
+        }
 
         return (
             <Suspense fallback={<div>loading...</div>}>
