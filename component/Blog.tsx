@@ -25,8 +25,8 @@ const getBlogs = async function () {
     })
     let data = await apiData.json()
     return data
-
 }
+
 const Blog = async () => {
     const data = await getBlogs()
     if (data == null) return (
