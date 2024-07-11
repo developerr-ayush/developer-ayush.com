@@ -1,5 +1,3 @@
-import { MetadataRoute } from "next";
-
 export default async function sitemap() {
   const apiData = await fetch(
     "https://admin-panel-eta-ten.vercel.app/api/blog",
