@@ -5,7 +5,7 @@ export default async function sitemap() {
     "https://admin-panel-eta-ten.vercel.app/api/blog",
     {
       next: {
-        revalidate: 1000,
+        revalidate: 3600,
       },
     }
   );
