@@ -3,7 +3,7 @@ import { MetadataRoute } from "next";
 export default async function sitemap() {
   const apiData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, {
     next: {
-      revalidate: 1000,
+      revalidate: 3600,
     },
   });
   let data = await apiData.json();
