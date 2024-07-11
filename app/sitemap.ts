@@ -1,10 +1,11 @@
+import { MetadataRoute } from "next";
+
 export default async function sitemap() {
-  const apiData = await fetch(
-    "https://admin-panel-eta-ten.vercel.app/api/blog",
-    {
-      cache: "no-cache",
-    }
-  );
+  const apiData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, {
+    next: {
+      revalidate: 1000,
+    },
+  });
   let data = await apiData.json();
   data = data.map((article: any) => {
     return {

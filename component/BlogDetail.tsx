@@ -20,7 +20,7 @@ interface Article {
 }
 
 async function getData(slug: string) {
-    const res = await fetch(`https://admin-panel-eta-ten.vercel.app/api/blog/${slug}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blog/${slug}`, {
         next: {
             revalidate: 3600
         },

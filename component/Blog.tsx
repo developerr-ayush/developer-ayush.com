@@ -19,8 +19,10 @@ interface apiErr {
     error: string
 }
 const getBlogs = async function () {
-    const apiData = await fetch("https://admin-panel-eta-ten.vercel.app/api/blog", {
-        cache: "no-cache",
+    const apiData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, {
+        next: {
+            revalidate: 1000
+        }
     })
     let data = await apiData.json()
     console.log(data)
