@@ -20,7 +20,9 @@ interface apiErr {
 }
 const getBlogs = async function () {
     const apiData = await fetch("https://admin-panel-eta-ten.vercel.app/api/blog", {
-        cache: "no-cache",
+        next: {
+            revalidate: 1000
+        }
     })
     let data = await apiData.json()
     console.log(data)
