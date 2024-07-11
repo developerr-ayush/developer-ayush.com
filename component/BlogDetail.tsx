@@ -37,30 +37,30 @@ const BlogDetail = async ({ params }: { params: { slug: string } }) => {
         const data = await getData(params.slug)
         metadata.title = data.title
         metadata.description = data.description
-        metadata.openGraph = {
-            url: `https://developerayush.com/blog/${params.slug}`,
-            title: data.title,
-            description: data.description,
-            images: [{
-                url: data.banner,
-                secureUrl: data.banner,
-                alt: data.title,
-                width: 1080,
-                height: 720
-            }],
-            type: 'article',
-        }
-        metadata.twitter = {
-            card: 'summary_large_image',
-            title: data.title,
-            description: data.description,
-            images: [{
-                url: data.banner,
-                secureUrl: data.banner
-            }],
-            site: '@developerayush',
-            creator: '@developerayush',
-        }
+        // metadata.openGraph = {
+        //     url: `https://developerayush.com/blog/${params.slug}`,
+        //     title: data.title,
+        //     description: data.description,
+        //     images: [{
+        //         url: data.banner,
+        //         secureUrl: data.banner,
+        //         alt: data.title,
+        //         width: 1080,
+        //         height: 720
+        //     }],
+        //     type: 'article',
+        // }
+        // metadata.twitter = {
+        //     card: 'summary_large_image',
+        //     title: data.title,
+        //     description: data.description,
+        //     images: [{
+        //         url: data.banner,
+        //         secureUrl: data.banner
+        //     }],
+        //     site: '@developerayush',
+        //     creator: '@developerayush',
+        // }
 
         return (
             <Suspense fallback={<div>loading...</div>}>
