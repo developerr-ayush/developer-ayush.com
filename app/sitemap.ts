@@ -1,4 +1,4 @@
-export default async function sitemap() {
+const sitemap = async () => {
   const apiData = await fetch(
     "https://admin-panel-eta-ten.vercel.app/api/blog",
     {
@@ -61,4 +61,5 @@ export default async function sitemap() {
     },
     ...data,
   ];
-}
+};
+export default sitemap;
