@@ -21,7 +21,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} dark-mode`}>
-        <GoogleTagManager gtmId="G-8FGDC36TL4" />
+        {/* <GoogleTagManager gtmId="G-8FGDC36TL4" /> */}
+        <GoogleTagManager gtmId="GTM-WVCN3W56" />
         <Header />
         <main>
           <div className="container">
