@@ -91,7 +91,7 @@ header {
   }
   &__item {
     font-size: 4rem;
-    opacity: 0.3;
+    opacity: 0.6;
     @include mq(md) {
       font-size: 1.6rem;
       font-weight: 500;
