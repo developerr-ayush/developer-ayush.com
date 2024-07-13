@@ -18,6 +18,7 @@
       display: flex;
       justify-content: center;
       gap: 2rem;
+      position: relative;
     }
     &-meta {
       display: flex;
@@ -51,5 +52,14 @@
         }
       }
     }
+  }
+  .copied {
+    position: absolute;
+    background-color: var(--function-body);
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    right: 0;
+    top: 0;
+    width: max-content;
   }
 }

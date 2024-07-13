@@ -3,7 +3,7 @@ import React from 'react'
 import { FaShare } from 'react-icons/fa'
 
 export const Share = ({ title }: { title: string }) => {
-
+    const [isCopied, setIsCopied] = React.useState(false)
     return (
         <div className="blog-social">
             <button className="social-link" aria-label='share button' onClick={async () => {
@@ -18,12 +18,17 @@ export const Share = ({ title }: { title: string }) => {
                 else {
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(shareData.url)
-                        alert("Link copied to clipboard")
+                        setIsCopied(true)
+                        setTimeout(() => {
+                            setIsCopied(false)
+                        }, 1000);
                     } else {
                         alert("your browser does not support sharing or copying link")
                     }
                 }
-            }}><FaShare size={20} /></button>
+            }}>
+                {isCopied && <p className="copied">Link copied to clipboard</p>}
+                <FaShare size={20} /></button>
         </div>
 
     )

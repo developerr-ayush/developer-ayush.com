@@ -25,7 +25,6 @@ const getBlogs = async function () {
         }
     })
     let data = await apiData.json()
-    console.log(data)
     return data
 }
 
