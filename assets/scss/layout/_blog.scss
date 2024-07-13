@@ -44,7 +44,11 @@
     &-body {
       margin-top: 2rem;
       li {
-        margin-bottom: 2rem;
+        margin-block: 1rem;
+        ul,
+        ol {
+          margin-block: 2rem;
+        }
       }
     }
   }
