@@ -21,7 +21,7 @@ interface apiErr {
 const getBlogs = async function () {
     const apiData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, {
         next: {
-            revalidate: 1000
+            revalidate: 100
         }
     })
     let data = await apiData.json()
