@@ -9,8 +9,10 @@ import Social from '@/component/Social';
 import Button from '@/component/Button';
 import Title from '@/component/Title';
 import { ContactForm } from '@/component/contact-form';
+import { metadata } from '../layout';
 
 const page = () => {
+    metadata.title = "Contact"
 
     return (
         <>

@@ -11,9 +11,11 @@ import Marquee from "@/component/Marquee";
 import Social from "@/component/Social";
 import Card from "@/component/card/Card";
 import Clock from "@/component/Clock";
+import { metadata } from "./layout";
 
 
 export default function Home() {
+
   return (
     <CardList className="grid grid-md-2 grid-lg-4">
       {/* Profile */}

@@ -9,6 +9,7 @@ import { edu, exp } from "../../../data/data";
 import Cardknowledege from '@/component/card/Cardknowledege'
 import Marquee from '@/component/Marquee'
 import ServiceList from '@/component/ServiceList'
+import { metadata } from '../layout'
 
 interface dataObj {
     id: number,
@@ -18,6 +19,7 @@ interface dataObj {
     para: string,
 }
 const page = () => {
+    metadata.title = "About"
     return (
         <>
             <CardList className="grid grid-lg-3 align-start">

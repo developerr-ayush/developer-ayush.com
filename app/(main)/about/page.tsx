@@ -10,8 +10,10 @@ import Cardknowledege from "@/component/card/Cardknowledege";
 import { edu, exp } from "../../../data/data";
 import Button from "@/component/Button";
 import Link from "next/link";
+import { metadata } from "../layout";
 
 export default function About() {
+    metadata.title = "About"
     return (
         <>
             <CardList className="grid grid-lg-3 align-start">

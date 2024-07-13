@@ -7,8 +7,10 @@ import project from "@/assets/img/project.jpeg"
 import BasicCard from '@/component/card/BasicCard'
 import Title from '@/component/Title'
 import { mywork } from '@/data/data'
+import { metadata } from '../layout'
 
 const page = () => {
+    metadata.title = "Work"
     let len = Math.ceil(mywork.length / 3)
     const filterData = {
         data1: mywork.slice(0, len),

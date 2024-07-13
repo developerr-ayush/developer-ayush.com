@@ -35,7 +35,7 @@ async function getData(slug: string) {
 const BlogDetail = async ({ params }: { params: { slug: string } }) => {
     try {
         const data = await getData(params.slug)
-        metadata.title = data.title
+        metadata.title = data.title + " | Developer Ayush"
         metadata.description = data.description
         metadata.openGraph = {
             title: data.title,
