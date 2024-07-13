@@ -56,6 +56,7 @@ const BlogDetail = async ({ params }: { params: { slug: string } }) => {
         }
 
         return (
+            // <Suspense fallback={<div>loading...</div>}>
             <div className="blog-page">
                 <div className="blog-image">
                     <Image src={data.banner} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" alt="blog-details" width="1920" height="1080" style={{
@@ -79,11 +80,12 @@ const BlogDetail = async ({ params }: { params: { slug: string } }) => {
                 </div>
 
             </div>
+            {/* </Suspense> */ }
         )
     } catch {
-        console.log("error")
-        redirect('/404')
-    }
+    console.log("error")
+    redirect('/404')
+}
 
 }
 export default BlogDetail
