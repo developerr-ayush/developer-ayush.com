@@ -61,7 +61,7 @@ const BlogDetail = async ({ params }: { params: { slug: string } }) => {
 
             <div className="blog-page">
                 <div className="blog-image">
-                    <Image src={data.banner} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" alt="blog-details" width="1920" height="1080" style={{
+                    <Image src={data.banner} loading='eager' sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" alt="blog-details" width="1920" height="1080" style={{
                         aspectRatio: "16/9"
                     }} />
                 </div>
