@@ -56,31 +56,29 @@ const BlogDetail = async ({ params }: { params: { slug: string } }) => {
         }
 
         return (
-            <Suspense fallback={<div>loading...</div>}>
-                <div className="blog-page">
-                    <div className="blog-image">
-                        <Image src={data.banner} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" alt="blog-details" width="1920" height="1080" style={{
-                            aspectRatio: "16/9"
-                        }} />
-                    </div>
-                    <div className="blog-content">
-                        <div className="blog-head">
-                            <h3 className="title">{data.title}</h3>
-                            <div className="blog-data ">
-                                <div className="blog-meta">
-                                    <p className="meta meta-date">{new Date(data.updatedAt).toLocaleDateString()}</p>
-                                    <p className="meta meta-author">{data.author.name}</p>
-                                </div>
-                                <Share title={data.title} />
-                            </div>
-                        </div>
-                        <div className="blog-body">
-                            <form dangerouslySetInnerHTML={{ __html: data.content }}></form>
-                        </div>
-                    </div>
-
+            <div className="blog-page">
+                <div className="blog-image">
+                    <Image src={data.banner} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" alt="blog-details" width="1920" height="1080" style={{
+                        aspectRatio: "16/9"
+                    }} />
                 </div>
-            </Suspense>
+                <div className="blog-content">
+                    <div className="blog-head">
+                        <h3 className="title">{data.title}</h3>
+                        <div className="blog-data ">
+                            <div className="blog-meta">
+                                <p className="meta meta-date">{new Date(data.updatedAt).toLocaleDateString()}</p>
+                                <p className="meta meta-author">{data.author.name}</p>
+                            </div>
+                            <Share title={data.title} />
+                        </div>
+                    </div>
+                    <div className="blog-body">
+                        <form dangerouslySetInnerHTML={{ __html: data.content }}></form>
+                    </div>
+                </div>
+
+            </div>
         )
     } catch {
         console.log("error")
