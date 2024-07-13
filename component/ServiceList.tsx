@@ -7,9 +7,9 @@ const ServiceList = () => {
             {serviceData.map((e, i) => {
                 return (
                     <div key={i} title={e.title} style={{ "--brand-color": e.color } as CSSProperties} className="card-icon">
-                        <a title={e.title}>
+                        <div title={e.title}>
                             <e.svg size={40} />
-                        </a>
+                        </div>
                     </div>
                 );
             })}
