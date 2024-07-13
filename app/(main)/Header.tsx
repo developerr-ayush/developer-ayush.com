@@ -19,7 +19,7 @@ const Header = () => {
     return (
         <header>
             <div className="container flex">
-                <Link href="/" className='logo'><Image src={sign} width={100} alt="profile" className="logo-img" /></Link>
+                <Link href="/" className='logo'><Image src={sign} width={100} alt="profile" className="logo-img" loading='eager' /></Link>
                 <Button exCla="btn-hamburger" ariaExpanded={false} label="Hamburger">
                     <span className="line"></span><span className="line"></span><span className="line"></span>
                 </Button>
