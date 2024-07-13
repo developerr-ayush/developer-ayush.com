@@ -15,7 +15,7 @@ import { metadata } from "./layout";
 
 
 export default function Home() {
-
+  metadata.title = "Ayush Shah"
   return (
     <CardList className="grid grid-md-2 grid-lg-4">
       {/* Profile */}
