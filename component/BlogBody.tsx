@@ -10,13 +10,15 @@ import scss from 'highlight.js/lib/languages/scss';
 import 'highlight.js/styles/stackoverflow-dark.css';
 export const BlogBody = ({ content }: any) => {
     useEffect(() => {
-        hljs.registerLanguage('javascript', javascript);
-        hljs.registerLanguage('bash', bash);
-        hljs.registerLanguage('css', css);
-        hljs.registerLanguage('json', json);
-        hljs.registerLanguage('typescript', typescript);
-        hljs.registerLanguage('scss', scss);
-        hljs.highlightAll();
+        setTimeout(() => {
+            hljs.registerLanguage('javascript', javascript);
+            hljs.registerLanguage('bash', bash);
+            hljs.registerLanguage('css', css);
+            hljs.registerLanguage('json', json);
+            hljs.registerLanguage('typescript', typescript);
+            hljs.registerLanguage('scss', scss);
+            hljs.highlightAll();
+        }, 100);
     }, [content])
     return (
         <div dangerouslySetInnerHTML={{ __html: content }}></div>
