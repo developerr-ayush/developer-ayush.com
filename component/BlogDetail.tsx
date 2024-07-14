@@ -5,6 +5,7 @@ import Image from "next/image"
 import { redirect } from "next/navigation";
 import exp from 'constants';
 import { metadata } from '@/app/(main)/layout';
+import { BlogBody } from './BlogBody';
 interface Article {
     id: string,
     title: string,
@@ -29,6 +30,7 @@ async function getData(slug: string) {
         // This will activate the closest `error.js` Error Boundary
         throw new Error('Failed to fetch data')
     }
+
     return res.json()
 }
 
@@ -77,7 +79,7 @@ const BlogDetail = async ({ params }: { params: { slug: string } }) => {
                         </div>
                     </div>
                     <div className="blog-body">
-                        <form dangerouslySetInnerHTML={{ __html: data.content }}></form>
+                        <BlogBody content={data.content} />
                     </div>
                 </div>
 
