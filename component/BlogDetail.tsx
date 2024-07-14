@@ -39,11 +39,13 @@ const BlogDetail = async ({ params }: { params: { slug: string } }) => {
         const data = await getData(params.slug)
         metadata.title = data.title + " | Developer Ayush"
         metadata.description = data.description
+        metadata.metadataBase = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/blog/${params.slug}`)
         metadata.openGraph = {
             title: data.title,
             description: data.description,
             images: data.banner,
             type: 'article',
+
         }
         metadata.twitter = {
             card: 'summary_large_image',
