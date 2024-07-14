@@ -23,7 +23,7 @@ interface Article {
 async function getData(slug: string) {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog/${slug}`, {
         next: {
-            revalidate: 100
+            revalidate: 3600
         },
     })
     if (!res.ok) {
