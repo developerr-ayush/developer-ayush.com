@@ -3,6 +3,7 @@ const nextConfig = {
   sassOptions: {
     includePaths: ["*"],
   },
+  transpilePackages: ["highlight.js"],
   images: {
     domains: [
       "auth-sigma-two.vercel.app",
