@@ -89,7 +89,6 @@ const BlogDetail = async ({ params }: { params: { slug: string } }) => {
 
         )
     } catch {
-        console.log("error")
         redirect('/404')
     }
 
