@@ -11,7 +11,7 @@
   }
   p {
     line-height: 2;
-    text-align: justify;
+    font-size: 1.6rem;
   }
   .blog {
     &-social {
@@ -42,8 +42,21 @@
         align-items: center;
       }
     }
+    &-content {
+      max-width: 65ch;
+      margin: 2rem auto 0;
+    }
     &-body {
       margin-top: 2rem;
+      h3,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        text-wrap: balance;
+        text-align: left;
+      }
       li {
         margin-block: 1rem;
         ul,
