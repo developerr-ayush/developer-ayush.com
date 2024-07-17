@@ -13,7 +13,10 @@
   li {
     line-height: 2;
     font-size: 1.6rem;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
+  }
+  pre {
+    margin-block: 1rem;
   }
   .blog {
     &-social {
