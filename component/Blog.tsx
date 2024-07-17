@@ -2,6 +2,7 @@ import React, { Suspense, useEffect, useState } from 'react'
 import CardList from '@/component/card/CardList'
 import Title from '@/component/Title'
 import BasicCard from '@/component/card/BasicCard'
+import MoreBlog from './MoreBlog'
 interface Article {
     id: string,
     title: string,
@@ -60,6 +61,7 @@ const Blog = async () => {
                                 className="card-blog card-blog-list" />
                         </div>
                     )}
+                    <MoreBlog/>
                 </CardList>
             </CardList>
         </Suspense>
