@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import { FaTwitter, FaYoutube, FaLinkedin, FaGithub, FaInstagram } from "react-icons/fa";
-
+import { SiPeerlist } from "react-icons/si";
 interface SocialItem {
     title: string;
     url: string;
@@ -11,28 +11,34 @@ interface SocialItem {
 const social: SocialItem[] = [
     {
         title: "Instagram",
-        url: "https://instagram.com",
+        url: "https://instagram.com/developerr_ayush/",
         element: FaInstagram,
         color: "#bc2a8d" // Color for Instagram
     },
     {
         title: "Youtube",
-        url: "https://youtube.com",
+        url: "https://www.youtube.com/ayushshah",
         element: FaYoutube,
         color: "#ff0000" // Color for Youtube
     },
     {
         title: "LinkedIn",
-        url: "https://linkedin.com",
+        url: "https://www.linkedin.com/in/developerr-ayush/",
         element: FaLinkedin,
         color: "#0077b5" // Color for LinkedIn
     },
     {
         title: "GitHub",
-        url: "https://github.com",
+        url: "https://github.com/developerr-ayush",
         element: FaGithub,
         color: "#7034a2" // Color for GitHub
     },
+    {
+        title: "Peerlist",
+        url: "https://peerlist.io/developerayush",
+        element: SiPeerlist,
+        color: "rgb(0 170 69)" // Color for Peerlist
+    }
 ];
 
 const Social = () => {
