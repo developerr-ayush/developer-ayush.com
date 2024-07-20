@@ -7,10 +7,11 @@ export default async function sitemap() {
     },
   });
   let data = await apiData.json();
+  let updated = data[0].updatedAt;
   data = data.map((article: any) => {
     return {
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/blog/${article.slug}`,
-      lastModified: new Date(),
+      lastModified: article.updatedAt,
       changeFrequency: "daily",
       priority: 0.8,
     };
@@ -35,12 +36,6 @@ export default async function sitemap() {
       priority: 0.8,
     },
     {
-      url: `${process.env.NEXT_PUBLIC_BASE_URL}/blog`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/contact`,
       lastModified: new Date(),
       changeFrequency: "monthly",
@@ -55,6 +50,12 @@ export default async function sitemap() {
     {
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/services`,
       lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/blog`,
+      lastModified: updated || new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
