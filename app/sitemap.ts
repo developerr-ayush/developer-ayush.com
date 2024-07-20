@@ -1,4 +1,3 @@
-import { MetadataRoute } from "next";
 
 export default async function sitemap() {
   const apiData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, {
