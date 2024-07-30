@@ -3,7 +3,7 @@ import BasicCard from "@/component/card/BasicCard";
 import CardList from "@/component/card/CardList";
 import sign from "@/assets/img/signature.png"
 import blog from "@/assets/img/gfonts.png"
-import profile from "@/assets/img/home-proifile.png"
+import profile from "@/assets/img/profile-ayush.png"
 import Card from "@/component/card/Card";
 import Social from "@/component/Social";
 import Cardknowledege from "@/component/card/Cardknowledege";

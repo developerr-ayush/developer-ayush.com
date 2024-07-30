@@ -12,7 +12,7 @@ const DarkmodeToggle = () => {
         }
     }
     useEffect(() => {
-        if (localStorage.getItem('dark-mode') !== 'true') {
+        if (localStorage.getItem('dark-mode') === 'true') {
             document.body.classList.add('dark-mode')
         } else {
             document.body.classList.remove('dark-mode')
