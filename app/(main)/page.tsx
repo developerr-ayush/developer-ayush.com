@@ -12,6 +12,7 @@ import Social from "@/component/Social";
 import Card from "@/component/card/Card";
 import Clock from "@/component/Clock";
 import { metadata } from "./layout";
+import { MarqueeCard } from "@/component/card/MarqueeCard";
 
 
 export default function Home() {
@@ -34,12 +35,7 @@ export default function Home() {
       </div>
       {/* marquee */}
       <div className="col-md-2 col-lg-2">
-        <BasicCard className="card-marquee" >
-          <Marquee>
-            <div className="marquee-item"><p>Latest Work and Feature</p></div>
-            <div className="marquee-item"><p>Latest Work and Feature</p></div>
-          </Marquee>
-        </BasicCard>
+        <MarqueeCard />
       </div>
       {/* credentials */}
       <div className="col-md-1 col-lg-1">
