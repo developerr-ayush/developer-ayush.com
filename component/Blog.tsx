@@ -20,9 +20,9 @@ interface apiErr {
     error: string
 }
 const getBlogs = async function () {
-    const apiData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog`, {
+    const apiData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blog?p=1`, {
         next: {
-            revalidate: 3600
+            revalidate: 1000
         }
     })
     let data = await apiData.json()
@@ -61,7 +61,7 @@ const Blog = async () => {
                                 className="card-blog card-blog-list" />
                         </div>
                     )}
-                    <MoreBlog/>
+                    <MoreBlog />
                 </CardList>
             </CardList>
         </Suspense>
