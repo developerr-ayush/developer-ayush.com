@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     title: 'Developer Ayush',
     description: 'Created using NextJs by Developer Ayush',
     card: 'summary_large_image',
-    images: 'https://www.developer-ayush.com/assets/img/default-share.png'
+    images: 'https://www.developer-ayush.com/default-share.png'
   },
 
 }
