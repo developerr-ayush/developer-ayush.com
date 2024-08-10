@@ -9,10 +9,32 @@ const inter = Inter({ subsets: ['latin'] })
 import { AOSInit } from './aosinit'
 import Script from 'next/script'
 export const metadata: Metadata = {
-  title: 'Ayush Shah',
-  description: 'Created using NextJs by Ayush Shah',
+  title: 'Developer Ayush',
+  description: 'Created using NextJs by Developer Ayush',
+  icons: "/favicon.png",
+  openGraph: {
+    type: 'website',
+    url: 'https://www.developer-ayush.com/',
+    title: 'Developer Ayush',
+    description: 'Created using NextJs by Developer Ayush',
+    siteName: 'Developer Ayush',
+    images: [
+      {
+        url: 'https://www.developer-ayush.com/assets/img/default-share.png',
+        width: 800,
+        height: 600,
+        alt: 'Developer Ayush'
+      }
+    ]
+  },
+  twitter: {
+    title: 'Developer Ayush',
+    description: 'Created using NextJs by Developer Ayush',
+    card: 'summary_large_image',
+  },
 
 }
+
 
 export default function RootLayout({
   children,
