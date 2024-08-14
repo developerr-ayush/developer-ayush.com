@@ -47,7 +47,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebSite",
               "name": "Developer Ayush",
-              "url": "https://www.developer-ayush.com/",
+              "url": "https://developer-ayush.com/",
+              "alternateName": ["Ayush Shah","Ayush","Developer Ayush","DA"],
             }),
           }}
         />
