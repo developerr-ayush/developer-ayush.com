@@ -8,6 +8,8 @@ import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 const inter = Inter({ subsets: ['latin'] })
 import { AOSInit } from './aosinit'
 import Script from 'next/script'
+import Head from 'next/head'
+import { GoogleSite } from '@/component/GoogleSite'
 export const metadata: Metadata = {
   title: 'Developer Ayush',
   description: 'Created using NextJs by Developer Ayush',
@@ -37,21 +39,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-
+      <GoogleSite />
       <body className={`${inter.className} dark-mode`}>
-        <Script
-          id='jsonld'
-          type='application/ld+json'
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": "Developer Ayush",
-              "url": "https://developer-ayush.com/",
-              "alternateName": ["Ayush Shah","Ayush","Developer Ayush","DA"],
-            }),
-          }}
-        />
+
         <GoogleAnalytics gaId="G-8FGDC36TL4" />
         <GoogleTagManager gtmId="GTM-WVCN3W56" />
         <Header />
