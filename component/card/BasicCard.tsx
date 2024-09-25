@@ -20,15 +20,16 @@ interface basicCard {
     redirect?: string,
     children?: React.ReactNode,
     className?: string
-    redirectTitle?: string
+    redirectTitle?: string,
+    blank?: boolean
 }
-const BasicCard = ({ img, content, children, redirect, className, redirectTitle }: basicCard) => {
+const BasicCard = ({ img, content, children, redirect, className, redirectTitle,blank }: basicCard) => {
     return (
         <Card className={className ? className : ""}>
             {img && <Img src={img.src} alt={img.alt} width={500} height={img.height}/>}
             {children}
             {content && <Content title={content.title} subTitle={content.subTitle} text={content.text} name={content.name} />}
-            {redirect && <RedirectAnchor href={redirect} redirectTitle={redirectTitle} />}
+            {redirect && <RedirectAnchor href={redirect} redirectTitle={redirectTitle} blank={blank} />}
         </Card>
     )
 }

@@ -25,12 +25,14 @@ const page = () => {
                     <Title>Projects</Title>
                 </div>
                 <CardList className="col-lg-1">
-                    {filterData.data3.map((e, i) => {
+                    {filterData.data1.map((e, i) => {
                         return <div key={i}>
                             <BasicCard img={{
                                 src: e.url,
                                 alt: e.title
                             }}
+                                blank={true}
+
                                 content={{
                                     title: e.title,
                                     text: e.detail
@@ -47,6 +49,7 @@ const page = () => {
                                 src: e.url,
                                 alt: e.title
                             }}
+                                blank={true}
                                 content={{
                                     title: e.title,
                                     text: e.detail
@@ -58,12 +61,14 @@ const page = () => {
                 </CardList>
             </CardList>
             <CardList className='col-lg-1'>
-                {filterData.data1.map((e, i) => {
+                {filterData.data3.map((e, i) => {
                     return <div key={i}>
                         <BasicCard img={{
                             src: e.url,
                             alt: e.title
                         }}
+                            blank={true}
+
                             content={{
                                 title: e.title,
                                 text: e.detail

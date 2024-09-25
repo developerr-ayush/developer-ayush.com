@@ -7,6 +7,9 @@ import Wireframe from "@/assets/img/work/wireframe.jpg";
 import Dataviv from "@/assets/img/work/dataviv.jpg";
 import Yoga from "@/assets/img/work/yoga.jpg";
 import Aonix from "@/assets/img/work/aonix.png";
+import Aonixv2 from "@/assets/img/work/aonixv2.jpeg";
+import schoolVr from "@/assets/img/work/schoolvr.jpeg";
+import tradebattle from "@/assets/img/work/tradebattle.jpeg";
 import Netflix from "@/assets/img/work/netflix.png";
 import Slack from "@/assets/img/work/slack.png";
 import {
@@ -96,36 +99,12 @@ let edu = [
 // Works
 let mywork = [
   {
-    title: "Aonix",
-    skillsUsed: ["React", "JavaScript", "HTML5", "SCSS", "CSS3"],
-    url: Aonix,
+    title: "Aonix v2",
+    skillsUsed: ["React", "JavaScript", "HTML5", "SCSS", "CSS3", "EmailJS"],
+    url: Aonixv2,
     detail:
-      "I built a website using React, and the toughest part was designing it and making dynamic pages. After that, I integrated EmailJs into it. Additionally, I added some small animations throughout the website.",
+      "Built a dynamic and responsive website using ReactJS, leveraging reusable components for efficient development. Integrated a contact form using EmailJS for direct email communication.",
     redirectLink: "https://aonix-website.netlify.app/",
-  },
-  {
-    title: "Netflix Landing Page",
-    skillsUsed: ["React", "JavaScript", "HTML5", "SCSS", "CSS3"],
-    url: Netflix,
-    detail:
-      "I created a Netflix landing page clone using React. Most of my focus went into the section where videos play. While keeping the design simple, I also addressed some flaws present in the actual Netflix website within this clone.",
-    redirectLink: "https://ayush-web-notflix.netlify.app/",
-  },
-  {
-    title: "Slack Landing page",
-    skillsUsed: ["React", "JavaScript", "HTML5", "SCSS", "CSS3"],
-    url: Slack,
-    detail:
-      "I made a Slack landing page clone using React. The most challenging aspect was the design, particularly the navbar, which took nearly 10 days to perfect. Additionally, I incorporated debouncing functionality into the clone.",
-    redirectLink: "https://slack-bg-ayush.netlify.app/",
-  },
-  {
-    title: "Yoga",
-    skillsUsed: ["HTML5", "Bootstrap", "CSS3", "JavaScript", "jQuery"],
-    url: Yoga,
-    detail:
-      "This website is an assignment given by a company, and one of its notable features is the use of pure CSS to create animated leaf movement. This animation contributes to the website's overall speed and performance.",
-    redirectLink: "https://developerr-ayush.github.io/yoga/",
   },
   {
     title: "Dataviv Technologies",
@@ -136,12 +115,53 @@ let mywork = [
     redirectLink: "https://dataviv-technologies.web.app/",
   },
   {
+    title: "Tradebattle",
+    skillsUsed: ["React", "JavaScript", "HTML5", "SCSS", "CSS3", "GSAP"],
+    url: tradebattle,
+    detail:
+      "Tradebattle is an interactive platform where users can place bets on stock market trends. Built using React, this project integrates dynamic features like scroll-driven animations and a sleek, responsive design. GSAP was used extensively to create smooth animations that enhance the user experience.",
+    redirectLink: "https://tradebattle.win/",
+  },
+
+  {
     title: "Data Web",
     skillsUsed: ["HTML5", "JavaScript", "jQuery", "SCSS"],
     url: DataWeb,
     detail:
       "I came across this website long after my course, and I decided to replicate it exactly as it is seen. I added a few of my own modifications, such as a sticky navigation and some hover animations.",
     redirectLink: "https://developerr-ayush.github.io/dataweb/",
+  },
+  {
+    title: "Netflix Landing Page",
+    skillsUsed: ["React", "JavaScript", "HTML5", "SCSS", "CSS3"],
+    url: Netflix,
+    detail:
+      "I created a Netflix landing page clone using React. Most of my focus went into the section where videos play. While keeping the design simple, I also addressed some flaws present in the actual Netflix website within this clone.",
+    redirectLink: "https://ayush-web-notflix.netlify.app/",
+  },
+  {
+    title: "School VR",
+    skillsUsed: ["React", "JavaScript", "HTML5", "SCSS", "CSS3"],
+    url: schoolVr,
+    detail:
+      "I built a website using React, and the toughest part was designing it and making dynamic pages. After that, I integrated EmailJs into it. Additionally, I added some small animations throughout the website.",
+    redirectLink: "https://schoolvr.netlify.app/",
+  },
+  {
+    title: "Slack Landing page",
+    skillsUsed: ["React", "JavaScript", "HTML5", "SCSS", "CSS3"],
+    url: Slack,
+    detail:
+      "I made a Slack landing page clone using React. The most challenging aspect was the design, particularly the navbar, which took nearly 10 days to perfect. Additionally, I incorporated debouncing functionality into the clone.",
+    redirectLink: "https://slack-clone-bg-ayush.netlify.app/",
+  },
+  {
+    title: "Yoga",
+    skillsUsed: ["HTML5", "Bootstrap", "CSS3", "JavaScript", "jQuery"],
+    url: Yoga,
+    detail:
+      "This website is an assignment given by a company, and one of its notable features is the use of pure CSS to create animated leaf movement. This animation contributes to the website's overall speed and performance.",
+    redirectLink: "https://developerr-ayush.github.io/yoga/",
   },
   {
     title: "Greeting Globe",
@@ -151,6 +171,7 @@ let mywork = [
       "I worked as a team member on this freelance project. I developed approximately 50-60% of the UI, and I also wrote about 90% of the logical parts on this website.",
     redirectLink: "https://greetingglobe-web.web.app/",
   },
+
   {
     title: "Finexo",
     skillsUsed: ["HTML5", "JavaScript", "jQuery", "SCSS"],
@@ -158,6 +179,14 @@ let mywork = [
     detail:
       "I created the layout for this website because I liked the UI parts and animations used in it. I personally love the website's layout, design, and UI. I also learned more about CSS animation while working on it.",
     redirectLink: "https://developerr-ayush.github.io/finexo/",
+  },
+  {
+    title: "Aonix v1",
+    skillsUsed: ["React", "JavaScript", "HTML5", "SCSS", "CSS3"],
+    url: Aonix,
+    detail:
+      "I built a website using React, and the toughest part was designing it and making dynamic pages. After that, I integrated EmailJs into it. Additionally, I added some small animations throughout the website.",
+    redirectLink: "https://aonix-project.netlify.app/",
   },
   {
     title: "Cuvee",
