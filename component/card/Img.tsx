@@ -12,7 +12,7 @@ interface img {
 const Img = ({ src, width, alt, className, height }: img) => {
     return (
         <div className={`card-img ${className ? className : ""}`}>
-            <Image src={src} width={width} alt={alt} height={height} loading='lazy' placeholder='blur' blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNksDlRDwACzQGFFBQ7xgAAAABJRU5ErkJggg==" />
+            <Image src={src} width={width} alt={alt} height={height} loading='eager' placeholder='blur' blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNksDlRDwACzQGFFBQ7xgAAAABJRU5ErkJggg==" />
         </div>
     )
 }
