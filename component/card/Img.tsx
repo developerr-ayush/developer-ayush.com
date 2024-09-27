@@ -1,20 +1,30 @@
-import { StaticImport } from 'next/dist/shared/lib/get-img-props'
-import Image from 'next/image'
-import React from 'react'
-import loadingImg from '@/assets/img/loading.gif'
-interface img {
-    src: StaticImport | string,
-    width: number,
-    alt: string,
-    className?: string
-    height?: number
-}
-const Img = ({ src, width, alt, className, height }: img) => {
-    return (
-        <div className={`card-img ${className ? className : ""}`}>
-            <Image src={src} width={width} alt={alt} height={height} loading='eager' priority placeholder='blur' blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNksDlRDwACzQGFFBQ7xgAAAABJRU5ErkJggg==" />
-        </div>
-    )
+import Image from 'next/image';
+import React from 'react';
+
+interface ImgProps {
+  src: string;
+  alt: string;
+  className?: string;
+  width: number; // Add width prop
+  height: number; // Add height prop
 }
 
-export default Img
+const Img = ({ src, alt, className, width, height }: ImgProps) => {
+  return (
+    <div className={`card-img ${className ? className : ''}`}>
+      <Image
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        sizes="(max-width: 600px) 320px, (max-width: 1200px) 640px, 100vw" // Responsive sizes
+        priority // Ensure it's preloaded
+        loading="lazy" // Load lazily for performance
+        placeholder="blur" // Use a placeholder if desired
+        blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNksDlRDwACzQGFFBQ7xgAAAABJRU5ErkJggg==" // Placeholder image
+      />
+    </div>
+  );
+};
+
+export default Img;
