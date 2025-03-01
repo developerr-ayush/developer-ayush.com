@@ -26,7 +26,16 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     images: "https://www.developer-ayush.com/default-share.png",
   },
-  themeColor: "#4287f5",
+  themeColor: [
+    {
+      color: "cyan",
+      media: "(prefers-color-scheme: light)",
+    },
+    {
+      color: "cyan",
+      media: "(prefers-color-scheme: dark)",
+    },
+  ],
 };
 
 export default function RootLayout({
