@@ -36,9 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <GoogleSite />
-      <head>
-        <meta name="theme-color" content="cyan" />
-      </head>
+
       <body className={`${inter.className} dark-mode`}>
         <GoogleAnalytics gaId="G-8FGDC36TL4" />
         <GoogleTagManager gtmId="GTM-WVCN3W56" />
