@@ -26,16 +26,6 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     images: "https://www.developer-ayush.com/default-share.png",
   },
-  themeColor: [
-    {
-      color: "cyan",
-      media: "(prefers-color-scheme: light)",
-    },
-    {
-      color: "cyan",
-      media: "(prefers-color-scheme: dark)",
-    },
-  ],
 };
 
 export default function RootLayout({
@@ -46,6 +36,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <GoogleSite />
+      <head>
+        <meta name="theme-color" content="cyan" />
+      </head>
       <body className={`${inter.className} dark-mode`}>
         <GoogleAnalytics gaId="G-8FGDC36TL4" />
         <GoogleTagManager gtmId="GTM-WVCN3W56" />
