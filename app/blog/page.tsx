@@ -1,32 +1,9 @@
 import { getBlogPosts } from "../blogData";
-import BlogCard from "../components/BlogCard";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Blog | Ayush Shah",
-  description:
-    "Check out my latest blog posts on web development and programming",
-  openGraph: {
-    title: "Blog | Ayush Shah",
-    description:
-      "Check out my latest blog posts on web development and programming",
-    url: "https://developer-ayush.com/blog",
-    siteName: "Ayush Shah",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Ayush Shah Blog",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-};
+import BlogList from "../components/BlogList";
 
 export default async function BlogPage() {
-  const posts = await getBlogPosts();
+  // Fetch the initial data on the server
+  const initialBlogData = await getBlogPosts(1);
 
   return (
     <div className="py-20 md:py-28">
@@ -41,11 +18,8 @@ export default async function BlogPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {posts.map((post, index) => (
-            <BlogCard key={post.id} post={post} index={index} />
-          ))}
-        </div>
+        {/* Pass the initial data to the client component */}
+        <BlogList initialData={initialBlogData} />
       </div>
     </div>
   );

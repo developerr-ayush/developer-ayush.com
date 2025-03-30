@@ -45,16 +45,80 @@ export type BlogPostDetail = {
   };
 };
 
-export async function getBlogPosts(): Promise<BlogPost[]> {
+export type PaginationResponse<T> = {
+  data: T[];
+  meta: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+  };
+};
+
+export async function getBlogPosts(
+  page: number = 1
+): Promise<PaginationResponse<BlogPost>> {
   try {
-    const res = await fetch("https://admin.developer-ayush.com/api/blog?p=2", {
-      next: { revalidate: 3600 }, // Revalidate every hour
-    });
-    if (!res.ok) throw new Error("Failed to fetch blog posts");
-    return await res.json();
+    console.log(`Fetching blog posts for page ${page}`);
+
+    // Different fetch options based on environment
+    const options: RequestInit & { next?: { revalidate: number } } = {
+      next: { revalidate: 3600 }, // Revalidate every hour for SSR
+    };
+
+    // Only add cache: 'no-store' on the client
+    if (typeof window !== "undefined") {
+      options.cache = "no-store" as RequestCache;
+    }
+
+    const res = await fetch(
+      `https://admin.developer-ayush.com/api/blog?p=${page}`,
+      options
+    );
+
+    if (!res.ok) {
+      console.error(`API response not OK: ${res.status} ${res.statusText}`);
+      throw new Error(
+        `Failed to fetch blog posts: ${res.status} ${res.statusText}`
+      );
+    }
+
+    const data = await res.json();
+    console.log(
+      `API data retrieved for page ${page}:`,
+      typeof data,
+      Array.isArray(data) ? data.length : "not array"
+    );
+
+    // If the API returns a flat array instead of pagination data,
+    // we'll wrap it in our pagination structure
+    if (Array.isArray(data)) {
+      const postsPerPage = 10; // Assuming 10 posts per page
+      const totalPages = page === 1 && data.length < postsPerPage ? 1 : 2;
+
+      return {
+        data,
+        meta: {
+          currentPage: page,
+          totalPages: totalPages,
+          totalItems: data.length * totalPages, // Estimate total items
+          itemsPerPage: postsPerPage,
+        },
+      };
+    }
+
+    return data;
   } catch (error) {
     console.error("Error fetching blog posts:", error);
-    return [];
+    return {
+      data: [],
+      meta: {
+        currentPage: page,
+        totalPages: 0,
+        totalItems: 0,
+        itemsPerPage: 0,
+      },
+    };
   }
 }
 
@@ -62,8 +126,8 @@ export async function getBlogPostBySlug(
   slug: string
 ): Promise<BlogPost | null> {
   try {
-    const posts = await getBlogPosts();
-    const post = posts.find((post) => post.slug === slug);
+    const response = await getBlogPosts(1);
+    const post = response.data.find((post) => post.slug === slug);
     return post || null;
   } catch (error) {
     console.error("Error fetching blog post by slug:", error);

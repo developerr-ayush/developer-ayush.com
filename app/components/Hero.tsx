@@ -9,21 +9,55 @@ import { useEffect, useState } from "react";
 
 const titleVariants = {
   initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  exit: { opacity: 0, y: -20, transition: { duration: 0.3 } },
 };
 
 const Hero = () => {
   const [titleIndex, setTitleIndex] = useState(0);
-  const titles = ["UI/UX", "Front end", "Full Stack"];
+  const [text, setText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [loopNum, setLoopNum] = useState(0);
+  const [typingSpeed, setTypingSpeed] = useState(150);
+
+  const titles = ["UI/UX", "Frontend", "Full Stack"];
+  const fullText = `${titles[titleIndex]} Developer`;
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTitleIndex((prev) => (prev + 1) % titles.length);
-    }, 3000);
+    const timer = setTimeout(() => {
+      handleTyping();
+    }, typingSpeed);
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearTimeout(timer);
+  }, [text, isDeleting, titleIndex]);
+
+  const handleTyping = () => {
+    // Current title being typed
+    const currentFullText = `${titles[titleIndex]} Developer`;
+
+    if (!isDeleting && text === currentFullText) {
+      // Wait at complete text
+      setTypingSpeed(2000);
+      setIsDeleting(true);
+      return;
+    } else if (isDeleting && text === "") {
+      // Move to next title
+      setIsDeleting(false);
+      setTitleIndex((prev) => (prev + 1) % titles.length);
+      setTypingSpeed(150);
+      return;
+    }
+
+    // Set typing speed
+    setTypingSpeed(isDeleting ? 100 : 150);
+
+    // Handle typing and deleting
+    if (!isDeleting) {
+      setText(currentFullText.substring(0, text.length + 1));
+    } else {
+      setText(currentFullText.substring(0, text.length - 1));
+    }
+  };
 
   return (
     <section className="relative min-h-screen flex items-center py-20 overflow-hidden">
@@ -57,8 +91,12 @@ const Hero = () => {
                 }}
               >
                 <span className="text-foreground">{personalInfo.name}</span>
-                <span className="block mt-2">
-                  <span className="text-sky-500">UI/UX</span> Developer
+                <span className="block mt-2 h-[60px] md:h-[72px]">
+                  <span className="text-sky-500">{text.split(" ")[0]}</span>
+                  {text.includes(" ") && (
+                    <span> {text.split(" ").slice(1).join(" ")}</span>
+                  )}
+                  <span className="text-sky-500 animate-blink">|</span>
                 </span>
               </h1>
               <p
@@ -160,6 +198,18 @@ const Hero = () => {
         }
         .animate-fade-in {
           animation: fade-in 0.6s ease-out forwards;
+        }
+        @keyframes blink {
+          0%,
+          100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0;
+          }
+        }
+        .animate-blink {
+          animation: blink 1s step-end infinite;
         }
       `}</style>
     </section>
