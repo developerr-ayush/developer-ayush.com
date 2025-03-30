@@ -54,87 +54,109 @@ const ExperienceItem = ({
   );
 };
 
-const Experience = () => {
+export default function Experience() {
   return (
-    <section id="experience" className="py-16 md:py-24 bg-foreground/[0.02]">
-      <div className="container mx-auto px-4 md:px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
-            Experience & <span className="text-sky-500">Education</span>
+    <section className="py-20 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute bottom-0 right-0 w-72 h-72 rounded-full bg-sky-500/5 blur-3xl"></div>
+      </div>
+
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16">
+          <span className="bg-gradient-to-r from-sky-500 to-sky-600 bg-clip-text text-transparent uppercase tracking-wider font-semibold">
+            Professional Journey
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
+            My Experience
           </h2>
-          <div className="mt-4 h-1 w-16 bg-sky-500 mx-auto rounded-full"></div>
-        </motion.div>
+          <p className="text-foreground/75 max-w-2xl mx-auto">
+            A timeline of my professional career and the skills I've developed
+            along the way.
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <div>
-            <h3 className="text-2xl font-bold mb-8 flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6 mr-2 text-sky-500"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z"
-                />
-              </svg>
-              Work Experience
-            </h3>
-            <div className="space-y-0">
-              {experienceData.map((item, index) => (
-                <ExperienceItem
-                  key={item.id}
-                  item={item}
-                  index={index}
-                  isLast={index === experienceData.length - 1}
-                />
-              ))}
-            </div>
-          </div>
+        <div className="relative max-w-4xl mx-auto">
+          {/* Timeline line */}
+          <div className="absolute left-0 md:left-1/2 top-0 h-full w-px bg-gradient-to-b from-sky-500/80 via-sky-500/50 to-sky-500/20 transform md:translate-x-[-0.5px] hidden md:block"></div>
 
-          <div>
-            <h3 className="text-2xl font-bold mb-8 flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6 mr-2 text-sky-500"
+          {experienceData.map((item, index) => (
+            <div key={index} className="mb-12 md:mb-20 relative">
+              <div
+                className={`flex flex-col md:flex-row ${
+                  index % 2 === 0 ? "md:flex-row-reverse" : ""
+                }`}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"
-                />
-              </svg>
-              Education
-            </h3>
-            <div className="space-y-0">
-              {educationData.map((item, index) => (
-                <ExperienceItem
-                  key={item.id}
-                  item={item}
-                  index={index}
-                  isLast={index === educationData.length - 1}
-                />
-              ))}
+                {/* Timeline dot indicator */}
+                <div className="absolute left-[-12px] md:left-1/2 top-0 md:translate-x-[-12px] hidden md:block">
+                  <div className="w-6 h-6 rounded-full border-4 border-sky-500 bg-black"></div>
+                </div>
+
+                {/* Visible dot for mobile */}
+                <div className="absolute left-[-5px] top-0 md:hidden">
+                  <div className="w-3 h-3 rounded-full bg-sky-500"></div>
+                </div>
+
+                {/* Date circle - only shows on desktop */}
+                <div
+                  className={`hidden md:flex items-center justify-center w-1/2 ${
+                    index % 2 === 0 ? "md:pl-12" : "md:pr-12"
+                  }`}
+                >
+                  <div className="text-center">
+                    <div className="inline-block px-4 py-2 rounded-full bg-sky-500/10 border border-sky-500/20">
+                      <span className="text-sm font-medium text-sky-500">
+                        {item.date}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div
+                  className={`border-l-2 border-sky-500/30 pl-6 md:border-0 md:pl-0 ${
+                    index % 2 === 0
+                      ? "md:pr-12 md:text-right md:w-1/2"
+                      : "md:pl-12 md:w-1/2"
+                  }`}
+                >
+                  {/* Date for mobile */}
+                  <div className="mb-3 md:hidden">
+                    <span className="text-sm font-medium text-sky-500">
+                      {item.date}
+                    </span>
+                  </div>
+
+                  <div
+                    className={`bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 shadow-lg transform transition-all hover:-translate-y-1 hover:shadow-sky-500/5 ${
+                      index % 2 === 0 ? "md:mr-6" : "md:ml-6"
+                    }`}
+                  >
+                    <h3 className="text-xl font-bold mb-2">{item.position}</h3>
+                    <h4 className="text-sky-500 font-medium mb-4">
+                      {item.from}
+                    </h4>
+                    <p className="text-foreground/70 mb-4">{item.para}</p>
+
+                    {item.details && (
+                      <ul className="space-y-2">
+                        {item.details.map((detail, detailIndex) => (
+                          <li key={detailIndex} className="flex items-start">
+                            <span className="text-sky-500 mr-2">•</span>
+                            <span className="text-foreground/80 text-sm">
+                              {detail}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
   );
-};
-
-export default Experience;
+}
