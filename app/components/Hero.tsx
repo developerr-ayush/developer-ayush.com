@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { personalInfo, socialLinks } from "../data";
-import profileImage from "../assets/img/personal/ayush-shah.png";
+import profileImage from "../assets/img/profile-ayush.png";
 import { useEffect, useState } from "react";
 
 const titleVariants = {
@@ -26,119 +26,142 @@ const Hero = () => {
   }, []);
 
   return (
-    <section
-      id="hero"
-      className="relative min-h-screen flex items-center pt-20 pb-16"
-    >
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col space-y-6"
-          >
-            <div className="flex items-center space-x-2">
-              <div className="h-px w-12 bg-sky-500"></div>
-              <span className="text-sm font-medium">
-                Welcome to my portfolio
-              </span>
+    <section className="relative min-h-screen flex items-center py-20 overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-1/3 -left-32 w-96 h-96 rounded-full bg-sky-500/10 blur-3xl"></div>
+        <div className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full bg-purple-500/10 blur-3xl"></div>
+      </div>
+
+      <div className="absolute right-0 top-0 w-full h-full bg-grid-white/[0.05] bg-[length:40px_40px] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
+
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
+          {/* Text content */}
+          <div className="lg:w-1/2 space-y-8">
+            <div className="space-y-4">
+              <p
+                className="text-lg text-sky-500 font-medium animate-fade-in opacity-0"
+                style={{
+                  animationDelay: "0.2s",
+                  animationFillMode: "forwards",
+                }}
+              >
+                Hello there, I'm
+              </p>
+              <h1
+                className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight animate-fade-in opacity-0"
+                style={{
+                  animationDelay: "0.4s",
+                  animationFillMode: "forwards",
+                }}
+              >
+                <span className="text-foreground">{personalInfo.name}</span>
+                <span className="block mt-2">
+                  <span className="text-sky-500">UI/UX</span> Developer
+                </span>
+              </h1>
+              <p
+                className="text-xl text-foreground/70 leading-relaxed max-w-2xl animate-fade-in opacity-0"
+                style={{
+                  animationDelay: "0.6s",
+                  animationFillMode: "forwards",
+                }}
+              >
+                I create responsive, user-friendly web experiences with modern
+                technologies, focusing on clean code and seamless interactions.
+              </p>
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              Hi, I'm{" "}
-              <span className="text-sky-500">
-                {personalInfo.name.split(" ")[0]}
-              </span>
-              <br />
-              <div className="h-[60px] md:h-[76px] lg:h-[96px] overflow-hidden">
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={titleIndex}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                    variants={titleVariants}
-                    transition={{ duration: 0.5 }}
-                    className="block"
-                  >
-                    {titles[titleIndex]} Developer
-                  </motion.span>
-                </AnimatePresence>
-              </div>
-            </h1>
-
-            <p className="text-lg text-foreground/70 max-w-md">
-              A passionate developer specializing in creating exceptional
-              digital experiences with modern web technologies.
-            </p>
-
-            <div className="flex flex-wrap gap-4 pt-2">
+            <div
+              className="flex flex-wrap gap-4 animate-fade-in opacity-0"
+              style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}
+            >
               <Link
                 href="#contact"
-                className="px-6 py-3 rounded-full bg-sky-500 text-white font-medium hover:bg-sky-600 transition-colors"
+                className="bg-sky-500 hover:bg-sky-600 text-white font-medium px-8 py-3 rounded-full transition-all transform hover:translate-y-[-2px] hover:shadow-lg"
               >
                 Contact Me
               </Link>
               <Link
                 href="#portfolio"
-                className="px-6 py-3 rounded-full border border-foreground/20 font-medium hover:bg-foreground/5 transition-colors"
+                className="border border-foreground/20 bg-foreground/5 hover:bg-foreground/10 text-foreground font-medium px-8 py-3 rounded-full transition-all transform hover:translate-y-[-2px]"
               >
-                View Projects
+                View Work
               </Link>
             </div>
 
-            <div className="flex items-center space-x-4 pt-2">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-foreground/70 hover:text-sky-500 transition-colors"
-                  aria-label={social.name}
-                >
-                  <social.icon className="w-5 h-5" />
-                </a>
-              ))}
+            <div
+              className="animate-fade-in opacity-0"
+              style={{ animationDelay: "1s", animationFillMode: "forwards" }}
+            >
+              <p className="text-foreground/60 mb-3 font-medium">
+                Connect with me:
+              </p>
+              <div className="flex gap-4">
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-foreground/10 hover:bg-foreground/15 p-3 rounded-full transition-all transform hover:translate-y-[-2px] group"
+                    aria-label={social.name}
+                  >
+                    <social.icon className="w-5 h-5 text-sky-500 group-hover:text-sky-400" />
+                  </a>
+                ))}
+              </div>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="relative mx-auto w-full max-w-md aspect-square"
+          {/* Image */}
+          <div
+            className="lg:w-1/2 flex justify-center lg:justify-end animate-fade-in opacity-0"
+            style={{ animationDelay: "1.2s", animationFillMode: "forwards" }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-indigo-500 rounded-full blur-3xl opacity-20"></div>
-            <div className="relative bg-foreground/5 border border-foreground/10 rounded-full overflow-hidden w-full h-full flex items-center justify-center">
-              <Image
-                src={profileImage}
-                alt="Ayush Shah"
-                className="object-cover w-full h-full"
-                priority
-              />
+            <div className="relative w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96">
+              <div
+                className="absolute inset-0 rounded-full bg-gradient-to-br from-sky-500/20 to-purple-500/20 animate-pulse"
+                style={{ animationDuration: "4s" }}
+              ></div>
+              <div className="absolute inset-2 rounded-full bg-foreground/5 backdrop-blur-sm border border-white/10 overflow-hidden">
+                <Image
+                  src={profileImage}
+                  alt={personalInfo.name}
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 768px) 85vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 1 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
-      >
-        <span className="text-sm text-foreground/60 mb-2">Scroll Down</span>
-        <div className="w-6 h-10 border-2 border-foreground/20 rounded-full flex justify-center p-1">
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-            className="w-1 h-1 bg-sky-500 rounded-full"
-          ></motion.div>
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div className="w-8 h-12 rounded-full border-2 border-foreground/20 flex justify-center pt-2">
+          <div className="w-1 h-3 rounded-full bg-sky-500"></div>
         </div>
-      </motion.div>
+      </div>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out forwards;
+        }
+      `}</style>
     </section>
   );
 };
