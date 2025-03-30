@@ -9,6 +9,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import "../blog-content.css";
+import Script from "next/script";
 
 type Props = {
   params: { slug: string };
@@ -20,18 +21,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) {
     return {
       title: "Blog Post Not Found",
-      description: "The blog post you're looking for doesn't exist.",
+      description: "The requested blog post could not be found.",
     };
   }
 
   return {
-    title: `${post.title} | Ayush Shah`,
+    title: post.title,
     description: post.description,
     openGraph: {
       title: post.title,
       description: post.description,
-      url: `https://developer-ayush.com/blog/${post.slug}`,
-      siteName: "Ayush Shah",
+      type: "article",
+      publishedTime: post.updatedAt,
+      authors: [post.author.name],
       images: [
         {
           url: post.banner,
@@ -40,14 +42,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           alt: post.title,
         },
       ],
-      locale: "en_US",
-      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+      images: [post.banner],
+    },
+    alternates: {
+      canonical: `https://developer-ayush.com/blog/${post.slug}`,
     },
   };
 }
 
 export async function generateStaticParams() {
-  const posts = await getBlogPosts();
+  const blogData = await getBlogPosts(1);
+  const posts = blogData.data || [];
 
   return posts.map((post) => ({
     slug: post.slug,
@@ -55,66 +65,116 @@ export async function generateStaticParams() {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const postDetail = await getBlogPostDetail(params.slug);
-  if (!postDetail) {
-    const fallbackPost = await getBlogPostBySlug(params.slug);
-    if (!fallbackPost) {
-      notFound();
-    }
+  const detailedPost = await getBlogPostDetail(params.slug);
+  const post = await getBlogPostBySlug(params.slug);
 
-    // Simple fallback if the detailed post can't be fetched
-    return (
-      <div className="py-20 md:py-28">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-8">
-              <Link
-                href="/blog"
-                className="text-sky-500 hover:text-sky-600 flex items-center text-sm"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 mr-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                  />
-                </svg>
-                Back to all blogs
-              </Link>
-            </div>
+  if (!post) {
+    notFound();
+  }
 
-            <div className="flex gap-2 mb-4 flex-wrap">
-              {fallbackPost.categories.map((category) => (
+  // Create structured data for the blog post
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    image: post.banner,
+    datePublished: post.updatedAt,
+    dateModified: post.updatedAt,
+    author: {
+      "@type": "Person",
+      name: post.author.name,
+    },
+    publisher: {
+      "@type": "Person",
+      name: post.author.name,
+      logo: {
+        "@type": "ImageObject",
+        url: "/android-chrome-192x192.png",
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://developer-ayush.com/blog/${post.slug}`,
+    },
+  };
+
+  // For SEO, split the categories into individual tags
+  const tags = post.categories.map((category) => category.name).join(", ");
+
+  return (
+    <div className="py-20 md:py-28">
+      {/* JSON-LD structured data */}
+      <Script
+        id="structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="max-w-4xl mx-auto">
+          {/* Back to blog link */}
+          <Link
+            href="/blog"
+            className="inline-flex items-center text-sm text-sky-500 hover:text-sky-600 mb-8"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4 mr-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            Back to Blog
+          </Link>
+
+          {/* Blog post banner */}
+          <div className="rounded-2xl overflow-hidden mb-8 relative aspect-video">
+            <Image
+              src={post.banner}
+              alt={post.title}
+              fill
+              className="object-cover"
+              priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 60vw"
+            />
+          </div>
+
+          {/* Blog post header */}
+          <div className="mb-8">
+            {/* Categories/tags */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {post.categories.map((category) => (
                 <span
                   key={category.id}
-                  className="text-xs px-2 py-1 rounded-full bg-sky-500/10 text-sky-500"
+                  className="text-xs px-3 py-1 rounded-full bg-sky-500/10 text-sky-500"
                 >
                   {category.name}
                 </span>
               ))}
             </div>
 
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-              {fallbackPost.title}
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+              {post.title}
             </h1>
 
-            <div className="flex items-center justify-between mb-8 text-foreground/70 text-sm">
+            <div className="flex justify-between items-center text-foreground/60 text-sm">
               <div className="flex items-center">
-                <span>By {fallbackPost.author.name}</span>
+                <span>By {post.author.name}</span>
                 <span className="mx-2">•</span>
-                <span>{formatDate(fallbackPost.updatedAt)}</span>
+                <span>{formatDate(post.updatedAt)}</span>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
+                  className="h-4 w-4 mr-1"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -132,124 +192,36 @@ export default async function BlogPostPage({ params }: Props) {
                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                   />
                 </svg>
-                {fallbackPost.views} views
+                {post.views} views
               </div>
             </div>
-
-            <div className="relative w-full aspect-video mb-10 rounded-lg overflow-hidden shadow-lg">
-              <Image
-                src={fallbackPost.banner}
-                alt={fallbackPost.title}
-                fill
-                className="object-cover"
-                priority
-                sizes="(max-width: 1024px) 100vw, 1024px"
-              />
-            </div>
-
-            <div className="prose prose-lg max-w-none">
-              <p className="text-lg leading-relaxed">
-                {fallbackPost.description}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Handle tags if present
-  const tagList = postDetail.tags
-    ? postDetail.tags.split(",").map((tag) => tag.trim())
-    : [];
-
-  return (
-    <div className="py-20 md:py-28">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <Link
-              href="/blog"
-              className="text-sky-500 hover:text-sky-600 flex items-center text-sm"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 mr-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              Back to all blogs
-            </Link>
           </div>
 
-          <div className="flex gap-2 mb-4 flex-wrap">
-            {tagList.map((tag, index) => (
-              <span
-                key={index}
-                className="text-xs px-2 py-1 rounded-full bg-sky-500/10 text-sky-500"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-            {postDetail.title}
-          </h1>
-
-          <div className="flex items-center justify-between mb-8 text-foreground/70 text-sm">
-            <div className="flex items-center">
-              <span>By {postDetail.author.name}</span>
-              <span className="mx-2">•</span>
-              <span>{formatDate(postDetail.updatedAt)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
-              {postDetail.views} views
-            </div>
-          </div>
-
-          <div className="relative w-full aspect-video mb-10 rounded-lg overflow-hidden shadow-lg">
-            <Image
-              src={postDetail.banner}
-              alt={postDetail.title}
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width: 1024px) 100vw, 1024px"
-            />
-          </div>
-
+          {/* Blog post content */}
           <article className="blog-content">
-            <div dangerouslySetInnerHTML={{ __html: postDetail.content }} />
+            {detailedPost ? (
+              <div dangerouslySetInnerHTML={{ __html: detailedPost.content }} />
+            ) : (
+              <p className="text-foreground/70">{post.description}</p>
+            )}
           </article>
+
+          {/* Tags for improved SEO */}
+          <div className="mt-12 pt-6 border-t border-foreground/10">
+            <div className="flex items-center">
+              <span className="text-foreground/60 mr-3">Tags:</span>
+              <div className="flex flex-wrap gap-2">
+                {post.categories.map((category) => (
+                  <span
+                    key={category.id}
+                    className="text-xs px-3 py-1 rounded-full bg-foreground/10 text-foreground/70"
+                  >
+                    {category.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

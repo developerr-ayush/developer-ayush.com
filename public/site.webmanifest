@@ -1,0 +1,23 @@
+{
+  "name": "Ayush Shah | UI/UX & Frontend Developer",
+  "short_name": "Ayush Shah",
+  "description": "UI/UX & Frontend Developer specializing in creating responsive, user-friendly web experiences with modern technologies.",
+  "icons": [
+    {
+      "src": "/favicon.jpg?v=1",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/favicon.jpg?v=1",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ],
+  "theme_color": "#0ea5e9",
+  "background_color": "#000000",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/",
+  "orientation": "portrait"
+}
