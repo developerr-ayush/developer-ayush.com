@@ -21,7 +21,6 @@ const nextConfig = {
   compress: true, // Enable compression
   poweredByHeader: false, // Remove X-Powered-By header for security
   reactStrictMode: true, // Enable React strict mode for better error catching
-  swcMinify: true, // Use SWC minifier for better performance
 };
 
 module.exports = nextConfig;

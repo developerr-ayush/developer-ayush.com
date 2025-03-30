@@ -9,8 +9,8 @@ export default function BlogNotFound() {
             Blog Post Not Found
           </h1>
           <p className="text-foreground/70 text-lg mb-8">
-            Sorry, the blog post you are looking for doesn't exist or may have
-            been moved.
+            Sorry, the blog post you are looking for doesn&apos;t exist or may
+            have been moved.
           </p>
           <Link
             href="/blog"

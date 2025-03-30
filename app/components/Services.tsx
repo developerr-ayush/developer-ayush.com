@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { servicesData } from "../data";
 import {
   FaCode,

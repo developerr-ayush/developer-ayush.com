@@ -1,37 +1,21 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { personalInfo, socialLinks } from "../data";
 import profileImage from "../assets/img/personal/ayush-shah.png";
-import { useEffect, useState } from "react";
-
-const titleVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.3 } },
-  exit: { opacity: 0, y: -20, transition: { duration: 0.3 } },
-};
+import { useEffect, useState, useCallback, useMemo } from "react";
 
 const Hero = () => {
   const [titleIndex, setTitleIndex] = useState(0);
   const [text, setText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [loopNum, setLoopNum] = useState(0);
   const [typingSpeed, setTypingSpeed] = useState(150);
 
-  const titles = ["UI/UX", "Frontend", "Full Stack"];
-  const fullText = `${titles[titleIndex]} Developer`;
+  // Use useMemo to prevent titles from changing on every render
+  const titles = useMemo(() => ["UI/UX", "Frontend", "Full Stack"], []);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      handleTyping();
-    }, typingSpeed);
-
-    return () => clearTimeout(timer);
-  }, [text, isDeleting, titleIndex]);
-
-  const handleTyping = () => {
+  const handleTyping = useCallback(() => {
     // Current title being typed
     const currentFullText = `${titles[titleIndex]} Developer`;
 
@@ -57,7 +41,15 @@ const Hero = () => {
     } else {
       setText(currentFullText.substring(0, text.length - 1));
     }
-  };
+  }, [text, isDeleting, titleIndex, titles]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleTyping();
+    }, typingSpeed);
+
+    return () => clearTimeout(timer);
+  }, [text, isDeleting, titleIndex, handleTyping, typingSpeed]);
 
   return (
     <section className="relative min-h-screen flex items-center py-20 overflow-hidden">
@@ -81,7 +73,7 @@ const Hero = () => {
                   animationFillMode: "forwards",
                 }}
               >
-                Hello there, I'm
+                Hello there, I&apos;m
               </p>
               <h1
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight animate-fade-in opacity-0"

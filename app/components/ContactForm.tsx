@@ -25,13 +25,16 @@ export default function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     setIsSubmitting(true);
     setError("");
 
     try {
-      // Simulating form submission - in real app you would submit to a backend
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Simulate form submission (replace with actual API call)
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
+      // Form successfully submitted
       setSubmitted(true);
       setFormState({
         name: "",
@@ -39,8 +42,10 @@ export default function ContactForm() {
         subject: "",
         message: "",
       });
-    } catch (err) {
+    } catch (error) {
+      // Handle error properly
       setError("Something went wrong. Please try again.");
+      console.error("Contact form submission error:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -66,7 +71,7 @@ export default function ContactForm() {
           </svg>
           <h4 className="text-xl font-bold mb-2">Message Sent!</h4>
           <p className="text-foreground/70 mb-4">
-            Thank you for contacting me. I'll get back to you soon.
+            Thank you for contacting me. I&apos;ll get back to you soon.
           </p>
           <button
             onClick={() => setSubmitted(false)}

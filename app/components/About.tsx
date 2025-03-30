@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import aboutImage from "../assets/img/personal/about-profile.png";
@@ -112,7 +111,8 @@ export default function About() {
           <div className="lg:w-7/12 xl:w-8/12">
             <div className="space-y-6">
               <h3 className="text-2xl md:text-3xl font-bold leading-tight">
-                I'm a <span className="text-sky-500">UI/UX Developer</span> with
+                I&apos;m a <span className="text-sky-500">UI/UX Developer</span>{" "}
+                with
                 <span className="bg-gradient-to-r from-sky-500/20 to-indigo-500/20 ml-2 px-3 py-1 rounded-full text-white">
                   3+ Years
                 </span>
@@ -130,13 +130,13 @@ export default function About() {
                 <p className="leading-relaxed">
                   My expertise includes front-end development with React,
                   Next.js, and modern CSS frameworks, as well as back-end
-                  integration using Node.js and MongoDB. I'm passionate about
-                  creating clean, efficient code that translates designs into
-                  seamless interactive experiences.
+                  integration using Node.js and MongoDB. I&apos;m passionate
+                  about creating clean, efficient code that translates designs
+                  into seamless interactive experiences.
                 </p>
                 <p className="leading-relaxed">
                   Currently working at Sportz Interactive as an Associate Front
-                  End Developer, I've had the opportunity to build high-profile
+                  End Developer, I&apos;ve had the opportunity to build high-profile
                   websites and contribute to numerous projects that have
                   improved my skills and perspective as a developer.
                 </p>

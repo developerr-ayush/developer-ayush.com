@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   getBlogPosts,
   type BlogPost,
@@ -34,41 +34,45 @@ export default function BlogList({ initialData }: BlogListProps) {
     triggerOnce: false,
   });
 
-  const fetchMorePosts = async (page: number) => {
-    if (pagination.isLoading) return;
+  // Wrap the fetchMorePosts in useCallback to prevent it from changing on every render
+  const fetchMorePosts = useCallback(
+    async (page: number) => {
+      if (pagination.isLoading) return;
 
-    setError(null);
-    setPagination((prev) => ({ ...prev, isLoading: true }));
+      setError(null);
+      setPagination((prev) => ({ ...prev, isLoading: true }));
 
-    try {
-      console.log("Fetching more posts for page:", page);
-      const response = await getBlogPosts(page);
-      console.log("API Response for page", page, ":", response);
+      try {
+        console.log("Fetching more posts for page:", page);
+        const response = await getBlogPosts(page);
+        console.log("API Response for page", page, ":", response);
 
-      if (!response || !response.data) {
-        throw new Error("Invalid response format from API");
+        if (!response || !response.data) {
+          throw new Error("Invalid response format from API");
+        }
+
+        setPosts((prev) => [...prev, ...response.data]);
+
+        // Calculate if there are more pages
+        const postsPerPage = 10;
+        const hasMorePages = response.data.length >= postsPerPage;
+
+        setPagination({
+          currentPage: page,
+          totalPages:
+            response.meta?.totalPages ||
+            Math.ceil(response.data.length / postsPerPage) + page,
+          isLoading: false,
+          hasMore: hasMorePages && response.data.length > 0,
+        });
+      } catch (error) {
+        console.error("Error fetching more posts:", error);
+        setError("Failed to load more blog posts. Please try again.");
+        setPagination((prev) => ({ ...prev, isLoading: false }));
       }
-
-      setPosts((prev) => [...prev, ...response.data]);
-
-      // Calculate if there are more pages
-      const postsPerPage = 10;
-      const hasMorePages = response.data.length >= postsPerPage;
-
-      setPagination({
-        currentPage: page,
-        totalPages:
-          response.meta?.totalPages ||
-          Math.ceil(response.data.length / postsPerPage) + page,
-        isLoading: false,
-        hasMore: hasMorePages && response.data.length > 0,
-      });
-    } catch (error) {
-      console.error("Error fetching more posts:", error);
-      setError("Failed to load more blog posts. Please try again.");
-      setPagination((prev) => ({ ...prev, isLoading: false }));
-    }
-  };
+    },
+    [pagination.isLoading]
+  );
 
   useEffect(() => {
     // If the loader is in view and we have more pages to load
@@ -82,6 +86,7 @@ export default function BlogList({ initialData }: BlogListProps) {
     pagination.hasMore,
     pagination.isLoading,
     pagination.currentPage,
+    fetchMorePosts,
   ]);
 
   return (
@@ -131,7 +136,7 @@ export default function BlogList({ initialData }: BlogListProps) {
       {/* No more posts indicator */}
       {!pagination.hasMore && posts.length > 0 && !pagination.isLoading && (
         <div className="mt-10 text-center text-foreground/60">
-          You've reached the end of the blog posts
+          You&apos;ve reached the end of the blog posts
         </div>
       )}
     </>

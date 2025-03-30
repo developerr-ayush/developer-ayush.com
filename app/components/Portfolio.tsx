@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { portfolioData } from "../data";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -10,14 +9,6 @@ const Portfolio = () => {
   const [filteredProjects, setFilteredProjects] = useState(portfolioData);
   const [visibleProjects, setVisibleProjects] = useState(6);
 
-  // Extract all unique skills across all projects
-  const allSkills = Array.from(
-    new Set(
-      portfolioData.flatMap((project) =>
-        project.skillsUsed.map((skill) => skill)
-      )
-    )
-  ).sort();
 
   // Most common skills for filter buttons
   const popularSkills = ["React", "JavaScript", "HTML5", "SCSS", "CSS3"];
@@ -51,7 +42,7 @@ const Portfolio = () => {
           </h2>
           <p className="text-foreground/75 max-w-2xl mx-auto">
             Check out some of my latest projects. Each project represents a
-            unique challenge I've tackled using various technologies.
+            unique challenge I&apos;ve tackled using various technologies.
           </p>
         </div>
 

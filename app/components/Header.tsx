@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { personalInfo } from "../data";
-import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 
 const Header = () => {
@@ -88,7 +86,7 @@ const Header = () => {
     { name: "Contact", path: "/#contact", hash: "#contact" },
   ];
 
-  const isActive = (hash, path) => {
+  const isActive = (hash: string | null, path: string) => {
     // Case 1: For exact paths like /blog
     if (path === "/blog" && pathname === "/blog") {
       return true;

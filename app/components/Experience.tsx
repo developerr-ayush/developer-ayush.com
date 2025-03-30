@@ -1,58 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { experienceData, educationData } from "../data";
-
-const ExperienceItem = ({
-  item,
-  index,
-  isLast = false,
-}: {
-  item: any;
-  index: number;
-  isLast?: boolean;
-}) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4, delay: index * 0.1 }}
-      className="relative pl-8 pb-8"
-    >
-      {/* Timeline line */}
-      {!isLast && (
-        <div className="absolute left-3 top-7 h-full w-0.5 bg-sky-200 dark:bg-sky-900/30"></div>
-      )}
-
-      {/* Timeline dot */}
-      <div className="absolute left-0 top-1 h-6 w-6 rounded-full border-2 border-sky-500 bg-background flex items-center justify-center">
-        <div className="h-2 w-2 rounded-full bg-sky-500"></div>
-      </div>
-
-      <div className="bg-foreground/5 rounded-lg p-6 border border-foreground/10 shadow-sm">
-        <h3 className="text-xl font-bold">{item.position}</h3>
-        <div className="flex items-center gap-2 mt-1 mb-4">
-          <span className="text-sky-500 font-medium">{item.from}</span>
-          <span className="text-xs text-foreground/50">•</span>
-          <span className="text-sm text-foreground/60">{item.date}</span>
-        </div>
-        <p className="text-foreground/70">{item.para}</p>
-
-        {item.details && item.details.length > 0 && (
-          <ul className="mt-4 space-y-2">
-            {item.details.map((detail: string, i: number) => (
-              <li key={i} className="flex items-start">
-                <span className="text-sky-500 mr-2">•</span>
-                <span className="text-sm text-foreground/70">{detail}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </motion.div>
-  );
-};
+import { experienceData } from "../data";
 
 export default function Experience() {
   return (
@@ -71,8 +19,8 @@ export default function Experience() {
             My Experience
           </h2>
           <p className="text-foreground/75 max-w-2xl mx-auto">
-            A timeline of my professional career and the skills I've developed
-            along the way.
+            A timeline of my professional career and the skills I&apos;ve
+            developed along the way.
           </p>
         </div>
 

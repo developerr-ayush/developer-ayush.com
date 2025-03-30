@@ -1,7 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useState } from "react";
 import { personalInfo, socialLinks } from "../data";
 import { FaMapMarkerAlt, FaEnvelope, FaPhone } from "react-icons/fa";
 import ContactForm from "./ContactForm";
@@ -24,8 +22,8 @@ export default function Contact() {
             Contact Me
           </h2>
           <p className="text-foreground/75 max-w-2xl mx-auto">
-            Have a project in mind or want to collaborate? I'd love to hear from
-            you.
+            Have a project in mind or want to collaborate? I&apos;d love to hear
+            from you.
           </p>
         </div>
 

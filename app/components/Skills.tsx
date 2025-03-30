@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { skillsData } from "../data";
 
 export default function Skills() {
@@ -23,8 +22,8 @@ export default function Skills() {
             Technical Expertise
           </h2>
           <p className="text-foreground/75 max-w-2xl mx-auto">
-            I've worked with a variety of technologies and frameworks to create
-            responsive and modern web applications.
+            I&apos;ve worked with a variety of technologies and frameworks to
+            create responsive and modern web applications.
           </p>
         </div>
 

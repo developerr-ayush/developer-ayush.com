@@ -7,56 +7,11 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Metadata } from "next";
 import "../blog-content.css";
 import Script from "next/script";
 import TableOfContents from "../../components/TableOfContents";
 import RelatedPosts from "../../components/RelatedPosts";
 import BreadcrumbsServer from "../../components/BreadcrumbsServer";
-
-type Props = {
-  params: { slug: string };
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = await getBlogPostBySlug(params.slug);
-
-  if (!post) {
-    return {
-      title: "Blog Post Not Found",
-      description: "The requested blog post could not be found.",
-    };
-  }
-
-  return {
-    title: post.title,
-    description: post.description,
-    openGraph: {
-      title: post.title,
-      description: post.description,
-      type: "article",
-      publishedTime: post.updatedAt,
-      authors: [post.author.name],
-      images: [
-        {
-          url: post.banner,
-          width: 1200,
-          height: 630,
-          alt: post.title,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: post.title,
-      description: post.description,
-      images: [post.banner],
-    },
-    alternates: {
-      canonical: `https://developer-ayush.com/blog/${post.slug}`,
-    },
-  };
-}
 
 export async function generateStaticParams() {
   const blogData = await getBlogPosts(1);
@@ -66,10 +21,15 @@ export async function generateStaticParams() {
     slug: post.slug,
   }));
 }
-
-export default async function BlogPostPage({ params }: Props) {
-  const detailedPost = await getBlogPostDetail(params.slug);
-  const post = await getBlogPostBySlug(params.slug);
+type Params = Promise<{ slug: string }>
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Params;
+}) {
+  const { slug } = await params;
+  const detailedPost = await getBlogPostDetail(slug[0]);
+  const post = await getBlogPostBySlug(slug[0]);
   const blogData = await getBlogPosts(1); // Get all blog posts for related posts
   const allPosts = blogData.data || [];
 
@@ -112,9 +72,6 @@ export default async function BlogPostPage({ params }: Props) {
       : 0,
     inLanguage: "en-US",
   };
-
-  // For SEO, split the categories into individual tags
-  const tags = post.categories.map((category) => category.name).join(", ");
 
   return (
     <div className="py-20 md:py-28">
