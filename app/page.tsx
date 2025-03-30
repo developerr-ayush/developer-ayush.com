@@ -9,7 +9,8 @@ import BlogSection from "./components/BlogSection";
 import { getBlogPosts } from "./blogData";
 
 export default async function Home() {
-  const blogPosts = await getBlogPosts();
+  const blogData = await getBlogPosts(1);
+  const blogPosts = blogData.data || [];
 
   return (
     <main>

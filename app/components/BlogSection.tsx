@@ -10,8 +10,9 @@ type BlogSectionProps = {
 };
 
 const BlogSection = ({ posts }: BlogSectionProps) => {
-  // Take only 3 most recent posts
-  const recentPosts = posts.slice(0, 3);
+  // Make sure posts is an array and take only 3 most recent posts
+  const blogPosts = Array.isArray(posts) ? posts : [];
+  const recentPosts = blogPosts.slice(0, 3);
 
   return (
     <section className="py-16 md:py-24 bg-foreground/[0.02]">

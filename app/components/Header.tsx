@@ -13,13 +13,23 @@ const Header = () => {
   const pathname = usePathname();
 
   useEffect(() => {
+    // Reset active section when path changes
+    if (pathname === "/") {
+      setActiveSection("home");
+    }
+
     const handleScroll = () => {
+      // Update scrolled state for header styling
       if (window.scrollY > 50) {
         setScrolled(true);
       } else {
         setScrolled(false);
       }
 
+      // Only handle section detection on homepage
+      if (pathname !== "/") return;
+
+      // Define all sections we want to track
       const sections = [
         "home",
         "about",
@@ -28,21 +38,44 @@ const Header = () => {
         "blog",
         "contact",
       ];
-      for (const section of sections.reverse()) {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 100) {
-            setActiveSection(section);
-            break;
-          }
+
+      // Use IntersectionObserver-like logic for better section detection
+      // Find which section occupies most of the viewport
+      let maxVisibleSection = null;
+      let maxVisibleHeight = 0;
+
+      // Special case for hero section (at the top)
+      if (window.scrollY < 100) {
+        setActiveSection("home");
+        return;
+      }
+
+      for (const sectionId of sections) {
+        const element = document.getElementById(sectionId);
+        if (!element) continue;
+
+        const rect = element.getBoundingClientRect();
+        const visibleHeight =
+          Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
+
+        // If this section has more visible area than previous max, update
+        if (visibleHeight > maxVisibleHeight && visibleHeight > 0) {
+          maxVisibleHeight = visibleHeight;
+          maxVisibleSection = sectionId;
         }
+      }
+
+      if (maxVisibleSection) {
+        setActiveSection(maxVisibleSection);
       }
     };
 
     window.addEventListener("scroll", handleScroll);
+    // Also call once on mount to set initial state
+    handleScroll();
+
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [pathname]);
 
   const closeMobileMenu = () => setIsOpen(false);
 
@@ -56,11 +89,28 @@ const Header = () => {
   ];
 
   const isActive = (hash, path) => {
-    if (hash) {
-      return activeSection === hash.slice(1);
-    } else {
-      return pathname === path || (path !== "/" && pathname.startsWith(path));
+    // Case 1: For exact paths like /blog
+    if (path === "/blog" && pathname === "/blog") {
+      return true;
     }
+
+    // Case 2: For blog subdirectories
+    if (path === "/blog" && pathname.startsWith("/blog/")) {
+      return true;
+    }
+
+    // Case 3: For homepage without hash (only for Home link)
+    if (path === "/" && hash === "#home" && pathname === "/") {
+      return activeSection === "home";
+    }
+
+    // Case 4: For hash links on homepage
+    if (hash && pathname === "/") {
+      return activeSection === hash.slice(1);
+    }
+
+    // Not active in any case
+    return false;
   };
 
   return (
