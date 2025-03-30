@@ -532,3 +532,107 @@
     padding: 0.25cm;
   }
 }
+
+/* Summary and details for FAQ sections */
+.blog-content details {
+  margin: 1.5rem 0;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.blog-content summary {
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: rgba(14, 165, 233, 0.05);
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.2s ease;
+  position: relative;
+  outline: none;
+}
+
+.blog-content summary:hover,
+.blog-content details[open] summary {
+  background-color: rgba(14, 165, 233, 0.1);
+}
+
+.blog-content details[open] summary {
+  border-bottom-color: rgba(14, 165, 233, 0.2);
+}
+
+.blog-content details > div {
+  padding: 1.5rem;
+}
+
+/* Keywords and highlights */
+.blog-content mark {
+  background-color: rgba(14, 165, 233, 0.2);
+  color: inherit;
+  padding: 0.1em 0.3em;
+  border-radius: 0.2em;
+}
+
+.blog-content .keyword {
+  font-weight: 600;
+  color: rgba(14, 165, 233, 0.9);
+}
+
+/* Blockquote improvements */
+.blog-content blockquote.info,
+.blog-content blockquote.warning,
+.blog-content blockquote.success,
+.blog-content blockquote.error {
+  padding-left: 4rem;
+}
+
+.blog-content blockquote.info::before,
+.blog-content blockquote.warning::before,
+.blog-content blockquote.success::before,
+.blog-content blockquote.error::before {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  font-size: 1.5rem;
+  font-family: sans-serif;
+}
+
+.blog-content blockquote.info {
+  background-color: rgba(56, 189, 248, 0.1);
+  border-left-color: rgba(56, 189, 248, 0.6);
+}
+
+.blog-content blockquote.info::before {
+  content: "ℹ️";
+  color: rgba(56, 189, 248, 0.8);
+}
+
+.blog-content blockquote.warning {
+  background-color: rgba(251, 146, 60, 0.1);
+  border-left-color: rgba(251, 146, 60, 0.6);
+}
+
+.blog-content blockquote.warning::before {
+  content: "⚠️";
+  color: rgba(251, 146, 60, 0.8);
+}
+
+.blog-content blockquote.success {
+  background-color: rgba(34, 197, 94, 0.1);
+  border-left-color: rgba(34, 197, 94, 0.6);
+}
+
+.blog-content blockquote.success::before {
+  content: "✅";
+  color: rgba(34, 197, 94, 0.8);
+}
+
+.blog-content blockquote.error {
+  background-color: rgba(244, 63, 94, 0.1);
+  border-left-color: rgba(244, 63, 94, 0.6);
+}
+
+.blog-content blockquote.error::before {
+  content: "❌";
+  color: rgba(244, 63, 94, 0.8);
+}

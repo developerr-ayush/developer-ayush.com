@@ -10,6 +10,9 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import "../blog-content.css";
 import Script from "next/script";
+import TableOfContents from "../../components/TableOfContents";
+import RelatedPosts from "../../components/RelatedPosts";
+import BreadcrumbsServer from "../../components/BreadcrumbsServer";
 
 type Props = {
   params: { slug: string };
@@ -67,6 +70,8 @@ export async function generateStaticParams() {
 export default async function BlogPostPage({ params }: Props) {
   const detailedPost = await getBlogPostDetail(params.slug);
   const post = await getBlogPostBySlug(params.slug);
+  const blogData = await getBlogPosts(1); // Get all blog posts for related posts
+  const allPosts = blogData.data || [];
 
   if (!post) {
     notFound();
@@ -84,19 +89,28 @@ export default async function BlogPostPage({ params }: Props) {
     author: {
       "@type": "Person",
       name: post.author.name,
+      url: "https://developer-ayush.com",
     },
     publisher: {
-      "@type": "Person",
-      name: post.author.name,
+      "@type": "Organization",
+      name: "Ayush Shah",
       logo: {
         "@type": "ImageObject",
-        url: "/android-chrome-192x192.png",
+        url: "https://developer-ayush.com/favicon.jpg",
+        width: "192",
+        height: "192",
       },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": `https://developer-ayush.com/blog/${post.slug}`,
     },
+    keywords: post.categories.map((category) => category.name).join(", "),
+    articleSection: post.categories[0]?.name || "Technology",
+    wordCount: detailedPost?.content
+      ? detailedPost.content.split(" ").length
+      : 0,
+    inLanguage: "en-US",
   };
 
   // For SEO, split the categories into individual tags
@@ -113,7 +127,9 @@ export default async function BlogPostPage({ params }: Props) {
 
       <div className="container mx-auto px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
-          {/* Back to blog link */}
+          {/* Back to blog link with breadcrumbs */}
+          <BreadcrumbsServer title={post.title} />
+
           <Link
             href="/blog"
             className="inline-flex items-center text-sm text-sky-500 hover:text-sky-600 mb-8"
@@ -198,13 +214,77 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
 
           {/* Blog post content */}
-          <article className="blog-content">
-            {detailedPost ? (
-              <div dangerouslySetInnerHTML={{ __html: detailedPost.content }} />
-            ) : (
-              <p className="text-foreground/70">{post.description}</p>
-            )}
-          </article>
+          <div className="flex flex-col lg:flex-row gap-8">
+            <div className="w-full lg:w-3/4">
+              <article className="blog-content">
+                {detailedPost ? (
+                  <div
+                    dangerouslySetInnerHTML={{ __html: detailedPost.content }}
+                  />
+                ) : (
+                  <p className="text-foreground/70">{post.description}</p>
+                )}
+              </article>
+            </div>
+            <aside className="w-full lg:w-1/4 lg:sticky lg:top-24 self-start">
+              <TableOfContents />
+              <div className="p-4 bg-foreground/5 rounded-lg border border-foreground/10">
+                <h3 className="text-lg font-semibold mb-3">Share this post</h3>
+                <div className="flex gap-2">
+                  <a
+                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                      post.title
+                    )}&url=${encodeURIComponent(
+                      `https://developer-ayush.com/blog/${post.slug}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-foreground/10 hover:bg-sky-500/20 rounded-full transition-colors"
+                    aria-label="Share on Twitter"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
+                    </svg>
+                  </a>
+                  <a
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+                      `https://developer-ayush.com/blog/${post.slug}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-foreground/10 hover:bg-sky-500/20 rounded-full transition-colors"
+                    aria-label="Share on LinkedIn"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                      <rect x="2" y="9" width="4" height="12"></rect>
+                      <circle cx="4" cy="4" r="2"></circle>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </aside>
+          </div>
 
           {/* Tags for improved SEO */}
           <div className="mt-12 pt-6 border-t border-foreground/10">
@@ -222,6 +302,9 @@ export default async function BlogPostPage({ params }: Props) {
               </div>
             </div>
           </div>
+
+          {/* Related Posts section */}
+          <RelatedPosts currentPost={post} allPosts={allPosts} />
         </div>
       </div>
     </div>
