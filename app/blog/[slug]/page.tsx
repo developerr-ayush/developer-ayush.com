@@ -12,6 +12,7 @@ import Script from "next/script";
 import TableOfContents from "../../components/TableOfContents";
 import RelatedPosts from "../../components/RelatedPosts";
 import BreadcrumbsServer from "../../components/BreadcrumbsServer";
+import { Metadata } from "next";
 
 export async function generateStaticParams() {
   const blogData = await getBlogPosts(1);
@@ -21,12 +22,23 @@ export async function generateStaticParams() {
     slug: post.slug,
   }));
 }
-type Params = Promise<{ slug: string }>
-export default async function BlogPostPage({
+type Params = Promise<{ slug: string }>;
+export async function generateMetadata({
   params,
 }: {
   params: Params;
-}) {
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getBlogPostBySlug(slug[0]);
+  return {
+    title: post?.title,
+    description: post?.description,
+    openGraph: {
+      images: post?.banner,
+    },
+  };
+}
+export default async function BlogPostPage({ params }: { params: Params }) {
   const { slug } = await params;
   const detailedPost = await getBlogPostDetail(slug[0]);
   const post = await getBlogPostBySlug(slug[0]);
