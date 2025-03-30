@@ -1,0 +1,132 @@
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content h4 {
+  font-weight: 700;
+  color: var(--foreground);
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.blog-content h1 {
+  font-size: 2.25rem;
+}
+
+.blog-content h2 {
+  font-size: 1.875rem;
+}
+
+.blog-content h3 {
+  font-size: 1.5rem;
+}
+
+.blog-content h4 {
+  font-size: 1.25rem;
+}
+
+.blog-content p {
+  margin-bottom: 1.5rem;
+  line-height: 1.75;
+  font-size: 1.125rem;
+  color: rgba(var(--foreground-rgb), 0.8);
+}
+
+.blog-content strong {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.blog-content a {
+  color: #0ea5e9;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.blog-content a:hover {
+  color: #0284c7;
+  text-decoration: underline;
+}
+
+.blog-content ul {
+  list-style-type: disc;
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.blog-content ol {
+  list-style-type: decimal;
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.blog-content li {
+  margin-bottom: 0.5rem;
+}
+
+.blog-content blockquote {
+  border-left: 4px solid rgba(14, 165, 233, 0.5);
+  padding-left: 1rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  font-style: italic;
+  margin: 1.5rem 0;
+  color: rgba(var(--foreground-rgb), 0.7);
+}
+
+.blog-content img {
+  border-radius: 0.5rem;
+  max-width: 100%;
+  height: auto;
+  margin: 1.5rem 0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.blog-content hr {
+  border: 0;
+  height: 1px;
+  background-color: rgba(var(--foreground-rgb), 0.1);
+  margin: 2rem 0;
+}
+
+.blog-content pre {
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.blog-content code {
+  background-color: rgba(14, 165, 233, 0.1);
+  color: #0ea5e9;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-family: monospace;
+}
+
+.blog-content pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+}
+
+.blog-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.blog-content th,
+.blog-content td {
+  padding: 0.75rem;
+  border: 1px solid rgba(var(--foreground-rgb), 0.2);
+}
+
+.blog-content th {
+  background-color: rgba(var(--foreground-rgb), 0.05);
+  font-weight: 600;
+}

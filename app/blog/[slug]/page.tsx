@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import "../blog-content.css";
 
 type Props = {
   params: { slug: string };
@@ -246,7 +247,7 @@ export default async function BlogPostPage({ params }: Props) {
             />
           </div>
 
-          <article className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-foreground prose-a:text-sky-500 hover:prose-a:text-sky-600">
+          <article className="blog-content">
             <div dangerouslySetInnerHTML={{ __html: postDetail.content }} />
           </article>
         </div>

@@ -376,12 +376,12 @@ export const socialLinks = [
   },
   {
     name: "Twitter",
-    url: "https://twitter.com",
+    url: "https://x.com/developerrayush",
     icon: FaTwitter,
   },
   {
     name: "YouTube",
-    url: "https://youtube.com",
+    url: "http://youtube.com/ayushshah",
     icon: FaYoutube,
   },
 ];
