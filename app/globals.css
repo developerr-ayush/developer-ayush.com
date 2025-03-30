@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
+    "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
+    "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+
+  /* Custom colors */
+  --color-primary: #3182ce;
+  --color-primary-light: #4299e1;
+  --color-primary-dark: #2c5282;
+
+  --color-secondary: #805ad5;
+  --color-secondary-light: #9f7aea;
+  --color-secondary-dark: #553c9a;
+
+  --color-accent: #f6ad55;
+
+  /* Dark mode colors */
+  --color-dark-bg: #121212;
+  --color-dark-surface: #1e1e1e;
+  --color-dark-border: #333333;
+  --color-dark-text: #f5f5f5;
+
+  /* Light mode colors */
+  --color-light-bg: #ffffff;
+  --color-light-surface: #f5f5f5;
+  --color-light-border: #e2e8f0;
+  --color-light-text: #1a202c;
+}
+
+:root {
+  --background: var(--color-light-bg);
+  --foreground: var(--color-light-text);
+  --surface: var(--color-light-surface);
+  --border: var(--color-light-border);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--color-dark-bg);
+    --foreground: var(--color-dark-text);
+    --surface: var(--color-dark-surface);
+    --border: var(--color-dark-border);
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Custom utility classes */
+@utility text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(
+    to right,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+}
+
+@utility bg-gradient {
+  background-image: linear-gradient(
+    to right,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+}
+
+@utility card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+@utility card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@utility animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-dark);
+}
