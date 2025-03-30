@@ -1,0 +1,33 @@
+@use "../config/" as *;
+.contact {
+  &-list {
+    margin-bottom: 3rem;
+  }
+  &-item {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-block: 2rem;
+  }
+  &-icon {
+    border-radius: 1rem;
+    padding: 2rem;
+  }
+  &-sub-title {
+    opacity: 0.5;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    margin-bottom: 0;
+  }
+  &-data {
+    display: grid;
+    gap: 0.5rem;
+  }
+  &-social {
+    margin-top: 3rem;
+    &-list {
+      display: flex;
+      gap: 2rem;
+    }
+  }
+}

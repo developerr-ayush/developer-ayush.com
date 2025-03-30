@@ -1,88 +1,69 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { personalInfo } from "../data";
-import {
-  FaGithub,
-  FaLinkedin,
-  FaEnvelope,
-  FaPhoneAlt,
-  FaGlobe,
-} from "react-icons/fa";
-import { FaReact } from "react-icons/fa";
-import { SiNextdotjs, SiTailwindcss } from "react-icons/si";
+import Link from "next/link";
+import { personalInfo, socialLinks } from "../data";
 
-export default function Hero() {
+const Hero = () => {
   return (
-    <section className="min-h-screen pt-28 pb-16 md:pt-32 md:pb-20 flex items-center">
-      <div className="container px-4 mx-auto">
-        <div className="grid md:grid-cols-2 items-center gap-12">
+    <section id="hero" className="relative pt-32 pb-16 md:pt-40 md:pb-24">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
+            className="flex flex-col space-y-6"
           >
-            <h2 className="text-lg md:text-xl font-medium text-primary mb-4">
-              Hello, I'm
-            </h2>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-gradient">
-              {personalInfo.name}
-            </h1>
-            <h3 className="text-xl md:text-2xl font-medium mb-6">
-              {personalInfo.title}
-            </h3>
-            <p className="text-foreground/80 text-base md:text-lg max-w-xl mb-8">
-              {personalInfo.summary}
-            </p>
-
-            <div className="flex flex-wrap gap-3 mb-8">
-              <a
-                href={personalInfo.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-full hover:border-primary transition-colors"
-              >
-                <FaGithub className="text-lg" />
-                <span>GitHub</span>
-              </a>
-              <a
-                href={personalInfo.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-full hover:border-primary transition-colors"
-              >
-                <FaLinkedin className="text-lg" />
-                <span>LinkedIn</span>
-              </a>
-              <a
-                href={`mailto:${personalInfo.email}`}
-                className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-full hover:border-primary transition-colors"
-              >
-                <FaEnvelope className="text-lg" />
-                <span>Email</span>
-              </a>
-              <a
-                href={`tel:${personalInfo.phone}`}
-                className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-full hover:border-primary transition-colors"
-              >
-                <FaPhoneAlt className="text-lg" />
-                <span>Call</span>
-              </a>
+            <div className="flex items-center space-x-2">
+              <div className="h-px w-12 bg-sky-500"></div>
+              <span className="text-sm font-medium">
+                Welcome to my portfolio
+              </span>
             </div>
 
-            <div className="flex gap-4">
-              <a
-                href="#projects"
-                className="px-6 py-3 bg-gradient text-white rounded-full text-base font-medium hover:opacity-90 transition-opacity"
-              >
-                View My Work
-              </a>
-              <a
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
+              Hi, I'm{" "}
+              <span className="text-sky-500">
+                {personalInfo.name.split(" ")[0]}
+              </span>
+              <br />
+              {personalInfo.title}
+            </h1>
+
+            <p className="text-lg text-foreground/70 max-w-md">
+              A passionate developer specializing in creating exceptional
+              digital experiences with modern web technologies.
+            </p>
+
+            <div className="flex flex-wrap gap-4 pt-2">
+              <Link
                 href="#contact"
-                className="px-6 py-3 bg-surface border border-border text-foreground rounded-full text-base font-medium hover:border-primary transition-colors"
+                className="px-6 py-3 rounded-full bg-sky-500 text-white font-medium hover:bg-sky-600 transition-colors"
               >
                 Contact Me
-              </a>
+              </Link>
+              <Link
+                href="#portfolio"
+                className="px-6 py-3 rounded-full border border-foreground/20 font-medium hover:bg-foreground/5 transition-colors"
+              >
+                View Projects
+              </Link>
+            </div>
+
+            <div className="flex items-center space-x-4 pt-2">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-foreground/70 hover:text-sky-500 transition-colors"
+                  aria-label={social.name}
+                >
+                  <social.icon className="w-5 h-5" />
+                </a>
+              ))}
             </div>
           </motion.div>
 
@@ -90,36 +71,35 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex justify-center"
+            className="relative mx-auto w-full max-w-md aspect-square"
           >
-            <div className="relative">
-              <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-primary/20 p-2 backdrop-blur-sm">
-                <div className="w-full h-full rounded-full bg-surface flex items-center justify-center text-9xl text-gradient font-bold">
-                  AS
-                </div>
-              </div>
-
-              <div className="absolute -top-4 -right-4 w-12 h-12 bg-surface rounded-full flex items-center justify-center border border-border animate-float">
-                <FaReact className="text-3xl text-primary" />
-              </div>
-
-              <div
-                className="absolute -bottom-2 -left-4 w-10 h-10 bg-surface rounded-full flex items-center justify-center border border-border animate-float"
-                style={{ animationDelay: "1s" }}
-              >
-                <SiNextdotjs className="text-2xl text-foreground" />
-              </div>
-
-              <div
-                className="absolute top-1/4 -right-6 w-14 h-14 bg-surface rounded-full flex items-center justify-center border border-border animate-float"
-                style={{ animationDelay: "1.5s" }}
-              >
-                <SiTailwindcss className="text-3xl text-[#38b2ac]" />
-              </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-indigo-500 rounded-full blur-3xl opacity-20"></div>
+            <div className="relative bg-foreground/5 border border-foreground/10 rounded-full overflow-hidden w-full h-full flex items-center justify-center">
+              {/* Profile image will be added here */}
+              <div className="text-6xl font-bold text-sky-500/40">AS</div>
             </div>
           </motion.div>
         </div>
       </div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 1 }}
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
+      >
+        <span className="text-sm text-foreground/60 mb-2">Scroll Down</span>
+        <div className="w-6 h-10 border-2 border-foreground/20 rounded-full flex justify-center p-1">
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+            className="w-1 h-1 bg-sky-500 rounded-full"
+          ></motion.div>
+        </div>
+      </motion.div>
     </section>
   );
-}
+};
+
+export default Hero;

@@ -1,0 +1,31 @@
+@use "../config/" as *;
+.footer {
+  text-align: center;
+  padding: 5rem 2rem;
+  @include mq(md) {
+    padding-block: 7rem;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    a {
+      display: block;
+      padding: 1rem;
+      font-size: 1.4rem;
+      color: var(--neutral-500);
+    }
+  }
+  h2 {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+  &-nav {
+    margin-bottom: 2rem;
+    @include mq(md) {
+      margin-block: 3rem;
+    }
+  }
+}

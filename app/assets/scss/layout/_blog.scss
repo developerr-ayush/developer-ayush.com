@@ -1,0 +1,84 @@
+@use "../config/" as *;
+.blog-page {
+  max-width: 80rem;
+  margin-inline: auto;
+  h3 {
+    margin-top: 2rem;
+    text-align: center;
+    @include mq(md) {
+      text-align: left;
+    }
+  }
+  p,
+  li {
+    line-height: 2;
+    font-size: 1.6rem;
+    margin-bottom: 1em;
+  }
+  pre {
+    margin-block: 1rem;
+  }
+  .blog {
+    &-social {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      position: relative;
+    }
+    &-meta {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+      gap: 1rem;
+      @include mq(md) {
+        margin-bottom: 0;
+      }
+      .meta {
+        &:not(:last-child)::after {
+          content: "|";
+          padding-left: 1rem;
+        }
+      }
+    }
+    &-data {
+      @include mq(md) {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+    &-content {
+      max-width: 65ch;
+      margin: 3rem auto 0;
+      font-size: 2rem;
+    }
+    &-body {
+      margin-top: 2rem;
+      h3,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        text-wrap: balance;
+        text-align: left;
+      }
+      li {
+        margin-block: 1rem;
+        ul,
+        ol {
+          margin-block: 2rem;
+        }
+      }
+    }
+  }
+  .copied {
+    position: absolute;
+    background-color: var(--function-body);
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    right: 0;
+    top: 0;
+    width: max-content;
+  }
+}

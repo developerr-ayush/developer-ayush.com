@@ -1,18 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { personalInfo } from "../data";
-import {
-  FaEnvelope,
-  FaPhoneAlt,
-  FaLinkedin,
-  FaGithub,
-  FaGlobe,
-} from "react-icons/fa";
+import { useState } from "react";
+import { personalInfo, socialLinks } from "../data";
 
-export default function Contact() {
-  const [formData, setFormData] = useState({
+const Contact = () => {
+  const [formState, setFormState] = useState({
     name: "",
     email: "",
     subject: "",
@@ -20,150 +13,172 @@ export default function Contact() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitResult, setSubmitResult] = useState<{
-    success: boolean;
-    message: string;
-  } | null>(null);
+  const [submitMessage, setSubmitMessage] = useState("");
+  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
+    null
+  );
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormState({
+      ...formState,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     // Simulate form submission
     setTimeout(() => {
       setIsSubmitting(false);
-      setSubmitResult({
-        success: true,
-        message: "Thank you for your message! I'll get back to you soon.",
-      });
-
-      // Clear form after successful submission
-      setFormData({
+      setSubmitStatus("success");
+      setSubmitMessage("Message sent successfully! I'll get back to you soon.");
+      setFormState({
         name: "",
         email: "",
         subject: "",
         message: "",
       });
-
-      // Clear success message after 5 seconds
-      setTimeout(() => {
-        setSubmitResult(null);
-      }, 5000);
     }, 1500);
   };
 
   return (
-    <section id="contact" className="py-20 bg-surface">
-      <div className="container px-4 mx-auto">
+    <section id="contact" className="py-16 md:py-24 bg-foreground/[0.02]">
+      <div className="container mx-auto px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="max-w-xl mx-auto text-center mb-16"
+          className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Get In Touch</h2>
-          <div className="w-16 h-1 bg-gradient mx-auto mb-6"></div>
-          <p className="text-foreground/80">
-            Have a project in mind or just want to say hello? Feel free to reach
-            out!
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+            Get In <span className="text-sky-500">Touch</span>
+          </h2>
+          <div className="mt-4 h-1 w-16 bg-sky-500 mx-auto rounded-full"></div>
+          <p className="mt-6 max-w-2xl mx-auto text-foreground/70">
+            Feel free to reach out if you have any questions, want to discuss a
+            project, or just want to say hello. I'll get back to you as soon as
+            possible.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-5 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="md:col-span-2 bg-background p-6 rounded-lg border border-border"
           >
-            <h3 className="text-xl font-bold mb-6">Contact Information</h3>
+            <h3 className="text-2xl font-bold mb-6">Contact Information</h3>
 
             <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <FaEnvelope className="text-primary" />
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-sky-500/10 flex items-center justify-center text-sky-500">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+                    />
+                  </svg>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-foreground/60 mb-1">
-                    Email
-                  </h4>
+                  <h4 className="font-medium">Email</h4>
                   <a
                     href={`mailto:${personalInfo.email}`}
-                    className="text-foreground hover:text-primary transition-colors"
+                    className="text-foreground/70 hover:text-sky-500 transition-colors"
                   >
                     {personalInfo.email}
                   </a>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <FaPhoneAlt className="text-primary" />
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-sky-500/10 flex items-center justify-center text-sky-500">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"
+                    />
+                  </svg>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-foreground/60 mb-1">
-                    Phone
-                  </h4>
+                  <h4 className="font-medium">Phone</h4>
                   <a
                     href={`tel:${personalInfo.phone}`}
-                    className="text-foreground hover:text-primary transition-colors"
+                    className="text-foreground/70 hover:text-sky-500 transition-colors"
                   >
                     {personalInfo.phone}
                   </a>
                 </div>
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <FaGlobe className="text-primary" />
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-sky-500/10 flex items-center justify-center text-sky-500">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"
+                    />
+                  </svg>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-foreground/60 mb-1">
-                    Website
-                  </h4>
+                  <h4 className="font-medium">Website</h4>
                   <a
-                    href={personalInfo.portfolio}
+                    href={personalInfo.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-foreground hover:text-primary transition-colors"
+                    className="text-foreground/70 hover:text-sky-500 transition-colors"
                   >
-                    {personalInfo.portfolio.replace(/^https?:\/\//, "")}
+                    {personalInfo.website.replace("https://", "")}
                   </a>
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-4 mt-8">
-              <a
-                href={personalInfo.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-background border border-border flex items-center justify-center text-foreground hover:text-primary hover:border-primary transition-colors"
-                aria-label="GitHub"
-              >
-                <FaGithub />
-              </a>
-              <a
-                href={personalInfo.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-background border border-border flex items-center justify-center text-foreground hover:text-primary hover:border-primary transition-colors"
-                aria-label="LinkedIn"
-              >
-                <FaLinkedin />
-              </a>
+            <div className="mt-8">
+              <h4 className="font-medium mb-4">Follow Me</h4>
+              <div className="flex space-x-4">
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 w-10 rounded-full bg-foreground/5 hover:bg-sky-500/10 flex items-center justify-center text-foreground/70 hover:text-sky-500 transition-colors"
+                    aria-label={social.name}
+                  >
+                    <social.icon className="w-5 h-5" />
+                  </a>
+                ))}
+              </div>
             </div>
           </motion.div>
 
@@ -171,65 +186,51 @@ export default function Contact() {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="md:col-span-3 bg-background p-6 rounded-lg border border-border"
+            transition={{ duration: 0.5 }}
           >
-            <h3 className="text-xl font-bold mb-6">Send A Message</h3>
+            <h3 className="text-2xl font-bold mb-6">Send Me a Message</h3>
 
-            {submitResult && (
-              <div
-                className={`p-4 rounded-lg mb-6 ${
-                  submitResult.success
-                    ? "bg-green-50 text-green-800 border border-green-200"
-                    : "bg-red-50 text-red-800 border border-red-200"
-                }`}
-              >
-                {submitResult.message}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit}>
-              <div className="grid sm:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium mb-2"
-                  >
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium mb-2"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
-                  />
-                </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium mb-1"
+                >
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formState.name}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 rounded-lg border border-foreground/10 bg-foreground/5 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                />
               </div>
 
-              <div className="mb-6">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium mb-1"
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formState.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 rounded-lg border border-foreground/10 bg-foreground/5 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                />
+              </div>
+
+              <div>
                 <label
                   htmlFor="subject"
-                  className="block text-sm font-medium mb-2"
+                  className="block text-sm font-medium mb-1"
                 >
                   Subject
                 </label>
@@ -237,35 +238,35 @@ export default function Contact() {
                   type="text"
                   id="subject"
                   name="subject"
-                  value={formData.subject}
+                  value={formState.subject}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                  className="w-full px-4 py-2 rounded-lg border border-foreground/10 bg-foreground/5 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
                 />
               </div>
 
-              <div className="mb-6">
+              <div>
                 <label
                   htmlFor="message"
-                  className="block text-sm font-medium mb-2"
+                  className="block text-sm font-medium mb-1"
                 >
                   Message
                 </label>
                 <textarea
                   id="message"
                   name="message"
-                  value={formData.message}
+                  value={formState.message}
                   onChange={handleChange}
                   required
                   rows={5}
-                  className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary resize-none"
-                />
+                  className="w-full px-4 py-2 rounded-lg border border-foreground/10 bg-foreground/5 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                ></textarea>
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-3 bg-gradient text-white rounded-full font-medium inline-flex items-center justify-center hover:opacity-90 transition-opacity disabled:opacity-70"
+                className="w-full py-3 px-6 rounded-lg bg-sky-500 text-white font-medium hover:bg-sky-600 transition-colors disabled:opacity-70 flex items-center justify-center"
               >
                 {isSubmitting ? (
                   <>
@@ -295,10 +296,24 @@ export default function Contact() {
                   "Send Message"
                 )}
               </button>
+
+              {submitMessage && (
+                <div
+                  className={`mt-4 p-3 rounded-lg ${
+                    submitStatus === "success"
+                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                      : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                  }`}
+                >
+                  {submitMessage}
+                </div>
+              )}
             </form>
           </motion.div>
         </div>
       </div>
     </section>
   );
-}
+};
+
+export default Contact;
