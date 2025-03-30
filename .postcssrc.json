@@ -1,7 +1,0 @@
-{
-  "plugins": {
-    "postcss-combine-media-query": {},
-    "autoprefixer": {},
-    "cssnano": {}
-  }
-}
