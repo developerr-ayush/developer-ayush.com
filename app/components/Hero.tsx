@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { personalInfo, socialLinks } from "../data";
-import profileImage from "../assets/img/profile-ayush.png";
+import profileImage from "../assets/img/personal/ayush-shah.png";
 import { useEffect, useState } from "react";
 
 const titleVariants = {
