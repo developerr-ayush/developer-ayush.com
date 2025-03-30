@@ -38,12 +38,12 @@ const Portfolio = () => {
           <div className="mt-4 h-1 w-16 bg-sky-500 mx-auto rounded-full"></div>
         </motion.div>
 
-        <div className="flex justify-center mb-10 space-x-2">
+        <div className="flex justify-center mb-10 space-x-2 flex-wrap">
           {filters.map((filter) => (
             <button
               key={filter.id}
               onClick={() => setActiveFilter(filter.id)}
-              className={`px-4 py-2 rounded-full text-sm transition-all ${
+              className={`px-4 py-2 rounded-full text-sm transition-all m-1 ${
                 activeFilter === filter.id
                   ? "bg-sky-500 text-white"
                   : "bg-foreground/5 hover:bg-foreground/10"
@@ -62,20 +62,16 @@ const Portfolio = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="bg-foreground/5 rounded-lg overflow-hidden border border-foreground/10 hover:shadow-lg transition-all group"
+              className="bg-foreground/5 rounded-lg group overflow-hidden border border-foreground/10 hover:shadow-lg transition-all group"
             >
-              <div className="h-48 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-sky-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
-                <div className="w-full h-full bg-foreground/10 flex items-center justify-center text-foreground/20">
-                  {project.title}
-                </div>
-                {/* This will be replaced with actual images when available */}
-                {/* <Image 
-                  src={project.imageUrl} 
-                  alt={project.title} 
-                  fill 
-                  className="object-cover transition-transform group-hover:scale-110" 
-                /> */}
+              <div className="aspect-video relative overflow-hidden">
+                {/* <div className="absolute inset-0 bg-gradient-to-t from-sky-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10"></div> */}
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  className="object-cover object-top group-hover:object-bottom transition-all duration-[5s]  group-hover:scale-110"
+                />
               </div>
 
               <div className="p-6">

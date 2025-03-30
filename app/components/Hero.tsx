@@ -1,12 +1,35 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { personalInfo, socialLinks } from "../data";
+import profileImage from "../assets/img/personal/ayush-shah.png";
+import { useEffect, useState } from "react";
+
+const titleVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+};
 
 const Hero = () => {
+  const [titleIndex, setTitleIndex] = useState(0);
+  const titles = ["UI/UX", "Front end", "Full Stack"];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTitleIndex((prev) => (prev + 1) % titles.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section id="hero" className="relative pt-32 pb-16 md:pt-40 md:pb-24">
+    <section
+      id="hero"
+      className="relative min-h-screen flex items-center pt-20 pb-16"
+    >
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <motion.div
@@ -28,7 +51,21 @@ const Hero = () => {
                 {personalInfo.name.split(" ")[0]}
               </span>
               <br />
-              {personalInfo.title}
+              <div className="h-[60px] md:h-[76px] lg:h-[96px] overflow-hidden">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={titleIndex}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    variants={titleVariants}
+                    transition={{ duration: 0.5 }}
+                    className="block"
+                  >
+                    {titles[titleIndex]} Developer
+                  </motion.span>
+                </AnimatePresence>
+              </div>
             </h1>
 
             <p className="text-lg text-foreground/70 max-w-md">
@@ -75,8 +112,12 @@ const Hero = () => {
           >
             <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-indigo-500 rounded-full blur-3xl opacity-20"></div>
             <div className="relative bg-foreground/5 border border-foreground/10 rounded-full overflow-hidden w-full h-full flex items-center justify-center">
-              {/* Profile image will be added here */}
-              <div className="text-6xl font-bold text-sky-500/40">AS</div>
+              <Image
+                src={profileImage}
+                alt="Ayush Shah"
+                className="object-cover w-full h-full"
+                priority
+              />
             </div>
           </motion.div>
         </div>

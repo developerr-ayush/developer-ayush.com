@@ -1,6 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
+import aboutProfile from "../assets/img/personal/about-profile.png";
 
 const About = () => {
   return (
@@ -29,8 +31,13 @@ const About = () => {
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-sky-500 to-indigo-500 opacity-30"></div>
             <div className="absolute inset-0 p-1">
-              <div className="w-full h-full bg-foreground/5 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                <div className="text-8xl font-bold text-sky-500/40">A</div>
+              <div className="w-full h-full bg-foreground/5 backdrop-blur-sm rounded-2xl flex items-center justify-center overflow-hidden">
+                <Image
+                  src={aboutProfile}
+                  alt="Ayush Shah"
+                  className="object-cover w-full h-full"
+                  priority
+                />
               </div>
             </div>
           </motion.div>

@@ -1,4 +1,3 @@
-import Header from "./components/Header";
 import Hero from "./components/Hero";
 import About from "./components/About";
 import Experience from "./components/Experience";
@@ -6,20 +5,22 @@ import Skills from "./components/Skills";
 import Portfolio from "./components/Portfolio";
 import Services from "./components/Services";
 import Contact from "./components/Contact";
-import Footer from "./components/Footer";
+import BlogSection from "./components/BlogSection";
+import { getBlogPosts } from "./blogData";
 
-export default function Home() {
+export default async function Home() {
+  const blogPosts = await getBlogPosts();
+
   return (
     <main>
-      <Header />
       <Hero />
       <About />
       <Experience />
       <Skills />
       <Portfolio />
       <Services />
+      <BlogSection posts={blogPosts} />
       <Contact />
-      <Footer />
     </main>
   );
 }
