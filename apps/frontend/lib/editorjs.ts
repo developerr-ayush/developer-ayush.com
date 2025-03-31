@@ -27,51 +27,6 @@ export function isEditorJsData(content: any): boolean {
 }
 
 /**
- * Initialize syntax highlighting
- * This function should be called client-side after rendering
- */
-export function initCodeSyntaxHighlighting(): void {
-  // Run this only on the client side
-  if (typeof window !== "undefined") {
-    console.log("Looking for code blocks to highlight...");
-
-    // Look for any code blocks that need highlighting with multiple selectors to ensure we catch them
-    const codeBlocks = document.querySelectorAll(
-      "pre code[class*='language-'], pre > code"
-    );
-
-    console.log(`Found ${codeBlocks.length} code blocks`);
-
-    // If there are code blocks, dynamically import and initialize highlight.js
-    if (codeBlocks.length > 0) {
-      // Log the code blocks for debugging
-      codeBlocks.forEach((block, index) => {
-        console.log(
-          `Code block ${index + 1}:`,
-          block.className,
-          block.textContent?.slice(0, 30) + "..."
-        );
-      });
-
-      import("highlight.js")
-        .then((hljs) => {
-          console.log("Highlight.js loaded, applying highlighting...");
-
-          // Apply highlighting to all code blocks
-          codeBlocks.forEach((block) => {
-            hljs.default.highlightElement(block as HTMLElement);
-          });
-
-          console.log("Highlighting applied successfully");
-        })
-        .catch((error) => {
-          console.error("Failed to load syntax highlighting:", error);
-        });
-    }
-  }
-}
-
-/**
  * Render EditorJS blocks to HTML
  * @param data - EditorJS data
  * @returns HTML string
@@ -147,7 +102,8 @@ export function renderEditorJsContent(data: any): string {
               .replace(/"/g, "&quot;")
               .replace(/'/g, "&#039;");
 
-            return `<pre><code class="hljs language-${language}">${escapedCode}</code></pre>`;
+            // Use data attributes to help with client-side processing
+            return `<pre><code class="language-${language}" data-language="${language}">${escapedCode}</code></pre>`;
 
           case "quote":
             const cite = block.data.caption
