@@ -56,8 +56,32 @@ export const EDITOR_JS_TOOLS = {
       services: {
         youtube: true,
         vimeo: true,
-      },
+        instagram: true,
+        twitter: true,
+        facebook: true,
+        codepen: true,
+        pinterest: true,
+        // Add more services as needed
+        // Custom service for other embed types
+        generic: {
+          // Generic embeds - detect common embed URLs
+          regex: /^(https?:\/\/.*?\/.*?)$/,
+          embedUrl: '<%= remote_id %>',
+          html: "<iframe class='embed-responsive-item' src='<%= remote_id %>' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>",
+          height: 320,
+          width: "100%",
+          id: (groups: string[]) => groups[1]
+        }
+      }
     },
+    inlineToolbar: true,
+  },
+  raw: {
+    class: require("@editorjs/raw"),
+    config: {
+      placeholder: 'Enter HTML code here (iframe, embed code, etc.)',
+    },
+    inlineToolbar: true,
   },
   code: require("@editorjs/code"),
   quote: {
