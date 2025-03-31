@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -23,15 +23,14 @@ export default function BlogForm({ blog }: { blog?: any }) {
   const [error, setError] = useState<string | null>(null);
   const [bannerUrl, setBannerUrl] = useState<string>("");
   const [editorContent, setEditorContent] = useState<any>(null);
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
     setValue,
     watch,
-    getValues,
   } = useForm<FormValues>({
     resolver: zodResolver(blogSchema),
     defaultValues: {
@@ -47,8 +46,26 @@ export default function BlogForm({ blog }: { blog?: any }) {
     },
   });
 
-  // Watch banner field for preview
+  // Watch title and banner fields
+  const watchedTitle = watch("title");
   const watchedBanner = watch("banner");
+
+  // Function to generate slug from title
+  const generateSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "") // Remove special characters
+      .replace(/\s+/g, "-") // Replace spaces with hyphens
+      .replace(/-+/g, "-") // Remove consecutive hyphens
+      .trim(); // Trim leading/trailing whitespace
+  };
+
+  // Auto-generate slug from title when title changes (only if slug hasn't been manually edited)
+  useEffect(() => {
+    if (watchedTitle && !slugManuallyEdited) {
+      setValue("slug", generateSlug(watchedTitle));
+    }
+  }, [watchedTitle, setValue, slugManuallyEdited]);
 
   useEffect(() => {
     if (blog) {
@@ -61,8 +78,16 @@ export default function BlogForm({ blog }: { blog?: any }) {
       setValue("status", blog.status || "draft");
       setValue("slug", blog.slug);
       setValue("tags", blog.tags || "");
-      setValue("categories", blog.categories?.map((cat: any) => cat.id) || []);
+      setValue(
+        "categories",
+        blog.categories?.map((cat: any) => cat.name) || []
+      );
       setValue("date", new Date());
+
+      // If we're editing an existing blog, consider the slug as manually edited
+      if (blog.slug) {
+        setSlugManuallyEdited(true);
+      }
     }
   }, [blog, setValue]);
 
@@ -74,7 +99,10 @@ export default function BlogForm({ blog }: { blog?: any }) {
   // Handle editor content change
   const handleEditorChange = (data: any) => {
     setEditorContent(data);
-    setValue("content", data);
+    setValue("json_content", data);
+
+    // Also set a string version for the content field
+    setValue("content", typeof data === "object" ? JSON.stringify(data) : data);
   };
 
   const onSubmit = async (data: FormValues) => {
@@ -82,7 +110,19 @@ export default function BlogForm({ blog }: { blog?: any }) {
     setError(null);
 
     // Set the editor content to the form values
-    data.content = editorContent;
+    data.json_content = editorContent;
+    data.content =
+      typeof editorContent === "object"
+        ? JSON.stringify(editorContent)
+        : editorContent;
+
+    // Process categories - if it's a string, split by commas and trim
+    if (typeof data.categories === "string") {
+      data.categories = (data.categories as unknown as string)
+        .split(",")
+        .map((cat) => cat.trim())
+        .filter((cat) => cat.length > 0);
+    }
 
     try {
       if (blog) {
@@ -177,6 +217,7 @@ export default function BlogForm({ blog }: { blog?: any }) {
                   type="text"
                   className={`block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 shadow-sm ring-1 ring-inset ${errors.slug ? "ring-red-300" : "ring-gray-300"} placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
                   placeholder="enter-url-slug"
+                  onInput={() => setSlugManuallyEdited(true)}
                   {...register("slug")}
                 />
                 {errors.slug && (
@@ -185,7 +226,7 @@ export default function BlogForm({ blog }: { blog?: any }) {
                   </p>
                 )}
                 <p className="text-xs text-gray-500">
-                  This will be used in the URL
+                  Auto-generated from title. You can edit manually.
                 </p>
               </div>
             </div>
@@ -262,7 +303,7 @@ export default function BlogForm({ blog }: { blog?: any }) {
                 Content <span className="text-red-500">*</span>
               </label>
               <RichTextEditor
-                initialValue={blog?.content || null}
+                initialValue={blog?.content}
                 onChange={handleEditorChange}
               />
               {errors.content && typeof errors.content.message === "string" && (
@@ -340,6 +381,11 @@ export default function BlogForm({ blog }: { blog?: any }) {
                 type="text"
                 className={`block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 shadow-sm ring-1 ring-inset ${errors.categories ? "ring-red-300" : "ring-gray-300"} placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
                 placeholder="Category1, Category2"
+                defaultValue={
+                  Array.isArray(blog?.categories)
+                    ? blog?.categories.map((cat: any) => cat.name).join(", ")
+                    : ""
+                }
                 {...register("categories")}
               />
               {errors.categories && (

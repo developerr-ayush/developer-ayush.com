@@ -47,7 +47,7 @@ model category {
 model Blog {
   id          String     @id @default(cuid())
   title       String?    @unique @db.VarChar(255)
-  content     String?    @db.Text
+  content     String     @db.Text
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   author      User       @relation(fields: [authorId], references: [id])

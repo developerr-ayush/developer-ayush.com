@@ -21,10 +21,15 @@ export default function RichTextEditor({
   const containerRef = useRef<HTMLDivElement>(null);
   const [editorReady, setEditorReady] = useState(false);
   const [initialData, setInitialData] = useState<any>(null);
+  const hasInitialized = useRef(false);
 
   // Initialize editor with initial data
   useEffect(() => {
     if (!containerRef.current) return;
+
+    // Prevent double initialization in development due to StrictMode
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
 
     // Process the initial value
     const data = normalizeContent(initialValue);

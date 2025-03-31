@@ -135,26 +135,60 @@ function slugify(text: string): string {
 /**
  * Process blog content for display
  * @param content - Blog content
+ * @param jsonContent - Optional JSON content from the json_content field
  * @returns Processed HTML content
  */
-export function processBlogContent(content: any): string {
+export function processBlogContent(content: any, jsonContent?: any): string {
+  // First try jsonContent if available
+  if (jsonContent) {
+    // If it's a string, try to parse it
+    if (typeof jsonContent === "string") {
+      try {
+        const parsedContent = JSON.parse(jsonContent);
+        if (isEditorJsData(parsedContent)) {
+          return renderEditorJsContent(parsedContent);
+        }
+      } catch {
+        // If parsing fails, continue with regular content
+      }
+    }
+    // If it's already an object, check if it's EditorJS data
+    else if (isEditorJsData(jsonContent)) {
+      return renderEditorJsContent(jsonContent);
+    }
+  }
+
+  // Handle null or undefined content
+  if (content === null || content === undefined) {
+    return "";
+  }
+
+  // If jsonContent is not available or not valid, use regular content
   // If the content is already a string, return as is
   if (typeof content === "string") {
     // Check if it's EditorJS JSON in string format
     if (content.trim().startsWith("{") && isValidJson(content)) {
-      const parsedContent = JSON.parse(content);
-      if (isEditorJsData(parsedContent)) {
-        return renderEditorJsContent(parsedContent);
+      try {
+        const parsedContent = JSON.parse(content);
+        if (isEditorJsData(parsedContent)) {
+          return renderEditorJsContent(parsedContent);
+        }
+      } catch (error) {
+        // If parsing fails, return the original content
+        console.error("Error parsing content JSON:", error);
+        return content;
       }
     }
     return content;
   }
 
   // If the content is an object, check if it's EditorJS data
-  if (isEditorJsData(content)) {
-    return renderEditorJsContent(content);
+  if (typeof content === "object" && content !== null) {
+    if (isEditorJsData(content)) {
+      return renderEditorJsContent(content);
+    }
   }
 
   // Fallback
-  return typeof content === "string" ? content : JSON.stringify(content);
+  return typeof content === "string" ? content : JSON.stringify(content || "");
 }

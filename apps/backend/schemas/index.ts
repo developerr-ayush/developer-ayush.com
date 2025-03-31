@@ -39,6 +39,7 @@ export const blogSchema = z.object({
 
     return val;
   }),
+  json_content: z.any().optional(),
   date: z.date(),
   author: z.string().optional(),
   banner: z.string(),
@@ -48,5 +49,14 @@ export const blogSchema = z.object({
     .optional(),
   slug: z.string(),
   tags: z.string().optional(),
-  categories: z.array(z.string()),
+  categories: z.union([
+    z.array(z.string()),
+    z.string().transform((val) => {
+      if (!val) return [];
+      return val
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0);
+    }),
+  ]),
 });

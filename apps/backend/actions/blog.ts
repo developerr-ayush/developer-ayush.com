@@ -6,10 +6,29 @@ import { blogSchema } from "../schemas";
 import { z } from "zod";
 
 export const createBlog = async (values: z.infer<typeof blogSchema>) => {
+  console.log(values);
   const validatedFields = blogSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields" };
-  const { title, description, status, banner, content, categories } =
-    validatedFields.data;
+  const {
+    title,
+    description,
+    status,
+    banner,
+    content,
+    categories,
+    json_content,
+  } = validatedFields.data;
+
+  // Ensure categories is an array
+  const categoriesArray: string[] = Array.isArray(categories)
+    ? categories
+    : typeof categories === "string"
+      ? (categories as unknown as string)
+          .split(",")
+          .map((c: string) => c.trim())
+          .filter((c: string) => c.length > 0)
+      : [];
+
   const session = await auth();
   if (!session?.user) return { error: "Not Authorized" };
   try {
@@ -17,17 +36,18 @@ export const createBlog = async (values: z.infer<typeof blogSchema>) => {
     await db.blog.create({
       data: {
         title,
-        content,
+        content:
+          typeof content === "object" ? JSON.stringify(content) : content,
         description,
         status,
         banner,
         tags: values.tags ? values.tags.toString() : "",
         slug: values.slug,
         categories: {
-          connectOrCreate: categories.map((cat) => {
+          connectOrCreate: categoriesArray.map((cat: string) => {
             return {
-              where: { id: cat },
-              create: { name: cat, slug: cat.toLowerCase().replace(/ /g, "-") }, // Add the 'slug' property with an empty string value
+              where: { name: cat },
+              create: { name: cat, slug: cat.toLowerCase().replace(/ /g, "-") },
             };
           }),
         },
@@ -39,6 +59,7 @@ export const createBlog = async (values: z.infer<typeof blogSchema>) => {
       },
     });
   } catch (e) {
+    console.error("Error creating blog:", e);
     // checking if error is because of title
     if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
       return { error: "Title or Slug already exists" };
@@ -55,36 +76,47 @@ export const updateBlog = async (
   if (!validatedFields.success) return { error: "Invalid Fields" };
   const { title, description, status, content, banner, categories, slug } =
     validatedFields.data;
+
+  // Ensure categories is an array
+  const categoriesArray: string[] = Array.isArray(categories) ? categories : [];
+
   const session = await auth();
   if (!session?.user) return { error: "Not Authorized" };
   const existingblog = await db.blog.findUnique({
     where: { id },
     include: { author: true },
   });
+  if (!existingblog) return { error: "Blog not found" };
   if (session.user.email !== existingblog?.author.email)
     return { error: "Not Authorized" };
   // save blog to database
-  await db.blog.update({
-    where: { id: id },
-    data: {
-      title,
-      content,
-      description,
-      status,
-      banner,
-      tags: values.tags ? values.tags.toString() : "",
-      slug: slug,
-      categories: {
-        connectOrCreate: categories.map((cat) => {
-          return {
-            where: { id: cat },
-            create: { name: cat, slug: cat.toLowerCase().replace(/ /g, "-") },
-          };
-        }),
+  try {
+    await db.blog.update({
+      where: { id: id },
+      data: {
+        title,
+        content:
+          typeof content === "object" ? JSON.stringify(content) : content,
+        description,
+        status,
+        banner,
+        tags: values.tags ? values.tags.toString() : "",
+        slug: slug,
+        categories: {
+          connectOrCreate: categoriesArray.map((cat: string) => {
+            return {
+              where: { name: cat },
+              create: { name: cat, slug: cat.toLowerCase().replace(/ /g, "-") },
+            };
+          }),
+        },
       },
-    },
-  });
-  return { success: "blog updated" };
+    });
+    return { success: "blog updated" };
+  } catch (e) {
+    console.error("Error updating blog:", e);
+    return { error: "something went wrong" };
+  }
 };
 export const showBlog = async () => {
   const blogs = await db.blog.findMany();
@@ -109,12 +141,14 @@ export const deleteBlog = async (id: string) => {
     where: { id },
     include: { author: true },
   });
+  if (!existingblog) return { error: "Blog not found" };
   if (session.user.email !== existingblog?.author.email)
     return { error: "Not Authorized" };
   try {
     await db.blog.delete({ where: { id } });
     return { success: "blog deleted" };
-  } catch {
+  } catch (e) {
+    console.error("Error deleting blog:", e);
     return { error: "something went wrong" };
   }
 };

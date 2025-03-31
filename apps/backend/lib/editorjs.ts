@@ -143,6 +143,15 @@ export function isValidJson(str: string): boolean {
  * @returns EditorJS data object
  */
 export function normalizeContent(content: string | any): any {
+  // Handle null or undefined content
+  if (content === null || content === undefined) {
+    return {
+      time: new Date().getTime(),
+      blocks: [],
+      version: "2.30.8",
+    };
+  }
+
   // If content is already an object, check if it's valid EditorJS data
   if (typeof content === "object") {
     if (content.blocks && Array.isArray(content.blocks)) {
@@ -155,7 +164,7 @@ export function normalizeContent(content: string | any): any {
   if (typeof content === "string") {
     if (isValidJson(content)) {
       const parsed = JSON.parse(content);
-      if (parsed.blocks && Array.isArray(parsed.blocks)) {
+      if (parsed && parsed.blocks && Array.isArray(parsed.blocks)) {
         return parsed;
       }
     }
