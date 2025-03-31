@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+- i am using turbo repo for this whole project so make sure that dependencies are install on correct place
+- always use pnpm for installing dependencies
+- there are apps/* so inside that there are individual project
