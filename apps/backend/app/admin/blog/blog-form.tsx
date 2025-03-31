@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { createBlog, updateBlog } from "../../../actions/blog";
 import { blogSchema } from "../../../schemas";
 import dynamic from "next/dynamic";
+import { toast } from "react-toastify";
 
 // Dynamically import the RichTextEditor to avoid SSR issues
 const RichTextEditor = dynamic(
@@ -22,6 +23,8 @@ export default function BlogForm({ blog }: { blog?: any }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [bannerUrl, setBannerUrl] = useState<string>("");
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+  const bannerFileInputRef = useRef<HTMLInputElement>(null);
   const [editorContent, setEditorContent] = useState<any>(null);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
@@ -103,6 +106,75 @@ export default function BlogForm({ blog }: { blog?: any }) {
 
     // Also set a string version for the content field
     setValue("content", typeof data === "object" ? JSON.stringify(data) : data);
+  };
+
+  // Function to clear banner file input
+  const clearBannerFileInput = () => {
+    if (bannerFileInputRef.current) {
+      bannerFileInputRef.current.value = "";
+    }
+  };
+
+  // Handle banner image change
+  const handleBannerFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && !file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      clearBannerFileInput();
+    }
+  };
+
+  // Handle banner image upload
+  const handleBannerUpload = async () => {
+    if (!bannerFileInputRef.current?.files?.[0]) {
+      toast.error("Please select an image to upload");
+      return;
+    }
+
+    const file = bannerFileInputRef.current.files[0];
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      clearBannerFileInput();
+      return;
+    }
+
+    try {
+      setUploadingBanner(true);
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "blog-banners");
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload failed with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || "Failed to upload image");
+      }
+
+      // Set the banner URL
+      setValue("banner", data.url);
+      setBannerUrl(data.url);
+      toast.success("Banner image uploaded successfully!");
+
+      // Clear the file input after successful upload
+      clearBannerFileInput();
+    } catch (err) {
+      console.error("Banner upload error:", err);
+      toast.error(
+        err instanceof Error ? err.message : "Failed to upload banner image"
+      );
+    } finally {
+      setUploadingBanner(false);
+    }
   };
 
   const onSubmit = async (data: FormValues) => {
@@ -240,18 +312,72 @@ export default function BlogForm({ blog }: { blog?: any }) {
               >
                 Banner Image URL <span className="text-red-500">*</span>
               </label>
-              <input
-                id="banner"
-                type="text"
-                className={`block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 shadow-sm ring-1 ring-inset ${errors.banner ? "ring-red-300" : "ring-gray-300"} placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
-                placeholder="https://example.com/image.jpg"
-                {...register("banner")}
-              />
-              {errors.banner && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.banner.message}
-                </p>
-              )}
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-grow">
+                  <input
+                    id="banner"
+                    type="text"
+                    className={`block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 shadow-sm ring-1 ring-inset ${
+                      errors.banner ? "ring-red-300" : "ring-gray-300"
+                    } placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
+                    placeholder="https://example.com/image.jpg"
+                    {...register("banner")}
+                  />
+                  {errors.banner && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.banner.message}
+                    </p>
+                  )}
+                </div>
+                <div className="text-xs text-gray-500">OR</div>
+                <div className="flex-none flex flex-col md:flex-row gap-2 items-center">
+                  <input
+                    ref={bannerFileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg p-2"
+                    onChange={handleBannerFileChange}
+                    disabled={uploadingBanner}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleBannerUpload}
+                    disabled={uploadingBanner}
+                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {uploadingBanner ? (
+                      <>
+                        <svg
+                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Uploading...
+                      </>
+                    ) : (
+                      "Upload"
+                    )}
+                  </button>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Enter a URL directly or upload an image to Cloudinary
+              </p>
             </div>
 
             {bannerUrl && (

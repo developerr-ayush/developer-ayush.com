@@ -30,6 +30,7 @@
     "@types/bcryptjs": "^3.0.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.6.0",
     "date-fns": "^4.1.0",
     "editorjs-html": "^4.0.5",
     "next": "^15.2.1",
@@ -37,6 +38,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.55.0",
+    "react-toastify": "^11.0.5",
     "tailwindcss": "^4.0.17",
     "zod": "^3.24.2"
   },
