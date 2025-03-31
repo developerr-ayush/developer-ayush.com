@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { signOut } from "../../auth";
 
 export default function AdminSidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -131,6 +132,13 @@ export default function AdminSidebar() {
               </svg>
               <span>Users</span>
             </Link>
+            {/* logout */}
+            <button
+              // onClick={() => signOut()}
+              className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition group"
+            >
+              <span>Logout</span>
+            </button>
           </nav>
         </div>
       </aside>
