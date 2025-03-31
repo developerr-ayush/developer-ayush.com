@@ -71,10 +71,11 @@ export async function getBlogPosts(
       options.cache = "no-store" as RequestCache;
     }
 
-    const res = await fetch(
-      `https://admin.developer-ayush.com/api/blog?p=${page}`,
-      options
-    );
+    // Construct URL based on page value
+    const baseUrl = "https://admin.developer-ayush.com/api/blog";
+    const url = page === -1 ? baseUrl : `${baseUrl}?p=${page}`;
+
+    const res = await fetch(url, options);
 
     if (!res.ok) {
       console.error(`API response not OK: ${res.status} ${res.statusText}`);

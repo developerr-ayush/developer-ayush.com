@@ -3,7 +3,7 @@ import { getBlogPosts } from "./blogData";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Get all blog posts
-  const blogData = await getBlogPosts(1);
+  const blogData = await getBlogPosts(-1);
   const posts = blogData.data || [];
 
   // Base URL
