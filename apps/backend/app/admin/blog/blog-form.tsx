@@ -23,6 +23,10 @@ export default function BlogForm({ blog }: { blog?: any }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [bannerUrl, setBannerUrl] = useState<string>("");
+  const [selectedBannerFile, setSelectedBannerFile] = useState<File | null>(
+    null
+  );
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [uploadingBanner, setUploadingBanner] = useState(false);
   const bannerFileInputRef = useRef<HTMLInputElement>(null);
   const [editorContent, setEditorContent] = useState<any>(null);
@@ -96,8 +100,10 @@ export default function BlogForm({ blog }: { blog?: any }) {
 
   // Update banner URL when the watched value changes
   useEffect(() => {
-    setBannerUrl(watchedBanner || "");
-  }, [watchedBanner]);
+    if (watchedBanner && !selectedBannerFile) {
+      setBannerUrl(watchedBanner);
+    }
+  }, [watchedBanner, selectedBannerFile]);
 
   // Handle editor content change
   const handleEditorChange = (data: any) => {
@@ -118,31 +124,38 @@ export default function BlogForm({ blog }: { blog?: any }) {
   // Handle banner image change
   const handleBannerFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && !file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
-      clearBannerFileInput();
-    }
-  };
-
-  // Handle banner image upload
-  const handleBannerUpload = async () => {
-    if (!bannerFileInputRef.current?.files?.[0]) {
-      toast.error("Please select an image to upload");
+    if (!file) {
+      setSelectedBannerFile(null);
+      setBannerPreview(null);
       return;
     }
 
-    const file = bannerFileInputRef.current.files[0];
     if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file");
       clearBannerFileInput();
       return;
     }
 
+    // Store the selected file
+    setSelectedBannerFile(file);
+
+    // Create a preview
+    const reader = new FileReader();
+    reader.onload = () => {
+      setBannerPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Upload the banner image to Cloudinary
+  const uploadBannerToCloudinary = async (): Promise<string | null> => {
+    if (!selectedBannerFile) return null;
+
     try {
       setUploadingBanner(true);
 
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", selectedBannerFile);
       formData.append("folder", "blog-banners");
 
       const response = await fetch("/api/upload", {
@@ -160,18 +173,14 @@ export default function BlogForm({ blog }: { blog?: any }) {
         throw new Error(data.error || "Failed to upload image");
       }
 
-      // Set the banner URL
-      setValue("banner", data.url);
-      setBannerUrl(data.url);
       toast.success("Banner image uploaded successfully!");
-
-      // Clear the file input after successful upload
-      clearBannerFileInput();
+      return data.url;
     } catch (err) {
       console.error("Banner upload error:", err);
       toast.error(
         err instanceof Error ? err.message : "Failed to upload banner image"
       );
+      return null;
     } finally {
       setUploadingBanner(false);
     }
@@ -181,27 +190,46 @@ export default function BlogForm({ blog }: { blog?: any }) {
     setIsSubmitting(true);
     setError(null);
 
-    // Set the editor content to the form values
-    data.json_content = editorContent;
-    data.content =
-      typeof editorContent === "object"
-        ? JSON.stringify(editorContent)
-        : editorContent;
-
-    // Process categories - if it's a string, split by commas and trim
-    if (typeof data.categories === "string") {
-      data.categories = (data.categories as unknown as string)
-        .split(",")
-        .map((cat) => cat.trim())
-        .filter((cat) => cat.length > 0);
-    }
-
     try {
+      // Upload banner image if one is selected
+      if (selectedBannerFile) {
+        const uploadedUrl = await uploadBannerToCloudinary();
+        if (uploadedUrl) {
+          data.banner = uploadedUrl;
+        } else {
+          // If upload failed, use the existing banner URL if available
+          if (!data.banner) {
+            setError(
+              "Banner image upload failed. Please try again or provide a URL."
+            );
+            setIsSubmitting(false);
+            return;
+          }
+        }
+      }
+
+      // Set the editor content to the form values
+      data.json_content = editorContent;
+      data.content =
+        typeof editorContent === "object"
+          ? JSON.stringify(editorContent)
+          : editorContent;
+
+      // Process categories - if it's a string, split by commas and trim
+      if (typeof data.categories === "string") {
+        data.categories = (data.categories as unknown as string)
+          .split(",")
+          .map((cat) => cat.trim())
+          .filter((cat) => cat.length > 0);
+      }
+
+      // Submit the blog post
       if (blog) {
         const result = await updateBlog(data, blog.id);
         if (result.error) {
           setError(result.error);
         } else {
+          toast.success("Blog post updated successfully!");
           router.push("/admin/blog");
           router.refresh();
         }
@@ -210,6 +238,7 @@ export default function BlogForm({ blog }: { blog?: any }) {
         if (result.error) {
           setError(result.error);
         } else {
+          toast.success("Blog post created successfully!");
           router.push("/admin/blog");
           router.refresh();
         }
@@ -310,9 +339,9 @@ export default function BlogForm({ blog }: { blog?: any }) {
                 htmlFor="banner"
                 className="block text-sm font-medium text-gray-700"
               >
-                Banner Image URL <span className="text-red-500">*</span>
+                Banner Image <span className="text-red-500">*</span>
               </label>
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex flex-col gap-4">
                 <div className="flex-grow">
                   <input
                     id="banner"
@@ -328,70 +357,63 @@ export default function BlogForm({ blog }: { blog?: any }) {
                       {errors.banner.message}
                     </p>
                   )}
+                  <p className="text-xs text-gray-500 mt-1">
+                    Enter a URL or upload a new image below
+                  </p>
                 </div>
-                <div className="text-xs text-gray-500">OR</div>
-                <div className="flex-none flex flex-col md:flex-row gap-2 items-center">
+
+                <div className="w-full">
                   <input
                     ref={bannerFileInputRef}
                     type="file"
                     accept="image/*"
                     className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg p-2"
                     onChange={handleBannerFileChange}
-                    disabled={uploadingBanner}
+                    disabled={isSubmitting}
                   />
-                  <button
-                    type="button"
-                    onClick={handleBannerUpload}
-                    disabled={uploadingBanner}
-                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {uploadingBanner ? (
-                      <>
-                        <svg
-                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        Uploading...
-                      </>
-                    ) : (
-                      "Upload"
-                    )}
-                  </button>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Selected image will be uploaded when you click{" "}
+                    {blog ? "Update Post" : "Create Post"}
+                  </p>
                 </div>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Enter a URL directly or upload an image to Cloudinary
-              </p>
             </div>
 
-            {bannerUrl && (
-              <div className="mt-4">
-                <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-lg bg-gray-100">
-                  <img
-                    src={bannerUrl}
-                    alt="Banner preview"
-                    className="object-cover w-full h-full"
-                    onError={() => setBannerUrl("")}
-                  />
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {bannerUrl && (
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-2">
+                    Current Banner:
+                  </p>
+                  <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-lg bg-gray-100">
+                    <img
+                      src={bannerUrl}
+                      alt="Current banner"
+                      className="object-cover w-full h-full"
+                      onError={() => setBannerUrl("")}
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+
+              {bannerPreview && (
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-2">
+                    New Banner Preview:
+                  </p>
+                  <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-lg bg-gray-100">
+                    <img
+                      src={bannerPreview}
+                      alt="New banner preview"
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    This image will be uploaded when form is submitted
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="pt-5 border-t border-gray-200">
@@ -535,10 +557,10 @@ export default function BlogForm({ blog }: { blog?: any }) {
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || uploadingBanner}
               className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center"
             >
-              {isSubmitting ? (
+              {isSubmitting || uploadingBanner ? (
                 <>
                   <svg
                     className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
@@ -560,7 +582,7 @@ export default function BlogForm({ blog }: { blog?: any }) {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Saving...
+                  {uploadingBanner ? "Uploading Image..." : "Saving..."}
                 </>
               ) : blog ? (
                 "Update Post"
