@@ -3,7 +3,19 @@ import authConfig from "./auth.config";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "./lib/db";
 import { getUserById } from "./data/user";
-import { Role } from "@prisma/client";
+
+type Role = "SUPER_ADMIN" | "ADMIN";
+declare module "next-auth" {
+  interface User {
+    role?: Role;
+  }
+
+  interface Session {
+    user: User & {
+      role?: Role;
+    };
+  }
+}
 
 export const {
   handlers: { GET, POST },

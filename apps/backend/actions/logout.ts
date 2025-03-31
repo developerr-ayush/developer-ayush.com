@@ -1,8 +1,7 @@
-"use server";
-
 import { signOut } from "../auth";
 
 export async function logout() {
-  await signOut();
+  "use server";
+  await signOut({ redirectTo: "/admin/login" });
   return null;
 }
