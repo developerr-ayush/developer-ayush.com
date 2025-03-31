@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { personalInfo } from "./data";
 import GoogleAnalytics from "./components/GoogleAnalytics";
+import { GoogleTagManager } from "@next/third-parties/google";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -108,7 +109,7 @@ export default function RootLayout({
       <body
         className={`${inter.className} bg-background text-foreground min-h-screen`}
       >
-        <GoogleAnalytics />
+        <GoogleTagManager gtmId="GTM-WVCN3W56" />
         <Header />
         {children}
         <Footer />
