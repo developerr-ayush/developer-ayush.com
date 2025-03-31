@@ -9,15 +9,8 @@ export const createBlog = async (values: z.infer<typeof blogSchema>) => {
   console.log(values);
   const validatedFields = blogSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields" };
-  const {
-    title,
-    description,
-    status,
-    banner,
-    content,
-    categories,
-    json_content,
-  } = validatedFields.data;
+  const { title, description, status, banner, content, categories } =
+    validatedFields.data;
 
   // Ensure categories is an array
   const categoriesArray: string[] = Array.isArray(categories)

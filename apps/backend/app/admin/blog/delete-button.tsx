@@ -74,7 +74,7 @@ export default function DeleteButton({ blogId }: { blogId: string }) {
                 Delete Blog Post
               </h3>
             </div>
-            <p className="text-sm text-gray-600 mb-6">
+            <p className="text-sm text-gray-600 mb-6 w-full text-wrap">
               Are you sure you want to delete this blog post? This action cannot
               be undone and all associated data will be permanently removed.
             </p>
