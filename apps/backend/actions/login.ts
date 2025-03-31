@@ -1,20 +1,21 @@
 "use server";
-import { LoginSchema } from "@/schemas";
-import { signIn } from "@/auth";
+import { LoginSchema } from "../schemas";
 import * as z from "zod";
-import bcrypt from "bcryptjs";
-import {
-  isRedirectError,
-  redirect,
-} from "next/dist/client/components/redirect";
-import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
-import { AuthError } from "next-auth";
-import { db } from "@/lib/db";
+import { redirect } from "next/dist/client/components/redirect";
+import { DEFAULT_LOGIN_REDIRECT } from "../routes";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+// import { db } from "../lib/db";
+import {signIn} from "../auth";
+
 export const login = async (values: z.infer<typeof LoginSchema>) => {
   const validatedFields = LoginSchema.safeParse(values);
+  console.log(validatedFields);
   if (!validatedFields.success) return { error: "Invalid Fields" };
 
   const { email, password } = validatedFields.data;
+  // get all users from database
+  // const users = await db.user.findMany();
+  // console.log(users);
   // const user = await db.user.create({
   //   data: {
   //     name: "Ayush Shah",
@@ -24,7 +25,7 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
   // });
   // return { success: "User created" };
   try {
-    let success = await signIn("credentials", {
+    await signIn("credentials", {
       email,
       password,
       redirectTo: DEFAULT_LOGIN_REDIRECT,

@@ -1,5 +1,8 @@
 "use client";
 import { useState, ChangeEvent, FormEvent } from "react";
+import { login } from "../../../actions/login";
+import { LoginSchema, RegisterSchema } from "../../../schemas";
+import { z } from "zod";
 
 interface FormData {
   email: string;
@@ -27,6 +30,7 @@ export default function LoginPage() {
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -34,30 +38,47 @@ export default function LoginPage() {
       ...formData,
       [name]: type === "checkbox" ? checked : value,
     });
+    // Clear errors when user types
+    if (errors[name as keyof FormErrors]) {
+      setErrors({
+        ...errors,
+        [name]: undefined,
+      });
+    }
+    setServerError(null);
   };
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
 
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
+    try {
+      if (isLogin) {
+        // Validate login form with Zod schema
+        LoginSchema.parse({
+          email: formData.email,
+          password: formData.password,
+        });
+      } else {
+        // Validate register form with Zod schema
+        RegisterSchema.parse({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        });
 
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    if (!isLogin) {
-      if (!formData.name) {
-        newErrors.name = "Name is required";
+        // Additional validation for confirm password
+        if (formData.password !== formData.confirmPassword) {
+          newErrors.confirmPassword = "Passwords do not match";
+        }
       }
-
-      if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match";
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        error.errors.forEach((err) => {
+          if (err.path) {
+            const fieldName = err.path[0] as keyof FormErrors;
+            newErrors[fieldName] = err.message;
+          }
+        });
       }
     }
 
@@ -71,30 +92,52 @@ export default function LoginPage() {
     if (!validateForm()) return;
 
     setLoading(true);
+    setServerError(null);
 
     try {
-      // Here you would add your actual authentication logic
       if (isLogin) {
-        // Login API call would go here
-        console.log("Logging in with:", formData.email, formData.password);
+        // Use the server action for login
+        const result = await login({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (result?.error) {
+          setServerError(result.error);
+        }
+        // The login action handles redirection on success
       } else {
-        // Signup API call would go here
+        // For signup, we would use a register server action
+        // Since we don't have one in the provided code, we'll simulate it
         console.log(
           "Signing up with:",
           formData.name,
           formData.email,
           formData.password
         );
+
+        // TODO: Replace with actual register server action
+        // const result = await register({
+        //   name: formData.name,
+        //   email: formData.email,
+        //   password: formData.password,
+        // });
+
+        // Simulate API call for signup
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        alert("Signup successful! Please login with your new account.");
+
+        // Reset form and show login screen
+        setFormData({
+          ...formData,
+          name: "",
+          confirmPassword: "",
+        });
+        setIsLogin(true);
       }
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Redirect or show success
-      alert(isLogin ? "Login successful!" : "Signup successful!");
     } catch (error) {
       console.error("Authentication error:", error);
-      alert("Authentication failed. Please try again.");
+      setServerError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -119,6 +162,12 @@ export default function LoginPage() {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {serverError && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-sm text-red-600">{serverError}</p>
+            </div>
+          )}
+
           {!isLogin && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -130,7 +179,7 @@ export default function LoginPage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   placeholder="John Doe"
                 />
               </div>
@@ -150,7 +199,7 @@ export default function LoginPage() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 placeholder="name@company.com"
               />
             </div>
@@ -169,7 +218,7 @@ export default function LoginPage() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 placeholder="••••••••"
               />
             </div>
@@ -189,7 +238,7 @@ export default function LoginPage() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   placeholder="••••••••"
                 />
               </div>
