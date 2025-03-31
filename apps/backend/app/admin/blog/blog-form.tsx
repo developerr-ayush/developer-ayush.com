@@ -9,7 +9,7 @@ import { createBlog, updateBlog } from "../../../actions/blog";
 import { blogSchema } from "../../../schemas";
 import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
-
+import Image from "next/image";
 // Dynamically import the RichTextEditor to avoid SSR issues
 const RichTextEditor = dynamic(
   () => import("../../../components/RichTextEditor"),
@@ -18,7 +18,23 @@ const RichTextEditor = dynamic(
 
 type FormValues = z.infer<typeof blogSchema>;
 
-export default function BlogForm({ blog }: { blog?: any }) {
+interface BlogCategory {
+  name: string;
+}
+
+interface BlogData {
+  id: string;
+  title: string;
+  content: any; // Using any here just for this specific field to avoid type issues
+  description: string;
+  banner: string;
+  status: "draft" | "published" | "archived";
+  slug: string;
+  tags: string;
+  categories?: BlogCategory[];
+}
+
+export default function BlogForm({ blog }: { blog?: BlogData }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -77,17 +93,16 @@ export default function BlogForm({ blog }: { blog?: any }) {
   useEffect(() => {
     if (blog) {
       setValue("title", blog.title);
-      setValue("content", blog.content);
-      setEditorContent(blog.content);
-      setValue("description", blog.description || "");
+      setValue("content", blog.content || "");
+      setEditorContent(blog.content || "");
+      setValue("description", blog.description);
       setValue("banner", blog.banner);
-      setBannerUrl(blog.banner || "");
-      setValue("status", blog.status || "draft");
+      setValue("status", blog.status);
       setValue("slug", blog.slug);
-      setValue("tags", blog.tags || "");
+      setValue("tags", blog.tags);
       setValue(
         "categories",
-        blog.categories?.map((cat: any) => cat.name) || []
+        blog.categories?.map((cat: { name: string }) => cat.name) || []
       );
       setValue("date", new Date());
 
@@ -106,12 +121,15 @@ export default function BlogForm({ blog }: { blog?: any }) {
   }, [watchedBanner, selectedBannerFile]);
 
   // Handle editor content change
-  const handleEditorChange = (data: any) => {
+  const handleEditorChange = (data: { [key: string]: [] }) => {
     setEditorContent(data);
     setValue("json_content", data);
 
     // Also set a string version for the content field
-    setValue("content", typeof data === "object" ? JSON.stringify(data) : data);
+    setValue(
+      "content",
+      typeof data === "object" ? JSON.stringify(data) : (data as string)
+    );
   };
 
   // Function to clear banner file input
@@ -386,11 +404,13 @@ export default function BlogForm({ blog }: { blog?: any }) {
                     Current Banner:
                   </p>
                   <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-lg bg-gray-100">
-                    <img
+                    <Image
                       src={bannerUrl}
                       alt="Current banner"
                       className="object-cover w-full h-full"
                       onError={() => setBannerUrl("")}
+                      width={1000}
+                      height={1000}
                     />
                   </div>
                 </div>
@@ -402,10 +422,12 @@ export default function BlogForm({ blog }: { blog?: any }) {
                     New Banner Preview:
                   </p>
                   <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-lg bg-gray-100">
-                    <img
+                    <Image
                       src={bannerPreview}
                       alt="New banner preview"
                       className="object-cover w-full h-full"
+                      width={1000}
+                      height={1000}
                     />
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
@@ -531,7 +553,9 @@ export default function BlogForm({ blog }: { blog?: any }) {
                 placeholder="Category1, Category2"
                 defaultValue={
                   Array.isArray(blog?.categories)
-                    ? blog?.categories.map((cat: any) => cat.name).join(", ")
+                    ? blog?.categories
+                        .map((cat: { name: string }) => cat.name)
+                        .join(", ")
                     : ""
                 }
                 {...register("categories")}

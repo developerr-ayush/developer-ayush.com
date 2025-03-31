@@ -1,7 +1,7 @@
 "use client";
 import { useState, ChangeEvent, FormEvent } from "react";
-import { login } from "../../../actions/login";
-import { LoginSchema, RegisterSchema } from "../../../schemas";
+import { login } from "../../actions/login";
+import { LoginSchema, RegisterSchema } from "../../schemas";
 import { z } from "zod";
 
 interface FormData {

@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import LogoutButton from "../LogoutButton";
+
 export default function AdminSidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -130,9 +132,8 @@ export default function AdminSidebar() {
               </svg>
               <span>Users</span>
             </Link>
-            <Link
-              href="/admin/logout"
-              className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition group"
+            <LogoutButton
+              className="flex items-center w-full px-4 py-3 rounded-lg hover:bg-white/10 transition group text-left"
               onClick={() => setIsOpen(false)}
             >
               <svg
@@ -145,11 +146,11 @@ export default function AdminSidebar() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                 />
               </svg>
-              <span>Users</span>
-            </Link>
+              <span>Logout</span>
+            </LogoutButton>
           </nav>
         </div>
       </aside>
