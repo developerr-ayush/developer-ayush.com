@@ -11,16 +11,24 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.8.0",
+    "@prisma/client": "^6.5.0",
     "@repo/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.0.17",
+    "@types/bcryptjs": "^3.0.0",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "next": "^15.2.1",
+    "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwindcss": "^4.0.17"
+    "tailwindcss": "^4.0.17",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/next-auth": "^3.15.0",
     "@types/node": "^22.13.10",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
