@@ -119,7 +119,7 @@ const Header = () => {
           : "py-5 bg-transparent"
       }`}
     >
-      <div className="container mx-auto px-4 flex justify-between items-center">
+      <div className="container mx-auto px-4 flex justify-between items-center relative z-40">
         <Link href="/" className="text-2xl font-bold">
           <span className="text-white">Ayush</span>
           <span className="text-sky-500">Shah</span>
@@ -147,7 +147,7 @@ const Header = () => {
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle menu"
         >
-          <div className="relative w-7 h-5">
+          <div className="relative w-10 h-10 flex items-center justify-center">
             <span
               className={`absolute h-0.5 w-7 bg-current transform transition-transform duration-300 ${
                 isOpen ? "rotate-45 top-2" : "rotate-0 top-0"
@@ -168,11 +168,11 @@ const Header = () => {
       </div>
 
       <div
-        className={`fixed inset-0 z-40 bg-background backdrop-blur-lg transition-transform duration-300 transform ${
+        className={`fixed top-0 left-0 w-full h-screen z-10 bg-background backdrop-blur-lg transition-transform duration-300 transform ${
           isOpen ? "translate-x-0" : "translate-x-full"
         } md:hidden flex flex-col pt-20`}
       >
-        <div className="container mx-auto px-4 flex flex-col space-y-2">
+        <div className="container mx-auto px-4 flex flex-col space-y-2 ">
           {navLinks.map((link) => (
             <Link
               key={link.name}
