@@ -1,0 +1,161 @@
+
+
+> frontend@0.1.0 build /Users/ayushshah/Project/turbo-repo/apps/frontend
+> next build
+
+   [1m[38;2;173;127;168m▲ Next.js 15.2.1[39m[22m
+
+ [37m[1m [22m[39m Creating an optimized production build ...
+ [32m[1m✓[22m[39m Compiled successfully
+[?25l [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m..[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m...[39m[2K[1G [37m[1m [22m[39m Linting and checking validity of types  [36m.[39m[2K[1G[?25h
+./app/components/Hero.tsx
+180:14  Warning: Unknown property 'jsx' found  react/no-unknown-property
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+[?25l [36m.[39m [2K[1G [36m..[39m [2K[1G [36m...[39m [2K[1G [36m.[39m [2K[1G[?25h    [32m[1m✓[22m[39m Linting and checking validity of types 
+[?25l [37m[1m [22m[39m Collecting page data  [36m.[39m[2K[1G [37m[1m [22m[39m Collecting page data  [36m..[39mFetching blog posts for page 1
+API data retrieved for page 1: object 10
+[2K[1G[?25h [37m[1m [22m[39m Collecting page data     [32m[1m✓[22m[39m Collecting page data 
+[?25l [37m[1m [22m[39m Generating static pages (0/18)  [36m[    ][39m[2K[1G [37m[1m [22m[39m Generating static pages (0/18)  [36m[=   ][39m[2K[1G[?25hFetching blog posts for page -1
+Fetching blog posts for page 1
+ ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+API data retrieved for page 1: object 10
+ ⚠ Unsupported metadata viewport is configured in metadata export in /blog/a-fresh-look-for-css-the-story-behind-its-new-logo. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /blog/a-fresh-look-for-css-the-story-behind-its-new-logo. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /blog/javascript-beginner-roadmap-along-with-some-mini-projects. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /blog/javascript-beginner-roadmap-along-with-some-mini-projects. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+API data retrieved for page -1: object 25
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+ ⚠ Unsupported metadata viewport is configured in metadata export in /blog/introduction-to-scroll-driven-animations-with-css-scroll-and-view. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /blog/introduction-to-scroll-driven-animations-with-css-scroll-and-view. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+ ⚠ Unsupported metadata viewport is configured in metadata export in /blog/the-mystery-of-the-missing-clicks-a-journey-into-event-delegation-in-javascript. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /blog/the-mystery-of-the-missing-clicks-a-journey-into-event-delegation-in-javascript. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+ ⚠ Unsupported metadata viewport is configured in metadata export in /blog/enhance-form-validation-with-pure-css-no-javascript. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /blog/enhance-form-validation-with-pure-css-no-javascript. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+ ⚠ Unsupported metadata viewport is configured in metadata export in /blog/css-hyphens-prevent-text-overflow. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /blog/css-hyphens-prevent-text-overflow. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+ ⚠ Unsupported metadata viewport is configured in metadata export in /blog/solving-overflowing-div-issues-with-align-items-safe-center-in-css. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /blog/solving-overflowing-div-issues-with-align-items-safe-center-in-css. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+ ⚠ Unsupported metadata viewport is configured in metadata export in /blog/understanding-env-safe-area-insets-css-react-tailwind. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /blog/understanding-env-safe-area-insets-css-react-tailwind. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+ ⚠ Unsupported metadata viewport is configured in metadata export in /blog/javascript-equality-puzzle-when-a-equals-1-2-and-3. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /blog/javascript-equality-puzzle-when-a-equals-1-2-and-3. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+ ⚠ Unsupported metadata viewport is configured in metadata export in /blog/hide-scrollbar-using-css. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /blog/hide-scrollbar-using-css. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+ ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+Fetching blog posts for page 1
+API data retrieved for page 1: object 10
+ ⚠ Unsupported metadata viewport is configured in metadata export in /blog. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /blog. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+[?25h [32m[1m✓[22m[39m Generating static pages (18/18)
+[?25l [37m[1m [22m[39m Finalizing page optimization  [36m.[39m[?25l [37m[1m [22m[39m Collecting build traces  [36m.[39m[2K[1G[?25h [37m[1m [22m[39m Collecting build traces     [32m[1m✓[22m[39m Collecting build traces 
+[2K[1G[?25h [37m[1m [22m[39m Finalizing page optimization     [32m[1m✓[22m[39m Finalizing page optimization 
+
+[4mRoute (app)[24m                                                                       [4mSize[24m  [4mFirst Load JS[24m  [4mRevalidate[24m  [4mExpire[24m
+┌ ○ /                                                                          26.9 kB         [37m[1m173 kB[22m[39m          1h      1y
+├ ○ /_not-found                                                                  979 B         [37m[1m102 kB[22m[39m
+├ ○ /blog                                                                      3.34 kB         [37m[1m150 kB[22m[39m          1h      1y
+├ ● /blog/[slug]                                                               2.15 kB         [37m[1m149 kB[22m[39m          1h      1y
+├   ├ /blog/a-fresh-look-for-css-the-story-behind-its-new-logo                                                 1h      1y
+├   ├ /blog/javascript-beginner-roadmap-along-with-some-mini-projects                                          1h      1y
+├   ├ /blog/introduction-to-scroll-driven-animations-with-css-scroll-and-view                                  1h      1y
+├   └ [+7 more paths]
+├ ○ /robots.txt                                                                  142 B         [37m[1m101 kB[22m[39m
+└ ○ /sitemap.xml                                                                 142 B         [37m[1m101 kB[22m[39m          1h      1y
++ First Load JS shared by all                                                   [37m[1m101 kB[22m[39m
+  ├ chunks/321-935b2bb38b646366.js                                             45.4 kB
+  ├ chunks/39f0e23d-a4b9ac1d04f65122.js                                        53.3 kB
+  └ other shared chunks (total)                                                1.92 kB
+
+
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses [36mgenerateStaticParams[39m)
+
+[?25h
