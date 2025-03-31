@@ -8,7 +8,8 @@ export default async function EditBlogPage({
 }: {
   params: { id: string };
 }) {
-  const blog = await getBlogById(await params.id);
+  const { id } = await params;
+  const blog = await getBlogById(id);
 
   if (!blog) {
     notFound();
@@ -19,7 +20,9 @@ export default async function EditBlogPage({
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Edit Blog Post</h1>
-          <p className="mt-2 text-sm text-gray-600">Update "{blog.title}"</p>
+          <p className="mt-2 text-sm text-gray-600">
+            Update &apos;{blog.title}&apos;
+          </p>
         </div>
         <Link
           href="/admin/blog"

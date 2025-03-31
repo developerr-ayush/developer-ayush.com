@@ -13,6 +13,7 @@ import TableOfContents from "../../components/TableOfContents";
 import RelatedPosts from "../../components/RelatedPosts";
 import BreadcrumbsServer from "../../components/BreadcrumbsServer";
 import { Metadata } from "next";
+import { processBlogContent } from "../../../lib/editorjs";
 
 export async function generateStaticParams() {
   const blogData = await getBlogPosts(1);
@@ -47,6 +48,12 @@ export default async function BlogPostPage({ params }: { params: Params }) {
 
   if (!post) {
     notFound();
+  }
+
+  // Process content - handle both legacy content and EditorJS content
+  let processedContent = "";
+  if (detailedPost && detailedPost.content) {
+    processedContent = processBlogContent(detailedPost.content);
   }
 
   // Create structured data for the blog post
@@ -187,9 +194,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
             <div className="w-full lg:w-3/4">
               <article className="blog-content">
                 {detailedPost ? (
-                  <div
-                    dangerouslySetInnerHTML={{ __html: detailedPost.content }}
-                  />
+                  <div dangerouslySetInnerHTML={{ __html: processedContent }} />
                 ) : (
                   <p className="text-foreground/70">{post.description}</p>
                 )}

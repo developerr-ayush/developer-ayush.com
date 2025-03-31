@@ -1,6 +1,6 @@
 "use server";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import {auth} from "../auth";
+import { auth } from "../auth";
 import { db } from "../lib/db";
 import { blogSchema } from "../schemas";
 import { z } from "zod";
@@ -53,15 +53,8 @@ export const updateBlog = async (
 ) => {
   const validatedFields = blogSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields" };
-  const {
-    title,
-    description,
-    status,
-    content,
-    banner,
-    categories,
-    slug,
-  } = validatedFields.data;
+  const { title, description, status, content, banner, categories, slug } =
+    validatedFields.data;
   const session = await auth();
   if (!session?.user) return { error: "Not Authorized" };
   const existingblog = await db.blog.findUnique({

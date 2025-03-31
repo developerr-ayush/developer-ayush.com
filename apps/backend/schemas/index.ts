@@ -20,9 +20,25 @@ export const blogSchema = z.object({
     .string()
     .min(10, { message: "Title should be atleast 10 letters" })
     .max(255, { message: "Title should be less than 255 letters" }),
-  content: z
-    .string()
-    .min(20, { message: "Description should be atleast 20 letters" }),
+  content: z.union([z.string(), z.object({}), z.null()]).transform((val) => {
+    // If it's an empty string or null, return null
+    if (!val) return null;
+
+    // If it's already an object, return it
+    if (typeof val === "object") return val;
+
+    // If it's a string, try to parse it as JSON
+    if (typeof val === "string") {
+      try {
+        return JSON.parse(val);
+      } catch (e) {
+        // If it's not valid JSON, return it as a string
+        return val;
+      }
+    }
+
+    return val;
+  }),
   date: z.date(),
   author: z.string().optional(),
   banner: z.string(),

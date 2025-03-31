@@ -7,6 +7,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { createBlog, updateBlog } from "../../../actions/blog";
 import { blogSchema } from "../../../schemas";
+import dynamic from "next/dynamic";
+
+// Dynamically import the RichTextEditor to avoid SSR issues
+const RichTextEditor = dynamic(
+  () => import("../../../components/RichTextEditor"),
+  { ssr: false }
+);
 
 type FormValues = z.infer<typeof blogSchema>;
 
@@ -15,6 +22,7 @@ export default function BlogForm({ blog }: { blog?: any }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [bannerUrl, setBannerUrl] = useState<string>("");
+  const [editorContent, setEditorContent] = useState<any>(null);
 
   const {
     register,
@@ -23,11 +31,12 @@ export default function BlogForm({ blog }: { blog?: any }) {
     reset,
     setValue,
     watch,
+    getValues,
   } = useForm<FormValues>({
     resolver: zodResolver(blogSchema),
     defaultValues: {
       title: "",
-      content: "",
+      content: null,
       description: "",
       banner: "",
       status: "draft",
@@ -45,6 +54,7 @@ export default function BlogForm({ blog }: { blog?: any }) {
     if (blog) {
       setValue("title", blog.title);
       setValue("content", blog.content);
+      setEditorContent(blog.content);
       setValue("description", blog.description || "");
       setValue("banner", blog.banner);
       setBannerUrl(blog.banner || "");
@@ -61,9 +71,18 @@ export default function BlogForm({ blog }: { blog?: any }) {
     setBannerUrl(watchedBanner || "");
   }, [watchedBanner]);
 
+  // Handle editor content change
+  const handleEditorChange = (data: any) => {
+    setEditorContent(data);
+    setValue("content", data);
+  };
+
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
     setError(null);
+
+    // Set the editor content to the form values
+    data.content = editorContent;
 
     try {
       if (blog) {
@@ -242,14 +261,11 @@ export default function BlogForm({ blog }: { blog?: any }) {
               >
                 Content <span className="text-red-500">*</span>
               </label>
-              <textarea
-                id="content"
-                rows={10}
-                className={`block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 shadow-sm ring-1 ring-inset ${errors.content ? "ring-red-300" : "ring-gray-300"} placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
-                placeholder="Write your blog content here..."
-                {...register("content")}
+              <RichTextEditor
+                initialValue={blog?.content || null}
+                onChange={handleEditorChange}
               />
-              {errors.content && (
+              {errors.content && typeof errors.content.message === "string" && (
                 <p className="mt-1 text-sm text-red-600">
                   {errors.content.message}
                 </p>
