@@ -1,6 +1,6 @@
 "use server";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import auth from "../app/api/auth/[...nextauth]";
+import {auth} from "../auth";
 import { db } from "../lib/db";
 import { blogSchema } from "../schemas";
 import { z } from "zod";
