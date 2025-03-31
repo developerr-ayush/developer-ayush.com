@@ -6,7 +6,6 @@ import { blogSchema } from "../schemas";
 import { z } from "zod";
 
 export const createBlog = async (values: z.infer<typeof blogSchema>) => {
-  console.log(values);
   const validatedFields = blogSchema.safeParse(values);
   if (!validatedFields.success) return { error: "Invalid Fields" };
   const { title, description, status, banner, content, categories } =
@@ -55,7 +54,7 @@ export const createBlog = async (values: z.infer<typeof blogSchema>) => {
     console.error("Error creating blog:", e);
     // checking if error is because of title
     if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
-      return { error: "Title or Slug already exists" };
+      return { error: "Title or Slug cateogry already exists" };
     }
     return { error: "something went wrong" };
   }
