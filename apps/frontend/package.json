@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "@next/third-parties": "^15.2.4",
     "@repo/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.0.17",
     "framer-motion": "^12.6.2",
