@@ -11,6 +11,7 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@repo/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.0.17",
     "framer-motion": "^12.6.2",

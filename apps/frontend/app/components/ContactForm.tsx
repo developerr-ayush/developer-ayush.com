@@ -1,50 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import emailjs from "@emailjs/browser";
 
 export default function ContactForm() {
-  const [formState, setFormState] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
-
+  const form = useRef<HTMLFormElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormState({
-      ...formState,
-      [e.target.name]: e.target.value,
-    });
-  };
+  useEffect(() => {
+    // Initialize EmailJS with your public key
+    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "");
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    if (isSubmitting || !form.current) return;
 
     setIsSubmitting(true);
     setError("");
 
     try {
-      // Simulate form submission (replace with actual API call)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await emailjs.sendForm(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "",
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "",
+        form.current,
+        {
+          publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "",
+        }
+      );
 
       // Form successfully submitted
       setSubmitted(true);
-      setFormState({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-      });
+      form.current.reset();
     } catch (error) {
-      // Handle error properly
-      setError("Something went wrong. Please try again.");
+      setError("Failed to send message. Please try again later.");
       console.error("Contact form submission error:", error);
     } finally {
       setIsSubmitting(false);
@@ -81,7 +72,7 @@ export default function ContactForm() {
           </button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form ref={form} onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="group">
               <label htmlFor="name" className="block text-sm font-medium mb-2">
@@ -90,9 +81,7 @@ export default function ContactForm() {
               <input
                 type="text"
                 id="name"
-                name="name"
-                value={formState.name}
-                onChange={handleChange}
+                name="user_name"
                 className="w-full px-4 py-3 rounded-lg bg-foreground/5 border border-foreground/10 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 transition-all"
                 required
               />
@@ -105,9 +94,7 @@ export default function ContactForm() {
               <input
                 type="email"
                 id="email"
-                name="email"
-                value={formState.email}
-                onChange={handleChange}
+                name="user_email"
                 className="w-full px-4 py-3 rounded-lg bg-foreground/5 border border-foreground/10 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 transition-all"
                 required
               />
@@ -122,8 +109,6 @@ export default function ContactForm() {
               type="text"
               id="subject"
               name="subject"
-              value={formState.subject}
-              onChange={handleChange}
               className="w-full px-4 py-3 rounded-lg bg-foreground/5 border border-foreground/10 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 transition-all"
               required
             />
@@ -136,8 +121,6 @@ export default function ContactForm() {
             <textarea
               id="message"
               name="message"
-              value={formState.message}
-              onChange={handleChange}
               rows={5}
               className="w-full px-4 py-3 rounded-lg bg-foreground/5 border border-foreground/10 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 transition-all resize-none"
               required
