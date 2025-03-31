@@ -16,6 +16,7 @@
     "@repo/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.0.17",
     "framer-motion": "^12.6.2",
+    "highlight.js": "^11.11.1",
     "next": "^15.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/highlight.js": "^10.1.0",
     "@types/node": "^22.13.10",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",

@@ -14,6 +14,7 @@ import RelatedPosts from "../../components/RelatedPosts";
 import BreadcrumbsServer from "../../components/BreadcrumbsServer";
 import { Metadata } from "next";
 import { processBlogContent } from "../../../lib/editorjs";
+import ClientSyntaxHighlighter from "../../../app/components/ClientSyntaxHighlighter";
 
 export async function generateStaticParams() {
   const blogData = await getBlogPosts(1);
@@ -202,6 +203,8 @@ export default async function BlogPostPage({ params }: { params: Params }) {
                   <p className="text-foreground/70">{post.description}</p>
                 )}
               </article>
+              {/* Client component for syntax highlighting */}
+              <ClientSyntaxHighlighter />
             </div>
             <aside className="w-full lg:w-1/4 lg:sticky lg:top-24 self-start">
               <TableOfContents />
