@@ -86,7 +86,7 @@ export default function RichTextEditor({
         editorRef.current = null;
       }
     };
-  }, [initialValue, placeholder, readOnly]);
+  }, [initialValue, placeholder, readOnly, onChange, initialData]);
 
   return (
     <div className="rich-text-editor">

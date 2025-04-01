@@ -12,6 +12,7 @@
       ],
       "outputs": [".next/**", "!.next/cache/**"]
     },
+
     "lint": {
       "dependsOn": ["^lint"]
     },
@@ -20,8 +21,12 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true      
+      "env": [
+        "CLOUDINARY_CLOUD_NAME",
+        "CLOUDINARY_API_KEY",
+        "CLOUDINARY_API_SECRET"
+      ],
+      "persistent": true
     }
-    
   }
 }
