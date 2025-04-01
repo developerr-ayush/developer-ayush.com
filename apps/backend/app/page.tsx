@@ -1,26 +1,17 @@
-import Image, { type ImageProps } from "next/image";
+import Image from "next/image";
 import { Button } from "@repo/ui/button";
 import styles from "./page.module.css";
 
-type Props = Omit<ImageProps, "src"> & {
-  srcLight: string;
-  srcDark: string;
-};
-
-const ThemeImage = (props: Props) => {
-  const { srcLight, srcDark, ...rest } = props;
-
-  return (
-    <>
-    </>
-  );
-};
+// type Props = Omit<ImageProps, "src"> & {
+//   srcLight: string;
+//   srcDark: string;
+// };
 
 export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <ThemeImage
+        {/* <ThemeImage
           className={styles.logo}
           srcLight="turborepo-dark.svg"
           srcDark="turborepo-light.svg"
@@ -28,7 +19,7 @@ export default function Home() {
           width={180}
           height={38}
           priority
-        />
+        /> */}
         <ol>
           <li>
             Get started by editing <code>apps/docs/app/page.tsx</code>

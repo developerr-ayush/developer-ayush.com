@@ -3,10 +3,15 @@
 import React, { useRef, useEffect, useState } from "react";
 import { EDITOR_JS_TOOLS, normalizeContent } from "../lib/editorjs";
 import type EditorJS from "@editorjs/editorjs";
+import { OutputData } from "@editorjs/editorjs";
 
 interface RichTextEditorProps {
-  initialValue: string | object | null;
-  onChange: (data: any) => void;
+  initialValue?: {
+    blocks: { type: string; data: object }[];
+    time: number;
+    version: string;
+  };
+  onChange: (data: OutputData) => void;
   placeholder?: string;
   readOnly?: boolean;
 }
@@ -20,7 +25,7 @@ export default function RichTextEditor({
   const editorRef = useRef<EditorJS | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [editorReady, setEditorReady] = useState(false);
-  const [initialData, setInitialData] = useState<any>(null);
+  const [initialData, setInitialData] = useState<OutputData | null>(null);
   const hasInitialized = useRef(false);
 
   // Initialize editor with initial data
@@ -33,7 +38,7 @@ export default function RichTextEditor({
 
     // Process the initial value
     const data = normalizeContent(initialValue);
-    setInitialData(data);
+    setInitialData(data || initialData);
 
     // Clean up previous editor instance if it exists
     if (editorRef.current) {

@@ -16,6 +16,7 @@ export const RegisterSchema = z.object({
   }),
 });
 export const blogSchema = z.object({
+  id: z.string(),
   title: z
     .string()
     .min(10, { message: "Title should be atleast 10 letters" })
@@ -49,6 +50,8 @@ export const blogSchema = z.object({
     .optional(),
   slug: z.string(),
   tags: z.string().optional(),
+  updatedAt: z.date().optional(),
+  createdAt: z.date().optional(),
   categories: z.union([
     z.array(z.string()),
     z.string().transform((val) => {

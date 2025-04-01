@@ -10,6 +10,7 @@ import { blogSchema } from "../../../schemas";
 import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import { OutputData } from "@editorjs/editorjs";
 // Dynamically import the RichTextEditor to avoid SSR issues
 const RichTextEditor = dynamic(
   () => import("../../../components/RichTextEditor"),
@@ -25,7 +26,11 @@ interface BlogCategory {
 interface BlogData {
   id: string;
   title: string;
-  content: any; // Using any here just for this specific field to avoid type issues
+  content: {
+    blocks: { type: string; data: object }[];
+    time: number;
+    version: string;
+  }; // Using any here just for this specific field to avoid type issues
   description: string;
   banner: string;
   status: "draft" | "published" | "archived";
@@ -45,7 +50,7 @@ export default function BlogForm({ blog }: { blog?: BlogData }) {
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [uploadingBanner, setUploadingBanner] = useState(false);
   const bannerFileInputRef = useRef<HTMLInputElement>(null);
-  const [editorContent, setEditorContent] = useState<any>(null);
+  const [editorContent, setEditorContent] = useState<OutputData | null>(null);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
   const {
@@ -121,9 +126,9 @@ export default function BlogForm({ blog }: { blog?: BlogData }) {
   }, [watchedBanner, selectedBannerFile]);
 
   // Handle editor content change
-  const handleEditorChange = (data: { [key: string]: [] }) => {
+  const handleEditorChange = (data: OutputData) => {
     setEditorContent(data);
-    setValue("json_content", data);
+    // setValue("json_content", data);
 
     // Also set a string version for the content field
     setValue(

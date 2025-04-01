@@ -1,11 +1,13 @@
 import Link from "next/link";
-import { showBlog, deleteBlog } from "../../../actions/blog";
+import { showBlog } from "../../../actions/blog";
 import { formatDistanceToNow } from "date-fns";
 import DeleteButton from "./delete-button";
 import Image from "next/image";
+import { blogSchema } from "../../../schemas";
+import * as z from "zod";
 
 export default async function BlogAdmin() {
-  const blogs = await showBlog();
+  const blogs: z.infer<typeof blogSchema>[] = await showBlog();
 
   return (
     <div>

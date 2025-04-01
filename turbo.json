@@ -5,6 +5,11 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "env": [
+        "CLOUDINARY_CLOUD_NAME",
+        "CLOUDINARY_API_KEY",
+        "CLOUDINARY_API_SECRET"
+      ],
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {
@@ -15,7 +20,8 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true      
     }
+    
   }
 }

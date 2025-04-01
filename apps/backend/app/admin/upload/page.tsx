@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useRef } from "react";
 import { toast } from "react-toastify";
 
@@ -99,10 +100,12 @@ export default function UploadPage() {
             <div className="mt-4">
               <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
               <div className="relative w-full h-64 border border-gray-200 rounded-lg overflow-hidden">
-                <img
+                <Image
                   src={selectedImage}
                   alt="Preview"
                   className="object-contain w-full h-full"
+                  width={100}
+                  height={100}
                 />
               </div>
             </div>
@@ -141,10 +144,12 @@ export default function UploadPage() {
                 Image uploaded successfully!
               </div>
               <div className="relative w-full h-64 border border-gray-200 rounded-lg overflow-hidden">
-                <img
+                <Image
                   src={uploadedImage}
                   alt="Uploaded"
                   className="object-contain w-full h-full"
+                  width={100}
+                  height={100}
                 />
               </div>
               <input
