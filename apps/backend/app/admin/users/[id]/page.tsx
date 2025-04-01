@@ -13,7 +13,7 @@ import { z } from "zod";
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 type FormValues = z.infer<typeof UpdateUserSchema>;
 
-export default function EditUserPage({ params }: { params: { id: string } }) {
+function EditUserPage({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -304,4 +304,12 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
       </div>
     </div>
   );
+}
+export default async function page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  return <EditUserPage params={{ id }} />;
 }
