@@ -30,7 +30,7 @@ export default function UserRegistrationForm({
   const {
     register,
     handleSubmit,
-    watch,
+
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(
@@ -50,7 +50,7 @@ export default function UserRegistrationForm({
     },
   });
 
-  const password = watch("password");
+  //   const password = watch("password");
 
   const onSubmit = async (data: FormValues) => {
     // Validate confirm password if not in admin mode

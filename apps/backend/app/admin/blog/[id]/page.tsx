@@ -5,8 +5,13 @@ import { auth } from "../../../../auth";
 import ApprovalActions from "../approval-actions";
 import DeleteButton from "../delete-button";
 import Link from "next/link";
-
-export default async function BlogPage({ params }: { params: { id: string } }) {
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+export default async function BlogPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
   const session = await auth();
 
   if (!session?.user) {
@@ -19,7 +24,7 @@ export default async function BlogPage({ params }: { params: { id: string } }) {
   try {
     const blog = await db.blog.findUnique({
       where: {
-        id: params.id,
+        id,
       },
       include: {
         categories: true,
@@ -66,7 +71,7 @@ export default async function BlogPage({ params }: { params: { id: string } }) {
                   Permission Denied
                 </h3>
                 <div className="mt-2 text-sm text-red-700">
-                  <p>You don't have permission to edit this blog post.</p>
+                  <p>You don&apos;t have permission to edit this blog post.</p>
                 </div>
               </div>
             </div>

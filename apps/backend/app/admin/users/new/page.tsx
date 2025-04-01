@@ -1,14 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+
 import UserRegistrationForm from "../../../../components/UserRegistrationForm";
 
 export default function NewUserPage() {
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { data: session } = useSession();
 

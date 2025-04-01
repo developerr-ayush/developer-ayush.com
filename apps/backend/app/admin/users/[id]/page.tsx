@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { z } from "zod";
-
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 type FormValues = z.infer<typeof UpdateUserSchema>;
 
 export default function EditUserPage({ params }: { params: { id: string } }) {
@@ -243,7 +243,7 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
           {user?.blogs && user.blogs.length > 0 && (
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-3">
-                User's Blogs
+                User&apos;s Blogs
               </h3>
               <div className="bg-gray-50 p-4 rounded-md">
                 <ul className="divide-y divide-gray-200">
