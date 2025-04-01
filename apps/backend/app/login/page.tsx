@@ -101,7 +101,7 @@ export default function LoginPage() {
           email: formData.email,
           password: formData.password,
         });
-
+        console.log("after login", result);
         if (result?.error) {
           setServerError(result.error);
         }
@@ -137,7 +137,7 @@ export default function LoginPage() {
       }
     } catch (error) {
       console.error("Authentication error:", error);
-      setServerError("An unexpected error occurred. Please try again.");
+      // setServerError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
