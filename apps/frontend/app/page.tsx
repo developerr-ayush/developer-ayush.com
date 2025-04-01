@@ -46,11 +46,11 @@ export default async function Home() {
   return (
     <main>
       {/* JSON-LD structured data */}
-      <Script
+      {/* <Script
         id="structured-data"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+      /> */}
 
       <Hero />
       <About />
