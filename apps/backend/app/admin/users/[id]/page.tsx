@@ -150,7 +150,7 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
         </Link>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
+      <div className="pb-6 rounded-lg overflow-hidden">
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
           {error && (
             <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
