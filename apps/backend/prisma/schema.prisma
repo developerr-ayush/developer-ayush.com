@@ -16,6 +16,7 @@ datasource db {
 enum Role {
   SUPER_ADMIN
   ADMIN
+  USER
 }
 
 model Subscription {
@@ -29,7 +30,7 @@ model User {
   id       String  @id @default(cuid())
   name     String?
   email    String  @unique
-  role     Role    @default(ADMIN)
+  role     Role    @default(USER)
   password String
   blogs    Blog[]
 }
@@ -47,7 +48,7 @@ model category {
 model Blog {
   id          String     @id @default(cuid())
   title       String?    @unique @db.VarChar(255)
-  content     String     @db.Text
+  content     String?    @db.Text
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   author      User       @relation(fields: [authorId], references: [id])
@@ -59,6 +60,7 @@ model Blog {
   slug        String?    @unique
   views       Int        @default(0)
   tags        String?
+  approved    Boolean    @default(false)
 }
 
 enum Status {

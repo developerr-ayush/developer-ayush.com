@@ -4,7 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "./lib/db";
 import { getUserById } from "./data/user";
 
-type Role = "SUPER_ADMIN" | "ADMIN";
+type Role = "SUPER_ADMIN" | "ADMIN" | "USER";
 declare module "next-auth" {
   interface User {
     role?: Role;

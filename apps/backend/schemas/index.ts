@@ -14,7 +14,19 @@ export const RegisterSchema = z.object({
   password: z.string().min(6, {
     message: "Password is required",
   }),
+  role: z.enum(["SUPER_ADMIN", "ADMIN", "USER"]).optional(),
 });
+
+export const UpdateUserSchema = z.object({
+  name: z
+    .string()
+    .min(1, {
+      message: "Name is required",
+    })
+    .optional(),
+  role: z.enum(["SUPER_ADMIN", "ADMIN", "USER"]).optional(),
+});
+
 export const blogSchema = z.object({
   id: z.string(),
   title: z
@@ -52,6 +64,7 @@ export const blogSchema = z.object({
   tags: z.string().optional(),
   updatedAt: z.date().optional(),
   createdAt: z.date().optional(),
+  approved: z.boolean().optional(),
   categories: z.union([
     z.array(z.string()),
     z.string().transform((val) => {

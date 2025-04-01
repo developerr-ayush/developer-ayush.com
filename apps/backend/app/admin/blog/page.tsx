@@ -3,9 +3,18 @@ import { showBlog } from "../../../actions/blog";
 import { formatDistanceToNow } from "date-fns";
 import DeleteButton from "./delete-button";
 import Image from "next/image";
-import { Blog } from "@prisma/client";
+import { auth } from "../../../auth";
+
 export default async function BlogAdmin() {
-  const blogs: Blog[] = await showBlog();
+  const blogs = await showBlog();
+  const session = await auth();
+
+  if (!session?.user) {
+    return <div>Not authenticated</div>;
+  }
+
+  const isAdmin =
+    session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN";
 
   return (
     <div>
@@ -60,6 +69,14 @@ export default async function BlogAdmin() {
                 >
                   Updated
                 </th>
+                {isAdmin && (
+                  <th
+                    scope="col"
+                    className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Author
+                  </th>
+                )}
                 <th
                   scope="col"
                   className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -125,18 +142,33 @@ export default async function BlogAdmin() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                        ${
-                          blog.status === "published"
-                            ? "bg-green-100 text-green-800"
-                            : blog.status === "draft"
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {blog.status || "draft"}
-                      </span>
+                      <div className="flex flex-col gap-2">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                          ${
+                            blog.status === "published"
+                              ? "bg-green-100 text-green-800"
+                              : blog.status === "draft"
+                                ? "bg-amber-100 text-amber-800"
+                                : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {blog.status || "draft"}
+                        </span>
+
+                        {blog.status === "draft" && (
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                            ${
+                              blog.approved
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {blog.approved ? "Approved" : "Needs Review"}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {blog.updatedAt
@@ -145,6 +177,22 @@ export default async function BlogAdmin() {
                           })
                         : "N/A"}
                     </td>
+                    {isAdmin && (
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                          ${
+                            blog.author.role === "SUPER_ADMIN"
+                              ? "bg-purple-100 text-purple-800"
+                              : blog.author.role === "ADMIN"
+                                ? "bg-indigo-100 text-indigo-800"
+                                : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {blog.author.name || blog.author.email}
+                        </span>
+                      </td>
+                    )}
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-4">
                         <Link

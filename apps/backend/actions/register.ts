@@ -17,6 +17,7 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
       name,
       email,
       password: hashedPassword,
+      role: "USER",
     },
   });
   // TODO:send verifciation email

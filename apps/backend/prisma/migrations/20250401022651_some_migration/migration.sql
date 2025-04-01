@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('SUPER_ADMIN', 'ADMIN');
+CREATE TYPE "Role" AS ENUM ('SUPER_ADMIN', 'ADMIN', 'USER');
 
 -- CreateEnum
 CREATE TYPE "Status" AS ENUM ('draft', 'published', 'archived');
@@ -19,7 +19,7 @@ CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "name" TEXT,
     "email" TEXT NOT NULL,
-    "role" "Role" NOT NULL DEFAULT 'ADMIN',
+    "role" "Role" NOT NULL DEFAULT 'USER',
     "password" TEXT NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -42,7 +42,6 @@ CREATE TABLE "Blog" (
     "id" TEXT NOT NULL,
     "title" VARCHAR(255),
     "content" TEXT,
-    "json_content" JSONB,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "authorId" TEXT NOT NULL,
@@ -52,6 +51,7 @@ CREATE TABLE "Blog" (
     "slug" TEXT,
     "views" INTEGER NOT NULL DEFAULT 0,
     "tags" TEXT,
+    "approved" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Blog_pkey" PRIMARY KEY ("id")
 );
