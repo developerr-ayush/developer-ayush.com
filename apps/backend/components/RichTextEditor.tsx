@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { EDITOR_JS_TOOLS, normalizeContent } from "../lib/editorjs";
 import type EditorJS from "@editorjs/editorjs";
 import { OutputData } from "@editorjs/editorjs";
+import { ToolSettings, EditorConfig } from "@editorjs/editorjs/types";
 
 interface RichTextEditorProps {
   initialValue?: {

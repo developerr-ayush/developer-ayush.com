@@ -3,11 +3,9 @@ import { showBlog } from "../../../actions/blog";
 import { formatDistanceToNow } from "date-fns";
 import DeleteButton from "./delete-button";
 import Image from "next/image";
-import { blogSchema } from "../../../schemas";
-import * as z from "zod";
-
+import { Blog } from "@prisma/client";
 export default async function BlogAdmin() {
-  const blogs: z.infer<typeof blogSchema>[] = await showBlog();
+  const blogs: Blog[] = await showBlog();
 
   return (
     <div>

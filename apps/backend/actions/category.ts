@@ -1,5 +1,5 @@
 "use server";
-import auth from "../app/api/auth/[...nextauth]";
+import { auth } from "../auth";
 import { db } from "../lib/db";
 export const createCategory = async (values: string) => {
   const session = await auth();

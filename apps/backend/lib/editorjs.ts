@@ -1,4 +1,23 @@
 import edjsHTML from "editorjs-html";
+import type { OutputData } from "@editorjs/editorjs";
+// Import only the types we need
+import "@editorjs/header";
+import "@editorjs/list";
+import "@editorjs/image";
+import "@editorjs/quote";
+import "@editorjs/paragraph";
+import "@editorjs/code";
+import "@editorjs/delimiter";
+import * as editorjsHeader from "@editorjs/header";
+import * as editorjsList from "@editorjs/list";
+import * as editorjsImage from "@editorjs/image";
+import * as editorjsQuote from "@editorjs/quote";
+import * as editorjsParagraph from "@editorjs/paragraph";
+import * as editorjsCode from "@editorjs/code";
+import * as editorjsDelimiter from "@editorjs/delimiter";
+import * as editorjsEmbed from "@editorjs/embed";
+import * as editorjsRaw from "@editorjs/raw";
+import * as editorjsMarker from "@editorjs/marker";
 
 // Initialize the EditorJS HTML parser
 const edjsParser = edjsHTML();
@@ -8,7 +27,7 @@ const edjsParser = edjsHTML();
  */
 export const EDITOR_JS_TOOLS = {
   header: {
-    class: require("@editorjs/header"),
+    class: editorjsHeader.default,
     config: {
       placeholder: "Enter a header",
       levels: [2, 3, 4, 5, 6],
@@ -16,11 +35,11 @@ export const EDITOR_JS_TOOLS = {
     },
   },
   list: {
-    class: require("@editorjs/list"),
+    class: editorjsList.default,
     inlineToolbar: true,
   },
   image: {
-    class: require("@editorjs/image"),
+    class: editorjsImage.default,
     config: {
       uploader: {
         uploadByFile(file: File) {
@@ -51,7 +70,7 @@ export const EDITOR_JS_TOOLS = {
     },
   },
   embed: {
-    class: require("@editorjs/embed"),
+    class: editorjsEmbed.default,
     config: {
       services: {
         youtube: true,
@@ -66,35 +85,35 @@ export const EDITOR_JS_TOOLS = {
         generic: {
           // Generic embeds - detect common embed URLs
           regex: /^(https?:\/\/.*?\/.*?)$/,
-          embedUrl: '<%= remote_id %>',
+          embedUrl: "<%= remote_id %>",
           html: "<iframe class='embed-responsive-item' src='<%= remote_id %>' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe>",
           height: 320,
           width: "100%",
-          id: (groups: string[]) => groups[1]
-        }
-      }
+          id: (groups: string[]) => groups[1],
+        },
+      },
     },
     inlineToolbar: true,
   },
   raw: {
-    class: require("@editorjs/raw"),
+    class: editorjsRaw.default,
     config: {
-      placeholder: 'Enter HTML code here (iframe, embed code, etc.)',
+      placeholder: "Enter HTML code here (iframe, embed code, etc.)",
     },
     inlineToolbar: true,
   },
-  code: require("@editorjs/code"),
+  code: editorjsCode.default,
   quote: {
-    class: require("@editorjs/quote"),
+    class: editorjsQuote.default,
     inlineToolbar: true,
   },
-  delimiter: require("@editorjs/delimiter"),
+  delimiter: editorjsDelimiter.default,
   paragraph: {
-    class: require("@editorjs/paragraph"),
+    class: editorjsParagraph.default,
     inlineToolbar: true,
   },
   marker: {
-    class: require("@editorjs/marker"),
+    class: editorjsMarker.default,
     shortcut: "CMD+SHIFT+M",
   },
 };
@@ -104,7 +123,7 @@ export const EDITOR_JS_TOOLS = {
  * @param data - EditorJS JSON data
  * @returns HTML string
  */
-export function parseEditorJsToHtml(data: any): string {
+export function parseEditorJsToHtml(data: OutputData): string {
   if (!data || !data.blocks || !data.blocks.length) {
     return "";
   }
@@ -123,7 +142,7 @@ export function parseEditorJsToHtml(data: any): string {
  * @param text - Plain text content
  * @returns EditorJS compatible data object
  */
-export function convertPlainTextToEditorJs(text: string): any {
+export function convertPlainTextToEditorJs(text: string): OutputData {
   if (!text) {
     return {
       time: new Date().getTime(),
@@ -156,7 +175,8 @@ export function isValidJson(str: string): boolean {
   try {
     JSON.parse(str);
     return true;
-  } catch (e) {
+  } catch (error) {
+    console.error("Error parsing JSON:", error);
     return false;
   }
 }
@@ -166,7 +186,9 @@ export function isValidJson(str: string): boolean {
  * @param content - Content to check
  * @returns EditorJS data object
  */
-export function normalizeContent(content: string | any): any {
+export function normalizeContent(
+  content: string | OutputData | undefined | null
+): OutputData {
   // Handle null or undefined content
   if (content === null || content === undefined) {
     return {

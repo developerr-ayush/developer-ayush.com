@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { parseEditorJsToHtml, normalizeContent } from "../lib/editorjs";
+import { OutputData } from "@editorjs/editorjs";
 
 interface RichTextDisplayProps {
-  content: string | object | null;
+  content: string | OutputData | null;
   className?: string;
 }
 

@@ -11,6 +11,7 @@ import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { OutputData } from "@editorjs/editorjs";
+import { Blog, category, User } from "@prisma/client";
 // Dynamically import the RichTextEditor to avoid SSR issues
 const RichTextEditor = dynamic(
   () => import("../../../components/RichTextEditor"),
@@ -18,28 +19,11 @@ const RichTextEditor = dynamic(
 );
 
 type FormValues = z.infer<typeof blogSchema>;
-
-interface BlogCategory {
-  name: string;
+interface BlogFormProps extends Blog {
+  categories: category[];
+  author: User;
 }
-
-interface BlogData {
-  id: string;
-  title: string;
-  content: {
-    blocks: { type: string; data: object }[];
-    time: number;
-    version: string;
-  }; // Using any here just for this specific field to avoid type issues
-  description: string;
-  banner: string;
-  status: "draft" | "published" | "archived";
-  slug: string;
-  tags: string;
-  categories?: BlogCategory[];
-}
-
-export default function BlogForm({ blog }: { blog?: BlogData }) {
+export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -97,18 +81,15 @@ export default function BlogForm({ blog }: { blog?: BlogData }) {
 
   useEffect(() => {
     if (blog) {
-      setValue("title", blog.title);
+      setValue("title", blog.title || "");
       setValue("content", blog.content || "");
-      setEditorContent(blog.content || "");
-      setValue("description", blog.description);
-      setValue("banner", blog.banner);
+      setEditorContent(JSON.parse(blog.content || "") || "");
+      setValue("description", blog.description || "");
+      setValue("banner", blog.banner || "");
       setValue("status", blog.status);
-      setValue("slug", blog.slug);
-      setValue("tags", blog.tags);
-      setValue(
-        "categories",
-        blog.categories?.map((cat: { name: string }) => cat.name) || []
-      );
+      setValue("slug", blog.slug || "");
+      setValue("tags", blog.tags || "");
+      setValue("categories", blog.categories?.map((cat) => cat.name) || []);
       setValue("date", new Date());
 
       // If we're editing an existing blog, consider the slug as manually edited
@@ -478,7 +459,7 @@ export default function BlogForm({ blog }: { blog?: BlogData }) {
                 Content <span className="text-red-500">*</span>
               </label>
               <RichTextEditor
-                initialValue={blog?.content}
+                initialValue={JSON.parse(blog?.content || "")}
                 onChange={handleEditorChange}
               />
               {errors.content && typeof errors.content.message === "string" && (
@@ -558,9 +539,7 @@ export default function BlogForm({ blog }: { blog?: BlogData }) {
                 placeholder="Category1, Category2"
                 defaultValue={
                   Array.isArray(blog?.categories)
-                    ? blog?.categories
-                        .map((cat: { name: string }) => cat.name)
-                        .join(", ")
+                    ? blog?.categories.map((cat) => cat).join(", ")
                     : ""
                 }
                 {...register("categories")}

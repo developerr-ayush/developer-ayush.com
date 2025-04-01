@@ -4,11 +4,10 @@ import { db } from "../../../../lib/db";
 // GET handler for fetching a single blog post by slug
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
+  const { slug } = await params;
   try {
-    const slug = params.slug;
-
     // Increment view count
     const blog = await db.blog.update({
       where: { slug },
@@ -30,7 +29,7 @@ export async function GET(
 
     return NextResponse.json(blog);
   } catch (error) {
-    console.error(`Error fetching blog with slug ${params.slug}:`, error);
+    console.error(`Error fetching blog with slug ${slug}:`, error);
     return NextResponse.json(
       { error: "Failed to fetch blog post" },
       { status: 500 }

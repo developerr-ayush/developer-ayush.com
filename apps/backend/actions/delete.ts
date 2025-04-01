@@ -1,6 +1,6 @@
 "use server";
 
-import auth from "../app/api/auth/[...nextauth]";
+import { auth } from "../auth";
 import { db } from "../lib/db";
 
 export async function deleteUser(value: string) {

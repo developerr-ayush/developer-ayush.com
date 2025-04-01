@@ -8,7 +8,10 @@
       "env": [
         "CLOUDINARY_CLOUD_NAME",
         "CLOUDINARY_API_KEY",
-        "CLOUDINARY_API_SECRET"
+        "CLOUDINARY_API_SECRET",
+        "NODE_ENV",
+        "SUPABASE_URL",
+        "SUPABASE_API_KEY"
       ],
       "outputs": [".next/**", "!.next/cache/**"]
     },
@@ -24,9 +27,11 @@
       "env": [
         "CLOUDINARY_CLOUD_NAME",
         "CLOUDINARY_API_KEY",
-        "CLOUDINARY_API_SECRET"
-      ],
-      "persistent": true
+        "CLOUDINARY_API_SECRET",
+        "NODE_ENV",
+        "SUPABASE_URL",
+        "SUPABASE_API_KEY"
+      ]
     }
   }
 }
