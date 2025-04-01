@@ -1,5 +1,6 @@
 "use server";
 
+import { Role } from "@prisma/client";
 import { auth } from "../auth";
 import { db } from "../lib/db";
 import { RegisterSchema } from "../schemas";
@@ -68,7 +69,7 @@ export const createUser = async (
         name,
         email,
         password: hashedPassword,
-        role,
+        role: role as Role,
       },
     });
 
@@ -105,7 +106,7 @@ export const updateUser = async (
       where: { id },
       data: {
         name: data.name,
-        role: data.role,
+        role: data.role as Role,
       },
     });
 
