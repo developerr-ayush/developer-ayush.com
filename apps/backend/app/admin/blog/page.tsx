@@ -214,7 +214,10 @@ export default async function BlogAdmin() {
                           </svg>
                           Edit
                         </Link>
-                        <DeleteButton blogId={blog.id} />
+                        <DeleteButton
+                          blogId={blog.id}
+                          authorEmail={blog.author.email}
+                        />
                       </div>
                     </td>
                   </tr>

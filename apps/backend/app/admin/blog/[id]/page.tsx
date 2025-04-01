@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import BlogForm from "../blog-form";
 import { auth } from "../../../../auth";
 import ApprovalActions from "../approval-actions";
+import DeleteButton from "../delete-button";
+import Link from "next/link";
 
 export default async function BlogPage({ params }: { params: { id: string } }) {
   const session = await auth();
@@ -79,9 +81,33 @@ export default async function BlogPage({ params }: { params: { id: string } }) {
 
     return (
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
-          Edit Blog Post
-        </h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Edit Blog Post</h1>
+
+          <div className="flex items-center space-x-4">
+            <Link
+              href="/admin/blog"
+              className="text-gray-600 hover:text-gray-900 transition-colors flex items-center"
+            >
+              <svg
+                className="w-4 h-4 mr-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              Back to Blogs
+            </Link>
+
+            <DeleteButton blogId={blog.id} authorEmail={blog.author.email} />
+          </div>
+        </div>
 
         {showApprovalActions && (
           <div className="mb-6">
@@ -89,7 +115,7 @@ export default async function BlogPage({ params }: { params: { id: string } }) {
           </div>
         )}
 
-        <BlogForm blog={blog} />
+        <BlogForm blog={blog as any} />
       </div>
     );
   } catch (error) {

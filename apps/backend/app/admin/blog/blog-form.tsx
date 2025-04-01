@@ -83,7 +83,7 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
     if (blog) {
       setValue("title", blog.title || "");
       setValue("content", blog.content || "");
-      setEditorContent(JSON.parse(blog.content || "") || "");
+      setEditorContent(blog.content ? JSON.parse(blog.content) : null);
       setValue("description", blog.description || "");
       setValue("banner", blog.banner || "");
       setValue("status", blog.status);
@@ -193,7 +193,6 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
     setError(null);
-
     try {
       // Upload banner image if one is selected
       if (selectedBannerFile) {
@@ -459,7 +458,7 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
                 Content <span className="text-red-500">*</span>
               </label>
               <RichTextEditor
-                initialValue={JSON.parse(blog?.content || "")}
+                initialValue={blog?.content ? JSON.parse(blog.content) : null}
                 onChange={handleEditorChange}
               />
               {errors.content && typeof errors.content.message === "string" && (

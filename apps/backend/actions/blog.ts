@@ -240,13 +240,24 @@ export const deleteBlog = async (id: string) => {
   const session = await auth();
   if (!session) return { error: "Not Authorized" };
   if (!session?.user) return { error: "Not Authorized" };
+
   const existingblog = await db.blog.findUnique({
     where: { id },
     include: { author: true },
   });
+
   if (!existingblog) return { error: "Blog not found" };
-  if (session.user.email !== existingblog?.author.email)
-    return { error: "Not Authorized" };
+
+  // Check permissions based on role
+  const userRole = session.user.role;
+  const isAdmin = userRole === "ADMIN" || userRole === "SUPER_ADMIN";
+  const isAuthor = session.user.email === existingblog?.author.email;
+
+  // Only allow deletion if user is admin/super_admin OR the author of the blog
+  if (!isAdmin && !isAuthor) {
+    return { error: "You don't have permission to delete this blog" };
+  }
+
   try {
     await db.blog.delete({ where: { id } });
     return { success: "blog deleted" };

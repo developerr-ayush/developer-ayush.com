@@ -28,7 +28,7 @@ export const UpdateUserSchema = z.object({
 });
 
 export const blogSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   title: z
     .string()
     .min(10, { message: "Title should be atleast 10 letters" })
