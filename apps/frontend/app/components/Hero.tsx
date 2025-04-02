@@ -7,15 +7,26 @@ import profileImage from "../assets/img/personal/ayush-shah.png";
 import { useEffect, useState, useCallback, useMemo } from "react";
 
 const Hero = () => {
+  const titles = useMemo(() => ["UI/UX", "Frontend", "Full Stack"], []);
   const [titleIndex, setTitleIndex] = useState(0);
-  const [text, setText] = useState("");
+  const [text, setText] = useState(`${titles[0]} Developer`); // Initialize with first title
   const [isDeleting, setIsDeleting] = useState(false);
   const [typingSpeed, setTypingSpeed] = useState(150);
+  const [startTyping, setStartTyping] = useState(false);
 
-  // Use useMemo to prevent titles from changing on every render
-  const titles = useMemo(() => ["UI/UX", "Frontend", "Full Stack"], []);
+  // Add initial delay before starting the typing effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setStartTyping(true);
+      setIsDeleting(true); // Start by deleting the first title
+    }, 5000); // 5 seconds delay
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleTyping = useCallback(() => {
+    if (!startTyping) return;
+
     // Current title being typed
     const currentFullText = `${titles[titleIndex]} Developer`;
 
@@ -41,7 +52,7 @@ const Hero = () => {
     } else {
       setText(currentFullText.substring(0, text.length - 1));
     }
-  }, [text, isDeleting, titleIndex, titles]);
+  }, [text, isDeleting, titleIndex, titles, startTyping]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -157,10 +157,11 @@ export default async function UsersAdmin() {
                           </svg>
                           Edit
                         </Link>
-                        {session.user.role === "SUPER_ADMIN" &&
-                          user.role !== "SUPER_ADMIN" && (
-                            <DeleteUserButton userId={user.id} />
-                          )}
+                        {(session.user.role === "SUPER_ADMIN" ||
+                          (session.user.role === "ADMIN" &&
+                            user.role === "USER")) && (
+                          <DeleteUserButton userId={user.id} />
+                        )}
                       </div>
                     </td>
                   </tr>

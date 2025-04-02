@@ -10,3 +10,4 @@ alwaysApply: true
 - always use pnpm for installing dependencies
 - there are apps/* so inside that there are individual project
 - dont migrate database utill i ask you to do 
+- i am usig next js 15 so you have to await params

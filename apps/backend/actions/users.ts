@@ -160,3 +160,51 @@ export const getUserDetails = async (id: string) => {
     return { error: "Failed to fetch user details" };
   }
 };
+
+export const DeleteUser = async (userId: string) => {
+  const session = await auth();
+
+  if (!session?.user) {
+    return { error: "Not authenticated" };
+  }
+
+  try {
+    // Get the user to be deleted
+    const userToDelete = await db.user.findUnique({
+      where: { id: userId },
+      include: { blogs: true },
+    });
+
+    if (!userToDelete) {
+      return { error: "User not found" };
+    }
+
+    // Check permissions
+    if (session.user.role !== "SUPER_ADMIN" && session.user.role !== "ADMIN") {
+      return { error: "Not authorized" };
+    }
+
+    // ADMIN can only delete USER role accounts
+    if (session.user.role === "ADMIN" && userToDelete.role !== "USER") {
+      return { error: "You can only delete users with USER role" };
+    }
+
+    // Transfer blogs to the admin who is deleting the user
+    if (userToDelete.blogs.length > 0) {
+      await db.blog.updateMany({
+        where: { authorId: userId },
+        data: { authorId: session.user.id },
+      });
+    }
+
+    // Delete the user
+    await db.user.delete({
+      where: { id: userId },
+    });
+
+    return { success: "User deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return { error: "Failed to delete user" };
+  }
+};

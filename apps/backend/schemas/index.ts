@@ -18,13 +18,9 @@ export const RegisterSchema = z.object({
 });
 
 export const UpdateUserSchema = z.object({
-  name: z
-    .string()
-    .min(1, {
-      message: "Name is required",
-    })
-    .optional(),
-  role: z.enum(["SUPER_ADMIN", "ADMIN", "USER"]).optional(),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  role: z.enum(["USER", "ADMIN", "SUPER_ADMIN"]),
 });
 
 export const blogSchema = z.object({
