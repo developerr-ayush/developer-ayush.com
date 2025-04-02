@@ -1,90 +1,80 @@
-import Image from "next/image";
-import { Button } from "@repo/ui/button";
-import styles from "./page.module.css";
-
-// type Props = Omit<ImageProps, "src"> & {
-//   srcLight: string;
-//   srcDark: string;
-// };
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        {/* <ThemeImage
-          className={styles.logo}
-          srcLight="turborepo-dark.svg"
-          srcDark="turborepo-light.svg"
-          alt="Turborepo logo"
-          width={180}
-          height={38}
-          priority
-        /> */}
-        <ol>
-          <li>
-            Get started by editing <code>apps/docs/app/page.tsx</code>
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new/clone?demo-description=Learn+to+implement+a+monorepo+with+a+two+Next.js+sites+that+has+installed+three+local+packages.&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F4K8ZISWAzJ8X1504ca0zmC%2F0b21a1c6246add355e55816278ef54bc%2FBasic.png&demo-title=Monorepo+with+Turborepo&demo-url=https%3A%2F%2Fexamples-basic-web.vercel.sh%2F&from=templates&project-name=Monorepo+with+Turborepo&repository-name=monorepo-turborepo&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fturborepo%2Ftree%2Fmain%2Fexamples%2Fbasic&root-directory=apps%2Fdocs&skippable-integrations=1&teamSlug=vercel&utm_source=create-turbo"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://turbo.build/repo/docs?utm_source"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Hero Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl">
+            Welcome to the Backend
+          </h1>
+          <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+            A powerful and secure backend service for your applications
+          </p>
         </div>
-        <Button appName="docs" className={styles.secondary}>
-          Open alert
-        </Button>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com/templates?search=turborepo&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://turbo.build?utm_source=create-turbo"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to turbo.build →
-        </a>
+      </div>
+
+      {/* Features Section */}
+      <div className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {/* Authentication */}
+            <div className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <h3 className="text-lg font-medium text-gray-900">
+                Authentication
+              </h3>
+              <p className="mt-2 text-gray-500">
+                Secure user authentication and authorization system
+              </p>
+              <Link
+                href="/login"
+                className="mt-4 inline-block text-blue-600 hover:text-blue-800"
+              >
+                Login →
+              </Link>
+            </div>
+
+            {/* API Routes */}
+            <div className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <h3 className="text-lg font-medium text-gray-900">API Routes</h3>
+              <p className="mt-2 text-gray-500">
+                RESTful API endpoints for your application needs
+              </p>
+              <Link
+                href="/api"
+                className="mt-4 inline-block text-blue-600 hover:text-blue-800"
+              >
+                Explore API →
+              </Link>
+            </div>
+
+            {/* Admin Dashboard */}
+            <div className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <h3 className="text-lg font-medium text-gray-900">
+                Admin Dashboard
+              </h3>
+              <p className="mt-2 text-gray-500">
+                Manage your application with the admin dashboard
+              </p>
+              <Link
+                href="/admin/blog"
+                className="mt-4 inline-block text-blue-600 hover:text-blue-800"
+              >
+                Go to Dashboard →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-50">
+        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-gray-500 text-sm">
+            © {new Date().getFullYear()} Backend Service. All rights reserved.
+          </p>
+        </div>
       </footer>
     </div>
   );
