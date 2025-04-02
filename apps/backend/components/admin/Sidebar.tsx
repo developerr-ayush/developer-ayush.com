@@ -93,7 +93,7 @@ export default function AdminSidebar() {
               <span>Blog Posts</span>
             </Link>
             <Link
-              href="/admin/category"
+              href="/admin/categories"
               className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition group"
               onClick={() => setIsOpen(false)}
             >

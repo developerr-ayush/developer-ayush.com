@@ -1,6 +1,7 @@
 "use server";
 import { auth } from "../auth";
 import { db } from "../lib/db";
+
 export const createCategory = async (values: string) => {
   const session = await auth();
   if (!session?.user) return { error: "Not Authorized" };
@@ -16,6 +17,7 @@ export const createCategory = async (values: string) => {
     return { error: "Category already exists", message: e };
   }
 };
+
 export const editCategory = async (values: {
   id: string;
   name: string;
@@ -34,5 +36,20 @@ export const editCategory = async (values: {
     return { success: "Category updated" };
   } catch (e) {
     return { error: "Category already exists", message: e };
+  }
+};
+
+export const getCategories = async () => {
+  const session = await auth();
+  if (!session?.user) return { error: "Not Authorized" };
+  try {
+    const categories = await db.category.findMany({
+      orderBy: {
+        name: "asc",
+      },
+    });
+    return { categories };
+  } catch (e) {
+    return { error: "Failed to fetch categories", message: e };
   }
 };
