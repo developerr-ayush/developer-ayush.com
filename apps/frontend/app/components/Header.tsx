@@ -121,7 +121,7 @@ const Header = () => {
     >
       <div className="container mx-auto px-4 flex justify-between items-center relative z-40">
         <Link href="/" className="text-2xl font-bold">
-          <span className="text-white">Ayush</span>
+          <span className="text-foreground">Ayush</span>
           <span className="text-sky-500">Shah</span>
         </Link>
 
