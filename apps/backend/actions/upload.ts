@@ -23,42 +23,78 @@ export type UploadResult = {
  * @param data - The upload data including base64 image and optional folder
  * @returns The upload result with success status and image URL
  */
-export async function uploadImage(data: z.infer<typeof uploadSchema>): Promise<UploadResult> {
+export async function uploadImage(
+  data: z.infer<typeof uploadSchema>
+): Promise<UploadResult> {
   try {
     // Check if the user is authenticated and has required permissions
     const session = await auth();
-    if (!session || !session.user || session.user.role !== Role.ADMIN) {
+    console.log(
+      "Auth session check:",
+      session
+        ? {
+            hasUser: !!session.user,
+            role: session.user?.role,
+          }
+        : "No session"
+    );
+
+    if (!session || !session.user) {
       return {
         success: false,
-        error: "Unauthorized. Only admins can upload images.",
+        error: "Authentication required. Please log in.",
+      };
+    }
+
+    // Allow both ADMIN and USER roles to upload
+    if (session.user.role !== Role.ADMIN && session.user.role !== Role.USER) {
+      return {
+        success: false,
+        error: `Unauthorized. Only registered users can upload images.`,
       };
     }
 
     // Validate input data
     const validatedData = uploadSchema.parse(data);
-    
+
     // Upload the image to Cloudinary
-    const result = await cloudinary.v2.uploader.upload(validatedData.file, {
-      folder: validatedData.folder,
-      resource_type: "image",
-      // You can add more options here if needed
-      transformation: [
-        { quality: "auto:good" }, // Automatic quality optimization
-        { fetch_format: "auto" },  // Automatic format selection (WebP when supported)
-      ],
-    });
+    console.log(
+      "Attempting Cloudinary upload to folder:",
+      validatedData.folder
+    );
+    try {
+      const result = await cloudinary.v2.uploader.upload(validatedData.file, {
+        folder: validatedData.folder,
+        resource_type: "image",
+        // You can add more options here if needed
+        transformation: [
+          { quality: "auto:good" }, // Automatic quality optimization
+          { fetch_format: "auto" }, // Automatic format selection (WebP when supported)
+        ],
+      });
+
+      return {
+        success: true,
+        url: result.secure_url,
+        publicId: result.public_id,
+      };
+    } catch (cloudinaryError) {
+      console.error("Cloudinary upload error:", cloudinaryError);
+      return {
+        success: false,
+        error:
+          cloudinaryError instanceof Error
+            ? cloudinaryError.message
+            : "Failed to upload to Cloudinary",
+      };
+    }
+  } catch (error) {
+    console.error("Error in uploadImage action:", error);
 
     return {
-      success: true,
-      url: result.secure_url,
-      publicId: result.public_id,
-    };
-  } catch (error) {
-    console.error("Error uploading image:", error);
-    
-    return {
       success: false,
-      error: error instanceof Error ? error.message : "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 }
@@ -88,10 +124,11 @@ export async function deleteImage(publicId: string): Promise<UploadResult> {
     };
   } catch (error) {
     console.error("Error deleting image:", error);
-    
+
     return {
       success: false,
-      error: error instanceof Error ? error.message : "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
-} 
+}

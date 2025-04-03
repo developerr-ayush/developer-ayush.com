@@ -11,7 +11,8 @@ import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { OutputData } from "@editorjs/editorjs";
-import { Blog, category, User } from "@prisma/client";
+import { Blog, category, User, Role } from "@prisma/client";
+import { useSession } from "next-auth/react";
 // Dynamically import the RichTextEditor to avoid SSR issues
 const RichTextEditor = dynamic(
   () => import("../../../components/RichTextEditor"),
@@ -25,6 +26,9 @@ interface BlogFormProps extends Blog {
 }
 export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
   const router = useRouter();
+  const { data: session } = useSession();
+  const userRole = session?.user?.role;
+  const isAdmin = userRole === Role.ADMIN;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [bannerUrl, setBannerUrl] = useState<string>("");
@@ -101,10 +105,10 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
 
   // Update banner URL when the watched value changes
   useEffect(() => {
-    if (watchedBanner && !selectedBannerFile) {
-      setBannerUrl(watchedBanner);
+    if (blog && blog.banner && !bannerUrl) {
+      setBannerUrl(blog.banner);
     }
-  }, [watchedBanner, selectedBannerFile]);
+  }, [blog, bannerUrl]);
 
   // Handle editor content change
   const handleEditorChange = (data: OutputData) => {
@@ -200,15 +204,18 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
         if (uploadedUrl) {
           data.banner = uploadedUrl;
         } else {
-          // If upload failed, use the existing banner URL if available
+          // If upload failed and we don't have an existing banner
           if (!data.banner) {
-            setError(
-              "Banner image upload failed. Please try again or provide a URL."
-            );
+            setError("Banner image upload failed. Please try again.");
             setIsSubmitting(false);
             return;
           }
         }
+      } else if (!blog?.banner) {
+        // If no file is selected and this is a new post or an edit without an existing banner
+        setError("Please upload a banner image");
+        setIsSubmitting(false);
+        return;
       }
 
       // Set the editor content to the form values
@@ -253,6 +260,13 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
       setIsSubmitting(false);
     }
   };
+
+  // If the user is not an admin and tries to directly publish, set to draft
+  useEffect(() => {
+    if (!isAdmin && watch("status") === "published") {
+      setValue("status", "draft");
+    }
+  }, [isAdmin, setValue, watch]);
 
   return (
     <div className="bg-white shadow-md rounded-xl border border-gray-200 overflow-hidden">
@@ -345,26 +359,6 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
                 Banner Image <span className="text-red-500">*</span>
               </label>
               <div className="flex flex-col gap-4">
-                <div className="flex-grow">
-                  <input
-                    id="banner"
-                    type="text"
-                    className={`block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 shadow-sm ring-1 ring-inset ${
-                      errors.banner ? "ring-red-300" : "ring-gray-300"
-                    } placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
-                    placeholder="https://example.com/image.jpg"
-                    {...register("banner")}
-                  />
-                  {errors.banner && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.banner.message}
-                    </p>
-                  )}
-                  <p className="text-xs text-gray-500 mt-1">
-                    Enter a URL or upload a new image below
-                  </p>
-                </div>
-
                 <div className="w-full">
                   <input
                     ref={bannerFileInputRef}
@@ -374,8 +368,14 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
                     onChange={handleBannerFileChange}
                     disabled={isSubmitting}
                   />
+                  {errors.banner && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.banner.message}
+                    </p>
+                  )}
                   <p className="text-xs text-gray-500 mt-1">
-                    Selected image will be uploaded when you click{" "}
+                    Upload an image for your blog banner. The image will be
+                    uploaded when you click{" "}
                     {blog ? "Update Post" : "Create Post"}
                   </p>
                 </div>
@@ -487,9 +487,15 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
                   {...register("status")}
                 >
                   <option value="draft">Draft</option>
-                  <option value="published">Published</option>
-                  <option value="archived">Archived</option>
+                  {isAdmin && <option value="published">Published</option>}
+                  {isAdmin && <option value="archived">Archived</option>}
                 </select>
+                {!isAdmin && (
+                  <p className="text-xs text-amber-600 mt-1">
+                    As a regular user, your posts will need approval before they
+                    can be published.
+                  </p>
+                )}
                 {errors.status && (
                   <p className="mt-1 text-sm text-red-600">
                     {errors.status.message}

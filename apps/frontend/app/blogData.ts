@@ -1,3 +1,5 @@
+const BASEURL =
+  process.env.NEXT_PUBLIC_BASE_URL_ADMIN || "https://admin.developer-ayush.com";
 export type Category = {
   id: string;
   name: string;
@@ -73,7 +75,7 @@ export async function getBlogPosts(
     }
 
     // Construct URL based on page value
-    const baseUrl = "https://admin.developer-ayush.com/api/blog";
+    const baseUrl = BASEURL + "/api/blog";
     const url = page === -1 ? baseUrl : `${baseUrl}?p=${page}`;
 
     const res = await fetch(url, options);
@@ -141,12 +143,12 @@ export async function getBlogPostDetail(
   slug: string
 ): Promise<BlogPostDetail | null> {
   try {
-    const res = await fetch(
-      `https://admin.developer-ayush.com/api/blog/${slug}`,
-      {
-        next: { revalidate: 3600 }, // Revalidate every hour
-      }
+    console.log(
+      `Fetching blog post detail for slug ${BASEURL}/api/blog/${slug}`
     );
+    const res = await fetch(`${BASEURL}/api/blog/${slug}`, {
+      next: { revalidate: 3600 }, // Revalidate every hour
+    });
     if (!res.ok) throw new Error("Failed to fetch blog post detail");
     return await res.json();
   } catch (error) {

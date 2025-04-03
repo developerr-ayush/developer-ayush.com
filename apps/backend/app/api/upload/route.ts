@@ -22,6 +22,13 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
     const base64File = `data:${file.type};base64,${buffer.toString("base64")}`;
 
+    console.log(
+      "Upload attempt with file type:",
+      file.type,
+      "Size (bytes):",
+      bytes.byteLength
+    );
+
     // Upload the image
     const result = await uploadImage({
       file: base64File,
@@ -29,6 +36,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!result.success) {
+      console.error("Upload failed with error:", result.error);
       return NextResponse.json(
         { success: false, error: result.error },
         { status: 500 }

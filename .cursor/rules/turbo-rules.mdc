@@ -11,3 +11,4 @@ alwaysApply: true
 - there are apps/* so inside that there are individual project
 - dont migrate database utill i ask you to do 
 - i am usig next js 15 so you have to await params
+- if you think some information is needed to be added in cursor rules then make sure to add it in .cursor/rules/turbo-rules.mdc
