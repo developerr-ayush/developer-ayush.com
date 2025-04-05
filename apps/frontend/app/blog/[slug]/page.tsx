@@ -1,8 +1,4 @@
-import {
-  getBlogPosts,
-  formatDate,
-  getBlogPostDetail,
-} from "../../blogData";
+import { getBlogPosts, formatDate, getBlogPostDetail } from "../../blogData";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -44,7 +40,6 @@ export default async function BlogPostPage({ params }: { params: Params }) {
   const detailedPost = await getBlogPostDetail(slug);
   const blogData = await getBlogPosts(1); // Get all blog posts for related posts
   const allPosts = blogData.data || [];
-  console.log("detailedPost", detailedPost);
   if (!detailedPost) {
     notFound();
   }
