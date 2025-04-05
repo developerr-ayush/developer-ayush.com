@@ -47,10 +47,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
   // Process content - handle both legacy content and EditorJS content
   let processedContent = "";
   if (detailedPost) {
-    processedContent = processBlogContent(
-      detailedPost.content,
-      detailedPost.json_content
-    );
+    processedContent = processBlogContent(detailedPost.content);
   }
 
   // Create structured data for the blog post

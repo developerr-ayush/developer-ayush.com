@@ -78,11 +78,11 @@ const languagePatterns = [
   {
     lang: "java",
     pattern:
-      /(public\s+class|private|protected|package\s+[\w\.]+;|import\s+[\w\.]+;)/i,
+      /(public\s+class|private|protected|package\s+[\w.]+;|import\s+[\w.]+;)/i,
   },
   {
     lang: "csharp",
-    pattern: /(namespace|using\s+[\w\.]+;|class|void|string\[\])/i,
+    pattern: /(namespace|using\s+[\w.]+;|class|void|string\[\])/i,
   },
   { lang: "go", pattern: /(package\s+\w+|func|import\s+\(|\)|\bgo\b)/i },
   {
@@ -208,7 +208,7 @@ export default function ClientSyntaxHighlighter() {
 
   return (
     <>
-      <style jsx global>{`
+      <style >{`
         /* Base styles for code blocks */
         pre.hljs-pre {
           background-color: #1a1b26 !important;

@@ -33,7 +33,6 @@ export type BlogPostDetail = {
   id: string;
   title: string;
   content: string;
-  json_content?: any;
   createdAt: string;
   updatedAt: string;
   authorId: string;
