@@ -58,7 +58,7 @@ export default function RichTextEditor({
         const editor = new EditorJS({
           holder: containerRef.current,
           tools: EDITOR_JS_TOOLS,
-          data,
+          data: data || initialData,
           placeholder,
           readOnly,
           onChange: async () => {
@@ -91,14 +91,23 @@ export default function RichTextEditor({
       }
     };
   }, [initialValue, placeholder, readOnly, onChange, initialData]);
+
+  // Handle AIGeneratedContent changes
   useEffect(() => {
     if (!editorRef.current || !hasInitialized.current) return;
 
     const data = normalizeContent(AIGeneratedContent);
     if (data) {
-      editorRef.current.render(data);
+      try {
+        editorRef.current.render(data).catch((error) => {
+          console.error("Failed to render editor content:", error);
+        });
+      } catch (error) {
+        console.error("Error rendering editor content:", error);
+      }
     }
   }, [AIGeneratedContent]);
+
   return (
     <div className="rich-text-editor blog-content">
       <div

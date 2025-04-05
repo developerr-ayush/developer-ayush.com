@@ -11,7 +11,8 @@
         "CLOUDINARY_API_SECRET",
         "NODE_ENV",
         "SUPABASE_URL",
-        "SUPABASE_API_KEY"
+        "SUPABASE_API_KEY",
+        "OPENAI_API_KEY"
       ],
       "outputs": [".next/**", "!.next/cache/**"]
     },
@@ -30,7 +31,8 @@
         "CLOUDINARY_API_SECRET",
         "NODE_ENV",
         "SUPABASE_URL",
-        "SUPABASE_API_KEY"
+        "SUPABASE_API_KEY",
+        "OPENAI_API_KEY"
       ]
     }
   }
