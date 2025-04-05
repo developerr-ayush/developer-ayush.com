@@ -1,12 +1,12 @@
 "use client";
 
-import { BlogPost } from "../blogData";
+import { BlogPost, BlogPostDetail } from "../blogData";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
 type RelatedPostsProps = {
-  currentPost: BlogPost;
+  currentPost: BlogPostDetail;
   allPosts: BlogPost[];
 };
 

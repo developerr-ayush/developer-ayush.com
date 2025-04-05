@@ -1,0 +1,643 @@
+/* Base typography for blog content */
+.blog-content {
+  color: var(--foreground);
+  line-height: 1.7;
+  font-size: 1.125rem;
+  width: 100%;
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Headings styling */
+.blog-content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+  color: var(--foreground);
+  scroll-margin-top: 100px;
+}
+
+.blog-content h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.3;
+  color: var(--foreground);
+  scroll-margin-top: 100px;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.blog-content h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 3rem;
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    rgba(14, 165, 233, 1),
+    rgba(56, 189, 248, 0.6)
+  );
+  border-radius: 3px;
+}
+
+.blog-content h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 1.75rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+  color: rgba(14, 165, 233, 0.9);
+  scroll-margin-top: 100px;
+}
+
+.blog-content h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+  color: rgba(14, 165, 233, 0.8);
+  scroll-margin-top: 100px;
+}
+
+/* Paragraph styling */
+.blog-content p {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.blog-content p:first-child {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Links */
+.blog-content a {
+  color: rgba(14, 165, 233, 1);
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px;
+  font-weight: 500;
+}
+
+.blog-content a:hover {
+  color: rgba(56, 189, 248, 1);
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+/* Strong and emphasis */
+.blog-content strong {
+  font-weight: 700;
+  color: white;
+}
+
+.blog-content em {
+  font-style: italic;
+}
+
+/* Blockquotes */
+.blog-content blockquote {
+  margin: 2rem 0;
+  padding: 1.5rem 2rem;
+  border-left: 4px solid rgba(14, 165, 233, 0.8);
+  background-color: rgba(14, 165, 233, 0.08);
+  border-radius: 0.25rem;
+  font-style: italic;
+  position: relative;
+}
+
+.blog-content blockquote::before {
+  content: "'";
+  position: absolute;
+  top: -0.5rem;
+  left: 0.5rem;
+  font-size: 3rem;
+  color: rgba(14, 165, 233, 0.3);
+  font-family: Georgia, serif;
+}
+
+.blog-content blockquote p {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Lists */
+.blog-content ul,
+.blog-content ol {
+  margin: 1.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.blog-content ul {
+  list-style-type: disc;
+}
+
+.blog-content ol {
+  list-style-type: decimal;
+}
+
+.blog-content li {
+  margin-bottom: 0.5rem;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.blog-content li > ul,
+.blog-content li > ol {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+/* Code and pre blocks */
+.blog-content code {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-size: 0.9em;
+  padding: 0.2em 0.4em;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.25rem;
+  white-space: nowrap;
+}
+
+.blog-content pre {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.blog-content pre code {
+  background-color: transparent;
+  padding: 0;
+  font-size: 0.9em;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: pre;
+}
+
+/* Images */
+.blog-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 2rem auto;
+  border-radius: 0.5rem;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.blog-content figure {
+  margin: 2rem 0;
+}
+
+.blog-content figcaption {
+  text-align: center;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+/* Tables */
+.blog-content table {
+  width: 100%;
+  margin: 2rem 0;
+  border-collapse: collapse;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.blog-content th {
+  background-color: rgba(14, 165, 233, 0.1);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.blog-content td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.blog-content tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.blog-content tbody tr:hover {
+  background-color: rgba(14, 165, 233, 0.05);
+}
+
+/* Horizontal rule */
+.blog-content hr {
+  margin: 3rem 0;
+  border: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+}
+
+/* Images with caption */
+.blog-content .image-with-caption {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.blog-content .image-with-caption img {
+  margin: 0 auto;
+}
+
+.blog-content .image-with-caption p {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+/* Callouts */
+.blog-content .callout {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border-left: 4px solid rgba(14, 165, 233, 0.8);
+  background-color: rgba(14, 165, 233, 0.08);
+}
+
+.blog-content .callout-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: rgba(14, 165, 233, 1);
+}
+
+/* Utility classes for images */
+.blog-content .full-width-image {
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  border-radius: 0;
+}
+
+/* Code syntax highlighting */
+.blog-content .hljs-keyword {
+  color: #ff79c6;
+}
+
+.blog-content .hljs-string {
+  color: #f1fa8c;
+}
+
+.blog-content .hljs-comment {
+  color: #6272a4;
+}
+
+.blog-content .hljs-function {
+  color: #8be9fd;
+}
+
+.blog-content .hljs-number {
+  color: #bd93f9;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .blog-content a,
+  .blog-content a:hover {
+    transition: none;
+  }
+}
+
+/* Responsive media queries */
+@media (max-width: 768px) {
+  .blog-content h1 {
+    font-size: 2rem;
+  }
+
+  .blog-content h2 {
+    font-size: 1.75rem;
+  }
+
+  .blog-content h3 {
+    font-size: 1.35rem;
+  }
+
+  .blog-content h4 {
+    font-size: 1.2rem;
+  }
+
+  .blog-content {
+    font-size: 1rem;
+  }
+
+  .blog-content pre {
+    padding: 1rem;
+  }
+
+  .blog-content blockquote {
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+/* Syntax highlighting for code blocks - Dark theme */
+.blog-content code[class*="language-"],
+.blog-content pre[class*="language-"] {
+  color: #f8f8f2;
+  background: none;
+  text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-size: 0.9em;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+  tab-size: 4;
+  hyphens: none;
+}
+
+.blog-content .hljs-keyword,
+.blog-content .token.keyword {
+  color: #ff79c6;
+}
+
+.blog-content .hljs-string,
+.blog-content .token.string {
+  color: #f1fa8c;
+}
+
+.blog-content .hljs-comment,
+.blog-content .token.comment {
+  color: #6272a4;
+}
+
+.blog-content .hljs-function,
+.blog-content .token.function {
+  color: #8be9fd;
+}
+
+.blog-content .hljs-number,
+.blog-content .token.number {
+  color: #bd93f9;
+}
+
+.blog-content .hljs-operator,
+.blog-content .token.operator {
+  color: #ff79c6;
+}
+
+.blog-content .hljs-class,
+.blog-content .token.class-name {
+  color: #8be9fd;
+}
+
+.blog-content .hljs-variable,
+.blog-content .token.variable {
+  color: #f8f8f2;
+}
+
+.blog-content .hljs-tag,
+.blog-content .token.tag {
+  color: #ff79c6;
+}
+
+.blog-content .hljs-name,
+.blog-content .token.tag .token.punctuation,
+.blog-content .token.tag .token.tag {
+  color: #ff79c6;
+}
+
+.blog-content .hljs-attr,
+.blog-content .token.attr-name {
+  color: #50fa7b;
+}
+
+.blog-content .hljs-attribute,
+.blog-content .token.attr-value {
+  color: #f1fa8c;
+}
+
+.blog-content .hljs-symbol,
+.blog-content .token.symbol {
+  color: #f1fa8c;
+}
+
+.blog-content .hljs-built_in,
+.blog-content .token.builtin {
+  color: #50fa7b;
+}
+
+.blog-content .hljs-title,
+.blog-content .token.property {
+  color: #8be9fd;
+}
+
+/* Print styles */
+@media print {
+  .blog-content {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+  }
+
+  .blog-content h1,
+  .blog-content h2,
+  .blog-content h3,
+  .blog-content h4 {
+    page-break-after: avoid;
+    color: #000;
+  }
+
+  .blog-content h1 {
+    font-size: 24pt;
+  }
+
+  .blog-content h2 {
+    font-size: 20pt;
+  }
+
+  .blog-content h3 {
+    font-size: 16pt;
+  }
+
+  .blog-content h4 {
+    font-size: 14pt;
+  }
+
+  .blog-content p,
+  .blog-content ul,
+  .blog-content ol,
+  .blog-content blockquote {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .blog-content img,
+  .blog-content figure {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  .blog-content a {
+    color: #000;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+
+  .blog-content a[href^="http"]:after {
+    content: " (" attr(href) ")";
+    font-size: 90%;
+    font-weight: normal;
+  }
+
+  .blog-content pre,
+  .blog-content code {
+    background: #f5f5f5 !important;
+    border: 1px solid #ddd !important;
+    color: #333 !important;
+  }
+
+  .blog-content blockquote {
+    border-left: 3px solid #666;
+    background: transparent;
+    padding: 0.5cm;
+    margin: 0.5cm 0;
+  }
+
+  .blog-content table {
+    border-collapse: collapse;
+  }
+
+  .blog-content th,
+  .blog-content td {
+    border: 1px solid #666;
+    padding: 0.25cm;
+  }
+}
+
+/* Summary and details for FAQ sections */
+.blog-content details {
+  margin: 1.5rem 0;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.blog-content summary {
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: rgba(14, 165, 233, 0.05);
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.2s ease;
+  position: relative;
+  outline: none;
+}
+
+.blog-content summary:hover,
+.blog-content details[open] summary {
+  background-color: rgba(14, 165, 233, 0.1);
+}
+
+.blog-content details[open] summary {
+  border-bottom-color: rgba(14, 165, 233, 0.2);
+}
+
+.blog-content details > div {
+  padding: 1.5rem;
+}
+
+/* Keywords and highlights */
+.blog-content mark {
+  background-color: rgba(14, 165, 233, 0.2);
+  color: inherit;
+  padding: 0.1em 0.3em;
+  border-radius: 0.2em;
+}
+
+.blog-content .keyword {
+  font-weight: 600;
+  color: rgba(14, 165, 233, 0.9);
+}
+
+/* Blockquote improvements */
+.blog-content blockquote.info,
+.blog-content blockquote.warning,
+.blog-content blockquote.success,
+.blog-content blockquote.error {
+  padding-left: 4rem;
+}
+
+.blog-content blockquote.info::before,
+.blog-content blockquote.warning::before,
+.blog-content blockquote.success::before,
+.blog-content blockquote.error::before {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  font-size: 1.5rem;
+  font-family: sans-serif;
+}
+
+.blog-content blockquote.info {
+  background-color: rgba(56, 189, 248, 0.1);
+  border-left-color: rgba(56, 189, 248, 0.6);
+}
+
+.blog-content blockquote.info::before {
+  content: "ℹ️";
+  color: rgba(56, 189, 248, 0.8);
+}
+
+.blog-content blockquote.warning {
+  background-color: rgba(251, 146, 60, 0.1);
+  border-left-color: rgba(251, 146, 60, 0.6);
+}
+
+.blog-content blockquote.warning::before {
+  content: "⚠️";
+  color: rgba(251, 146, 60, 0.8);
+}
+
+.blog-content blockquote.success {
+  background-color: rgba(34, 197, 94, 0.1);
+  border-left-color: rgba(34, 197, 94, 0.6);
+}
+
+.blog-content blockquote.success::before {
+  content: "✅";
+  color: rgba(34, 197, 94, 0.8);
+}
+
+.blog-content blockquote.error {
+  background-color: rgba(244, 63, 94, 0.1);
+  border-left-color: rgba(244, 63, 94, 0.6);
+}
+
+.blog-content blockquote.error::before {
+  content: "❌";
+  color: rgba(244, 63, 94, 0.8);
+}

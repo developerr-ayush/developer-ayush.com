@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { EDITOR_JS_TOOLS, normalizeContent } from "../lib/editorjs";
 import type EditorJS from "@editorjs/editorjs";
 import { OutputData } from "@editorjs/editorjs";
-
+import "../app/blog-content.css";
 interface RichTextEditorProps {
   initialValue?: {
     blocks: { type: string; data: object }[];
@@ -14,6 +14,7 @@ interface RichTextEditorProps {
   onChange: (data: OutputData) => void;
   placeholder?: string;
   readOnly?: boolean;
+  AIGeneratedContent?: OutputData | null | undefined;
 }
 
 export default function RichTextEditor({
@@ -21,7 +22,9 @@ export default function RichTextEditor({
   onChange,
   placeholder = "Start writing your content here...",
   readOnly = false,
+  AIGeneratedContent,
 }: RichTextEditorProps) {
+  console.log("initialValue", initialValue);
   const editorRef = useRef<EditorJS | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [editorReady, setEditorReady] = useState(false);
@@ -61,6 +64,7 @@ export default function RichTextEditor({
           onChange: async () => {
             try {
               const savedData = await editorRef.current?.save();
+              console.log("savedData", savedData);
               if (savedData) {
                 onChange(savedData);
               }
@@ -87,9 +91,16 @@ export default function RichTextEditor({
       }
     };
   }, [initialValue, placeholder, readOnly, onChange, initialData]);
+  useEffect(() => {
+    if (!editorRef.current || !hasInitialized.current) return;
 
+    const data = normalizeContent(AIGeneratedContent);
+    if (data) {
+      editorRef.current.render(data);
+    }
+  }, [AIGeneratedContent]);
   return (
-    <div className="rich-text-editor">
+    <div className="rich-text-editor blog-content">
       <div
         ref={containerRef}
         className={`border border-gray-300 rounded-md min-h-[300px] ${!editorReady ? "editor-loading" : ""}`}

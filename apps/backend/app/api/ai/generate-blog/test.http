@@ -1,0 +1,7 @@
+# Test the blog generation endpoint
+POST http://localhost:3000/api/ai/generate-blog
+Content-Type: application/json
+
+{
+  "prompt": "Write a comprehensive guide about AI-powered content generation for marketing teams. Include sections on benefits, implementation steps, and best practices."
+} 

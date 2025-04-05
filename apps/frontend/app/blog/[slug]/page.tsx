@@ -1,5 +1,4 @@
 import {
-  getBlogPostBySlug,
   getBlogPosts,
   formatDate,
   getBlogPostDetail,
@@ -31,7 +30,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getBlogPostBySlug(slug);
+  const post = await getBlogPostDetail(slug);
   return {
     title: post?.title,
     description: post?.description,
@@ -43,11 +42,10 @@ export async function generateMetadata({
 export default async function BlogPostPage({ params }: { params: Params }) {
   const { slug } = await params;
   const detailedPost = await getBlogPostDetail(slug);
-  const post = await getBlogPostBySlug(slug);
   const blogData = await getBlogPosts(1); // Get all blog posts for related posts
   const allPosts = blogData.data || [];
-
-  if (!post) {
+  console.log("detailedPost", detailedPost);
+  if (!detailedPost) {
     notFound();
   }
 
@@ -64,14 +62,14 @@ export default async function BlogPostPage({ params }: { params: Params }) {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    headline: post.title,
-    description: post.description,
-    image: post.banner,
-    datePublished: post.updatedAt,
-    dateModified: post.updatedAt,
+    headline: detailedPost.title,
+    description: detailedPost.description,
+    image: detailedPost.banner,
+    datePublished: detailedPost.updatedAt,
+    dateModified: detailedPost.updatedAt,
     author: {
       "@type": "Person",
-      name: post.author.name,
+      name: detailedPost.author.name,
       url: "https://developer-ayush.com",
     },
     publisher: {
@@ -86,10 +84,12 @@ export default async function BlogPostPage({ params }: { params: Params }) {
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://developer-ayush.com/blog/${post.slug}`,
+      "@id": `https://developer-ayush.com/blog/${detailedPost.slug}`,
     },
-    keywords: post.categories.map((category) => category.name).join(", "),
-    articleSection: post.categories[0]?.name || "Technology",
+    keywords: detailedPost.categories
+      .map((category) => category.name)
+      .join(", "),
+    articleSection: detailedPost.categories[0]?.name || "Technology",
     wordCount: detailedPost?.content
       ? detailedPost.content.split(" ").length
       : 0,
@@ -108,7 +108,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
       <div className="container mx-auto px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
           {/* Back to blog link with breadcrumbs */}
-          <BreadcrumbsServer title={post.title} />
+          <BreadcrumbsServer title={detailedPost.title} />
 
           <Link
             href="/blog"
@@ -134,8 +134,8 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           {/* Blog post banner */}
           <div className="rounded-2xl overflow-hidden mb-8 relative aspect-video">
             <Image
-              src={post.banner}
-              alt={post.title}
+              src={detailedPost.banner}
+              alt={detailedPost.title}
               fill
               className="object-cover"
               priority
@@ -147,7 +147,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           <div className="mb-8">
             {/* Categories/tags */}
             <div className="flex flex-wrap gap-2 mb-4">
-              {post.categories.map((category) => (
+              {detailedPost.categories.map((category) => (
                 <span
                   key={category.id}
                   className="text-xs px-3 py-1 rounded-full bg-sky-500/10 text-sky-500"
@@ -158,14 +158,14 @@ export default async function BlogPostPage({ params }: { params: Params }) {
             </div>
 
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-              {post.title}
+              {detailedPost.title}
             </h1>
 
             <div className="flex justify-between items-center text-foreground/60 text-sm">
               <div className="flex items-center">
-                <span>By {post.author.name}</span>
+                <span>By {detailedPost.author.name}</span>
                 <span className="mx-2">•</span>
-                <span>{formatDate(post.updatedAt)}</span>
+                <span>{formatDate(detailedPost.updatedAt)}</span>
               </div>
               <div className="flex items-center">
                 <svg
@@ -188,7 +188,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                   />
                 </svg>
-                {post.views} views
+                {detailedPost.views} views
               </div>
             </div>
           </div>
@@ -200,7 +200,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
                 {detailedPost ? (
                   <div dangerouslySetInnerHTML={{ __html: processedContent }} />
                 ) : (
-                  <p className="text-foreground/70">{post.description}</p>
+                  ""
                 )}
               </article>
               {/* Client component for syntax highlighting */}
@@ -213,9 +213,9 @@ export default async function BlogPostPage({ params }: { params: Params }) {
                 <div className="flex gap-2">
                   <a
                     href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                      post.title
+                      detailedPost.title
                     )}&url=${encodeURIComponent(
-                      `https://developer-ayush.com/blog/${post.slug}`
+                      `https://developer-ayush.com/blog/${detailedPost.slug}`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -238,7 +238,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
                   </a>
                   <a
                     href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-                      `https://developer-ayush.com/blog/${post.slug}`
+                      `https://developer-ayush.com/blog/${detailedPost.slug}`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -271,7 +271,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
             <div className="flex items-center">
               <span className="text-foreground/60 mr-3">Tags:</span>
               <div className="flex flex-wrap gap-2">
-                {post.categories.map((category) => (
+                {detailedPost.categories.map((category) => (
                   <span
                     key={category.id}
                     className="text-xs px-3 py-1 rounded-full bg-foreground/10 text-foreground/70"
@@ -284,7 +284,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           </div>
 
           {/* Related Posts section */}
-          <RelatedPosts currentPost={post} allPosts={allPosts} />
+          <RelatedPosts currentPost={detailedPost} allPosts={allPosts} />
         </div>
       </div>
     </div>

@@ -39,10 +39,11 @@ export type BlogPostDetail = {
   authorId: string;
   status: string;
   banner: string;
-  description: string;
+  description?: string;
   slug: string;
   views: number;
   tags: string;
+  categories: Category[];
   author: {
     name: string;
   };
@@ -128,11 +129,10 @@ export async function getBlogPosts(
 
 export async function getBlogPostBySlug(
   slug: string
-): Promise<BlogPost | null> {
+): Promise<BlogPostDetail | null> {
   try {
-    const response = await getBlogPosts(1);
-    const post = response.data.find((post) => post.slug === slug);
-    return post || null;
+    const response = await getBlogPostDetail(slug);
+    return response || null;
   } catch (error) {
     console.error("Error fetching blog post by slug:", error);
     return null;

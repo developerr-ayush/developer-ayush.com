@@ -24,6 +24,17 @@ interface BlogFormProps extends Blog {
   categories: category[];
   author: User;
 }
+
+// Define AI blog generation interface
+interface AIBlogContent {
+  title: string;
+  content: OutputData;
+  description: string;
+  slug: string;
+  tags: string;
+  categories: string[];
+}
+
 export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
   const router = useRouter();
   const { data: session } = useSession();
@@ -39,7 +50,15 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
   const [uploadingBanner, setUploadingBanner] = useState(false);
   const bannerFileInputRef = useRef<HTMLInputElement>(null);
   const [editorContent, setEditorContent] = useState<OutputData | null>(null);
+  const [AIGeneratedContent, setAIGeneratedContent] = useState<
+    OutputData | null | undefined
+  >(null);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+
+  // AI blog generation states
+  const [showAIPopup, setShowAIPopup] = useState(false);
+  const [blogIdea, setBlogIdea] = useState("");
+  const [generatingContent, setGeneratingContent] = useState(false);
 
   const {
     register,
@@ -268,6 +287,100 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
     }
   }, [isAdmin, setValue, watch]);
 
+  // Function to generate blog content with AI
+  const generateBlogWithAI = async () => {
+    if (!blogIdea.trim()) {
+      toast.error("Please enter a blog idea or topic");
+      return;
+    }
+
+    setGeneratingContent(true);
+    try {
+      // Call OpenAI API
+      const response = await fetch("/api/ai/generate-blog", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt: blogIdea }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || "Failed to generate content");
+      }
+
+      // Validate the generated content
+      const generatedContent = data.content as AIBlogContent;
+
+      // First validation: Check if all required fields are present
+      if (
+        !generatedContent.title ||
+        !generatedContent.content ||
+        !generatedContent.description
+      ) {
+        throw new Error("Generated content is missing required fields");
+      }
+
+      // Second validation: Check content structure
+      if (
+        !generatedContent.content.blocks ||
+        generatedContent.content.blocks.length === 0
+      ) {
+        throw new Error("Generated content structure is invalid");
+      }
+
+      // Third validation: Check for reasonable content length
+      if (
+        generatedContent.description.length < 10 ||
+        generatedContent.title.length < 3 ||
+        generatedContent.content.blocks.length < 2
+      ) {
+        throw new Error(
+          "Generated content appears to be too short or incomplete"
+        );
+      }
+
+      // If all validations pass, fill the form
+      setValue("title", generatedContent.title);
+
+      // Ensure the content has the right structure for EditorJS
+
+      // Set the editor content
+      setEditorContent(generatedContent.content);
+      setAIGeneratedContent(generatedContent.content);
+
+      // Set the form content field as a JSON string
+      setValue("content", generatedContent.content);
+
+      setValue("description", generatedContent.description);
+      setValue(
+        "slug",
+        generatedContent.slug || generateSlug(generatedContent.title)
+      );
+      setValue("tags", generatedContent.tags || "");
+      setValue("categories", generatedContent.categories || []);
+
+      // Close the popup and show success message
+      setShowAIPopup(false);
+      toast.success("Blog content generated successfully!");
+
+      // Force refresh the editor after a brief delay
+    } catch (err) {
+      console.error("AI generation error:", err);
+      toast.error(
+        err instanceof Error ? err.message : "Failed to generate blog content"
+      );
+    } finally {
+      setGeneratingContent(false);
+    }
+  };
+
   return (
     <div className="bg-white shadow-md rounded-xl border border-gray-200 overflow-hidden">
       {error && (
@@ -295,12 +408,143 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
         </div>
       )}
 
+      {/* AI Blog Generation Popup */}
+      {showAIPopup && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity">
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen"></span>
+            &#8203;
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-indigo-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                    <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">
+                      Generate Blog with AI
+                    </h3>
+                    <div className="mt-2">
+                      <div className="mb-4 p-3 bg-blue-50 border border-blue-100 rounded text-sm text-blue-800">
+                        <p className="font-medium mb-1">✨ How it works:</p>
+                        <ol className="list-decimal pl-5 space-y-1">
+                          <li>Enter a blog idea or detailed instructions</li>
+                          <li>AI will generate complete blog content</li>
+                          <li>Review and edit before publishing</li>
+                        </ol>
+                      </div>
+                      <p className="text-sm text-gray-500 mb-4">
+                        Be specific about the topic, target audience, tone, and
+                        key points you want to cover.
+                      </p>
+                      <textarea
+                        rows={4}
+                        className="block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        placeholder="E.g., 'Write a comprehensive guide about AI-powered content generation for marketing teams. Include sections on benefits, implementation steps, and best practices.'"
+                        value={blogIdea}
+                        onChange={(e) => setBlogIdea(e.target.value)}
+                      />
+                      <p className="text-xs text-gray-500 mt-2">
+                        The AI will generate title, content, description, tags,
+                        and categories. You'll still need to add a banner image.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button
+                  type="button"
+                  disabled={generatingContent || !blogIdea.trim()}
+                  onClick={generateBlogWithAI}
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {generatingContent ? (
+                    <>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Generating...
+                    </>
+                  ) : (
+                    "Generate Content"
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAIPopup(false)}
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit(onSubmit)} className="p-6">
         <div className="space-y-6">
           <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-6">
-              Basic Information
-            </h3>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-medium text-gray-900">
+                Basic Information
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowAIPopup(true)}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                Generate with AI
+              </button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label
@@ -460,6 +704,7 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
               <RichTextEditor
                 initialValue={blog?.content ? JSON.parse(blog.content) : null}
                 onChange={handleEditorChange}
+                AIGeneratedContent={AIGeneratedContent}
               />
               {errors.content && typeof errors.content.message === "string" && (
                 <p className="mt-1 text-sm text-red-600">
