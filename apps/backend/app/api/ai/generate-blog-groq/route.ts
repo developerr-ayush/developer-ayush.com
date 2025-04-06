@@ -454,7 +454,7 @@ export async function POST(req: NextRequest) {
 
     // Make the Groq request with a timeout
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("Groq request timed out")), 45000); // 45 second timeout
+      setTimeout(() => reject(new Error("Groq request timed out")), 450000); // 45 second timeout
     });
 
     const groqPromise = groq.chat.completions.create({

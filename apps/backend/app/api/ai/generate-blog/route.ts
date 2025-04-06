@@ -249,17 +249,17 @@ export async function POST(req: NextRequest) {
 
     // Make the OpenAI request with a timeout
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("OpenAI request timed out")), 45000); // Increase timeout to 45 seconds
+      setTimeout(() => reject(new Error("OpenAI request timed out")), 450000); // Increase timeout to 45 seconds
     });
 
     const openaiPromise = openai.chat.completions.create({
-      model: "gpt-4-turbo", // Always use GPT-4 as requested by user
+      model: "gpt-3.5-turbo", // Always use GPT-4 as requested by user
       messages: [
         { role: "system", content: systemMessage },
         { role: "user", content: prompt },
       ],
       temperature: 0.7,
-      max_tokens: simplified ? 1000 : 4000, // Increase token count for regular mode to allow longer blogs
+      max_tokens: 4000, // Increase token count for regular mode to allow longer blogs
     });
 
     const response = (await Promise.race([
