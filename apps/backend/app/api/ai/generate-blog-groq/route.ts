@@ -1,110 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
+import Groq from "groq-sdk";
 import { auth } from "../../../../auth";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
 });
 
 export async function POST(req: NextRequest) {
-  // return NextResponse.json({
-  //   success: true,
-  //   content: {
-  //     title: "Why Companies Are Saying Goodbye to Next.js?",
-  //     content: {
-  //       time: 1743869505535,
-  //       blocks: [
-  //         {
-  //           id: "block-1",
-  //           type: "header",
-  //           data: {
-  //             text: "Introduction to Next.js and Its Popularity",
-  //             level: 2,
-  //           },
-  //         },
-  //         {
-  //           id: "block-2",
-  //           type: "paragraph",
-  //           data: {
-  //             text: "Next.js, developed by Vercel, is a popular React framework that offers features like server-side rendering and static site generation, aiming to improve both user and developer experiences. However, despite these benefits, some companies are choosing to move away from the framework.",
-  //           },
-  //         },
-  //         {
-  //           id: "block-3",
-  //           type: "header",
-  //           data: {
-  //             text: "Key Reasons for the Shift Away from Next.js",
-  //             level: 2,
-  //           },
-  //         },
-  //         {
-  //           id: "block-4",
-  //           type: "list",
-  //           data: {
-  //             style: "unordered",
-  //             items: [
-  //               "Complexity and Overhead",
-  //               "Cost of Deployment and Scaling",
-  //               "Limited Flexibility with Back-end Integration",
-  //               "Competitive Alternatives",
-  //             ],
-  //           },
-  //         },
-  //         {
-  //           id: "block-5",
-  //           type: "header",
-  //           data: {
-  //             text: "Exploring the Alternatives",
-  //             level: 2,
-  //           },
-  //         },
-  //         {
-  //           id: "block-6",
-  //           type: "paragraph",
-  //           data: {
-  //             text: "As some companies move away from Next.js, they often turn towards other frameworks and technologies such as Gatsby for static sites, Nuxt.js for Vue applications, or traditional React setups without a framework for more control and simplicity.",
-  //           },
-  //         },
-  //         {
-  //           id: "block-7",
-  //           type: "header",
-  //           data: {
-  //             text: "Case Studies: Successes Without Next.js",
-  //             level: 2,
-  //           },
-  //         },
-  //         {
-  //           id: "block-8",
-  //           type: "paragraph",
-  //           data: {
-  //             text: "Several companies have successfully transitioned away from Next.js, finding that alternatives can offer more control over their web infrastructure, reduce costs, or better align with their specific technical requirements and team expertise.",
-  //           },
-  //         },
-  //         {
-  //           id: "block-9",
-  //           type: "header",
-  //           data: {
-  //             text: "Conclusion",
-  //             level: 2,
-  //           },
-  //         },
-  //         {
-  //           id: "block-10",
-  //           type: "paragraph",
-  //           data: {
-  //             text: "While Next.js remains a powerful tool for many applications, the evolving web development landscape and diverse needs of businesses mean that it won't always be the best fit for every project.",
-  //           },
-  //         },
-  //       ],
-  //       version: "2.28.0",
-  //     },
-  //     description:
-  //       "Explore the reasons why some companies are moving away from Next.js despite its popularity as a React framework.",
-  //     slug: "why-companies-are-saying-goodbye-to-next-js",
-  //     tags: "Next.js, web development, technology trends",
-  //     categories: ["Web Development", "Technology Trends"],
-  //   },
-  // });
   try {
     // Check authentication
     const session = await auth();
@@ -127,7 +29,7 @@ export async function POST(req: NextRequest) {
     }
 
     console.log(
-      `Generating blog for prompt: ${prompt} (simplified: ${simplified})`
+      `Generating blog using Groq for prompt: ${prompt} (simplified: ${simplified})`
     );
 
     // Construct the system message with instructions for blog generation
@@ -247,35 +149,46 @@ export async function POST(req: NextRequest) {
     `;
     }
 
-    // Make the OpenAI request with a timeout
+    // Make the Groq request with a timeout
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("OpenAI request timed out")), 45000); // Increase timeout to 45 seconds
+      setTimeout(() => reject(new Error("Groq request timed out")), 45000); // 45 second timeout
     });
 
-    const openaiPromise = openai.chat.completions.create({
-      model: "gpt-4-turbo", // Always use GPT-4 as requested by user
+    const groqPromise = groq.chat.completions.create({
+      model: "deepseek-r1-distill-llama-70b", // Use different models based on complexity
       messages: [
         { role: "system", content: systemMessage },
         { role: "user", content: prompt },
       ],
       temperature: 0.7,
-      max_tokens: simplified ? 1000 : 4000, // Increase token count for regular mode to allow longer blogs
+      max_tokens: simplified ? 1000 : 4000, // Adjust token count based on complexity
     });
 
-    const response = (await Promise.race([
-      openaiPromise,
-      timeoutPromise,
-    ])) as OpenAI.ChatCompletion;
+    // We need to handle the response as unknown first
+    const rawResponse = await Promise.race([groqPromise, timeoutPromise]);
 
-    // Extract the response content
-    const assistantResponse = response.choices[0]?.message?.content;
+    // Type guard to ensure we have a chat completion (non-streaming) response
+    if (
+      !rawResponse ||
+      typeof rawResponse !== "object" ||
+      !("choices" in rawResponse)
+    ) {
+      throw new Error("Invalid response from Groq");
+    }
+
+    // Now TypeScript knows this has choices
+    const response = rawResponse;
+
+    // Extract the response content with type assertion to any
+    // @ts-ignore - We know this structure exists in the Groq response
+    const assistantResponse = (response as any).choices[0]?.message?.content;
 
     if (!assistantResponse) {
-      throw new Error("No response from OpenAI");
+      throw new Error("No response from Groq");
     }
 
     console.log(
-      "OpenAI response received:",
+      "Groq response received:",
       assistantResponse.substring(0, 200) + "..."
     );
 
@@ -409,7 +322,7 @@ export async function POST(req: NextRequest) {
       };
 
       console.log(
-        "Returning validated content:",
+        "Returning validated content from Groq:",
         JSON.stringify(
           {
             title: contentToReturn.title.substring(0, 30) + "...",
@@ -442,7 +355,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Failed to parse AI response",
+          error: "Failed to parse Groq response",
           details:
             jsonError instanceof Error ? jsonError.message : "Unknown error",
         },
@@ -450,11 +363,11 @@ export async function POST(req: NextRequest) {
       );
     }
   } catch (error) {
-    console.error("OpenAI API error:", error);
+    console.error("Groq API error:", error);
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to generate blog content",
+        error: "Failed to generate blog content with Groq",
         details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }

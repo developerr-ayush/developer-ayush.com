@@ -26,6 +26,14 @@ const nextConfig = {
   compress: true, // Enable compression
   poweredByHeader: false, // Remove X-Powered-By header for security
   reactStrictMode: true, // Enable React strict mode for better error catching
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "4mb", // Increase body size limit for longer content
+    },
+  },
+  serverRuntimeConfig: {
+    functionTimeout: 60, // Set 60 second function timeout
+  },
 };
 
 export default nextConfig;
