@@ -85,7 +85,7 @@ export default function RichTextEditor({
 
     // Cleanup on component unmount
     return () => {
-      if (editorRef.current) {
+      if (editorRef.current?.destroy) {
         editorRef.current.destroy();
         editorRef.current = null;
       }
