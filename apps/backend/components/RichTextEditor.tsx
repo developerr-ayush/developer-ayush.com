@@ -26,10 +26,33 @@ export default function RichTextEditor({
 }: RichTextEditorProps) {
   console.log("initialValue", initialValue);
   const editorRef = useRef<EditorJS | null>(null);
+  const editorInstance = useRef<any>(null); // Keep a separate reference for the raw editor instance
   const containerRef = useRef<HTMLDivElement>(null);
   const [editorReady, setEditorReady] = useState(false);
   const [initialData, setInitialData] = useState<OutputData | null>(null);
   const hasInitialized = useRef(false);
+
+  // Safe method to destroy editor
+  const safeDestroyEditor = () => {
+    try {
+      if (
+        editorRef.current &&
+        typeof editorRef.current.destroy === "function"
+      ) {
+        editorRef.current.destroy();
+      } else if (
+        editorInstance.current &&
+        typeof editorInstance.current.destroy === "function"
+      ) {
+        editorInstance.current.destroy();
+      }
+    } catch (error) {
+      console.error("Error destroying editor:", error);
+    } finally {
+      editorRef.current = null;
+      editorInstance.current = null;
+    }
+  };
 
   // Initialize editor with initial data
   useEffect(() => {
@@ -44,14 +67,12 @@ export default function RichTextEditor({
     setInitialData(data || initialData);
 
     // Clean up previous editor instance if it exists
-    if (editorRef.current) {
-      editorRef.current.destroy();
-      editorRef.current = null;
-    }
+    safeDestroyEditor();
 
     // Dynamically import EditorJS to avoid SSR issues
+    let isComponentMounted = true;
     import("@editorjs/editorjs").then(({ default: EditorJS }) => {
-      if (!containerRef.current) return;
+      if (!containerRef.current || !isComponentMounted) return;
 
       try {
         // Initialize editor
@@ -77,7 +98,9 @@ export default function RichTextEditor({
           },
         });
 
+        // Store both references
         editorRef.current = editor;
+        editorInstance.current = editor;
       } catch (error) {
         console.error("Failed to initialize EditorJS:", error);
       }
@@ -85,10 +108,8 @@ export default function RichTextEditor({
 
     // Cleanup on component unmount
     return () => {
-      if (editorRef.current?.destroy) {
-        editorRef.current.destroy();
-        editorRef.current = null;
-      }
+      isComponentMounted = false;
+      safeDestroyEditor();
     };
   }, [initialValue, placeholder, readOnly, onChange, initialData]);
 
@@ -109,6 +130,7 @@ export default function RichTextEditor({
             data: {
               ...block.data,
               code: block.data.text || block.data.code || "",
+              language: block.data.language || "typescript",
             },
           };
         }

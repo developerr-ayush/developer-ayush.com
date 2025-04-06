@@ -420,6 +420,14 @@ export async function POST(req: NextRequest) {
           },
           {
             "id": "block-5",
+            "type": "code",
+            "data": {
+              "code": "console.log('Hello world');",
+              "language": "javascript" 
+            }
+          },
+          {
+            "id": "block-6",
             "type": "quote",
             "data": {
               "text": "Quote text",
@@ -447,8 +455,9 @@ export async function POST(req: NextRequest) {
     9. The response MUST be a valid JSON object that can be parsed
     10. The title should be at least 10 characters and less than 255 characters
     11. The description should be less than 1000 characters
-    12. IMPORTANT: Make sure the "content" object has the exact structure shown above, with "time", "blocks", and "version" properties
-    13. IMPORTANT: Each block MUST have an "id", "type", and "data" property exactly as shown in the examples
+    12. IMPORTANT: For code blocks, use the "code" field (not "text") and include a "language" field
+    13. IMPORTANT: Make sure the "content" object has the exact structure shown above, with "time", "blocks", and "version" properties
+    14. IMPORTANT: Each block MUST have an "id", "type", and "data" property exactly as shown in the examples
     `;
     }
 
