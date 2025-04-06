@@ -94,17 +94,35 @@ export default function RichTextEditor({
 
   // Handle AIGeneratedContent changes
   useEffect(() => {
-    if (!editorRef.current || !hasInitialized.current) return;
+    if (!editorRef.current || !AIGeneratedContent) return;
 
-    const data = normalizeContent(AIGeneratedContent);
-    if (data) {
-      try {
-        editorRef.current.render(data).catch((error) => {
-          console.error("Failed to render editor content:", error);
-        });
-      } catch (error) {
-        console.error("Error rendering editor content:", error);
-      }
+    console.log("Rendering AI content:", AIGeneratedContent);
+
+    // Ensure code blocks have the correct structure
+    const processedContent = {
+      ...AIGeneratedContent,
+      blocks: AIGeneratedContent.blocks?.map((block) => {
+        if (block.type === "code" && block.data) {
+          // Ensure code blocks have text property
+          return {
+            ...block,
+            data: {
+              ...block.data,
+              code: block.data.text || block.data.code || "",
+            },
+          };
+        }
+        return block;
+      }),
+    };
+
+    try {
+      editorRef.current.clear();
+      editorRef.current.render(processedContent).catch((error) => {
+        console.error("Failed to render editor content:", error);
+      });
+    } catch (error) {
+      console.error("Error rendering editor content:", error);
     }
   }, [AIGeneratedContent]);
 

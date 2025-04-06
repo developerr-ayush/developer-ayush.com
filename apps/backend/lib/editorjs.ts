@@ -102,7 +102,13 @@ export const EDITOR_JS_TOOLS = {
     },
     inlineToolbar: true,
   },
-  code: editorjsCode.default,
+  code: {
+    class: editorjsCode.default,
+    config: {
+      placeholder: "Enter code here",
+      language: "auto",
+    },
+  },
   quote: {
     class: editorjsQuote.default,
     inlineToolbar: true,

@@ -7,6 +7,309 @@ const groq = new Groq({
 });
 
 export async function POST(req: NextRequest) {
+  // return NextResponse.json({
+  //   success: true,
+  //   content: {
+  //     title:
+  //       "How to Create an MCP Model Context Protocol Server Using TypeScript: A Step-by-Step Guide with Weather API Example",
+  //     content: {
+  //       time: 1743959363252,
+  //       blocks: [
+  //         {
+  //           id: "block-1",
+  //           type: "header",
+  //           data: {
+  //             text: "Introduction to MCP Model Context Protocol",
+  //             level: 2,
+  //           },
+  //         },
+  //         {
+  //           id: "block-2",
+  //           type: "paragraph",
+  //           data: {
+  //             text: "The Model-Context-Protocol (MCP) architecture is a design pattern that separates concerns into three main components: <b>Model</b>, <b>Context</b>, and <b>Protocol</b>. This separation enables cleaner code organization, better maintainability, and scalability. In this guide, we'll create an MCP server using TypeScript and integrate it with a weather API as a practical example.",
+  //           },
+  //         },
+  //         {
+  //           id: "block-3",
+  //           type: "list",
+  //           data: {
+  //             style: "unordered",
+  //             items: [
+  //               "Model: Represents the data structure and business logic",
+  //               "Context: Manages the state and flow of the application",
+  //               "Protocol: Handles communication and API interactions",
+  //             ],
+  //           },
+  //         },
+  //         {
+  //           id: "block-4",
+  //           type: "delimiter",
+  //           data: {},
+  //         },
+  //         {
+  //           id: "block-5",
+  //           type: "header",
+  //           data: {
+  //             text: "Step 1: Setting Up the Project",
+  //             level: 2,
+  //           },
+  //         },
+  //         {
+  //           id: "block-6",
+  //           type: "paragraph",
+  //           data: {
+  //             text: "Let's start by initializing a new Node.js project with TypeScript support.",
+  //           },
+  //         },
+  //         {
+  //           id: "block-7",
+  //           type: "list",
+  //           data: {
+  //             style: "unordered",
+  //             items: [
+  //               "Run `npm init -y` to create a package.json file",
+  //               "Install TypeScript and required dependencies: `npm install typescript @types/node ts-node`",
+  //               "Install Express: `npm install express cors dotenv`",
+  //               "Install Axios for API calls: `npm install axios`",
+  //             ],
+  //           },
+  //         },
+  //         {
+  //           id: "block-8",
+  //           type: "delimiter",
+  //           data: {},
+  //         },
+  //         {
+  //           id: "block-9",
+  //           type: "header",
+  //           data: {
+  //             text: "Step 2: Project Structure",
+  //             level: 2,
+  //           },
+  //         },
+  //         {
+  //           id: "block-10",
+  //           type: "paragraph",
+  //           data: {
+  //             text: "Organize your project into the following structure:",
+  //           },
+  //         },
+  //         {
+  //           id: "block-11",
+  //           type: "list",
+  //           data: {
+  //             style: "unordered",
+  //             items: [
+  //               "src/",
+  //               "src/models/",
+  //               "src/contexts/",
+  //               "src/protocols/",
+  //               "src/utils/",
+  //               "src/config/",
+  //               "index.ts",
+  //             ],
+  //           },
+  //         },
+  //         {
+  //           id: "block-12",
+  //           type: "delimiter",
+  //           data: {},
+  //         },
+  //         {
+  //           id: "block-13",
+  //           type: "header",
+  //           data: {
+  //             text: "Step 3: Setting Up the Server",
+  //             level: 2,
+  //           },
+  //         },
+  //         {
+  //           id: "block-14",
+  //           type: "paragraph",
+  //           data: {
+  //             text: "Create the main server file (`index.ts`) and set up Express:",
+  //           },
+  //         },
+  //         {
+  //           id: "block-15",
+  //           type: "code",
+  //           data: {
+  //             code: "import express, { Request, Response } from 'express';\nimport cors from 'cors';\nimport dotenv from 'dotenv';\n\ndotenv.config();\n\nconst app = express();\nconst PORT = process.env.PORT || 3000;\n\napp.use(cors());\napp.use(express.json());\n\napp.get('/', (req: Request, res: Response) => {\n  res.status(200).json({ message: 'MCP Server is running!' });\n});\n\napp.listen(PORT, () => {\n  console.log(`Server is running on http://localhost:${PORT}`);\n});",
+  //             language: "typescript",
+  //           },
+  //         },
+  //         {
+  //           id: "block-16",
+  //           type: "delimiter",
+  //           data: {},
+  //         },
+  //         {
+  //           id: "block-17",
+  //           type: "header",
+  //           data: {
+  //             text: "Step 4: Defining the Protocol",
+  //             level: 2,
+  //           },
+  //         },
+  //         {
+  //           id: "block-18",
+  //           type: "paragraph",
+  //           data: {
+  //             text: "Create a protocol for handling weather data requests.",
+  //           },
+  //         },
+  //         {
+  //           id: "block-19",
+  //           type: "code",
+  //           data: {
+  //             code: "interface WeatherRequest {\n  city: string;\n}\n\ninterface WeatherResponse {\n  temperature: number;\n  conditions: string;\n  city: string;\n}",
+  //             language: "typescript",
+  //           },
+  //         },
+  //         {
+  //           id: "block-20",
+  //           type: "delimiter",
+  //           data: {},
+  //         },
+  //         {
+  //           id: "block-21",
+  //           type: "header",
+  //           data: {
+  //             text: "Step 5: Implementing the Model",
+  //             level: 2,
+  //           },
+  //         },
+  //         {
+  //           id: "block-22",
+  //           type: "paragraph",
+  //           data: {
+  //             text: "Create a model to fetch weather data from an external API.",
+  //           },
+  //         },
+  //         {
+  //           id: "block-23",
+  //           type: "code",
+  //           data: {
+  //             code: "import axios from 'axios';\n\nexport class WeatherModel {\n  async getWeather(city: string): Promise<WeatherResponse> {\n    try {\n      const API_KEY = process.env.WEATHER_API_KEY;\n      const url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}`;\n      \n      const response = await axios.get(url);\n      \n      return {\n        temperature: response.data.main.temp,\n        conditions: response.data.weather[0].description,\n        city: city\n      } as WeatherResponse;\n    } catch (error) {\n      throw new Error('Failed to fetch weather data');\n    }\n  }\n}",
+  //             language: "typescript",
+  //           },
+  //         },
+  //         {
+  //           id: "block-24",
+  //           type: "delimiter",
+  //           data: {},
+  //         },
+  //         {
+  //           id: "block-25",
+  //           type: "header",
+  //           data: {
+  //             text: "Step 6: Implementing the Controller",
+  //             level: 2,
+  //           },
+  //         },
+  //         {
+  //           id: "block-26",
+  //           type: "paragraph",
+  //           data: {
+  //             text: "Create a controller to handle incoming requests and interact with the model.",
+  //           },
+  //         },
+  //         {
+  //           id: "block-27",
+  //           type: "code",
+  //           data: {
+  //             code: "export class WeatherController {\n  constructor(private weatherModel: WeatherModel) {}\n\n  async getWeather(req: Request<{}, {}, WeatherRequest>): Promise<Response> {\n    try {\n      const weatherData = await this.weatherModel.getWeather(req.body.city);\n      return res.status(200).json(weatherData);\n    } catch (error) {\n      return res.status(500).json({ message: error.message });\n    }\n  }\n}",
+  //             language: "typescript",
+  //           },
+  //         },
+  //         {
+  //           id: "block-28",
+  //           type: "delimiter",
+  //           data: {},
+  //         },
+  //         {
+  //           id: "block-29",
+  //           type: "header",
+  //           data: {
+  //             text: "Step 7: Connecting Everything",
+  //             level: 2,
+  //           },
+  //         },
+  //         {
+  //           id: "block-30",
+  //           type: "paragraph",
+  //           data: {
+  //             text: "Update the main server file to include the weather endpoint.",
+  //           },
+  //         },
+  //         {
+  //           id: "block-31",
+  //           type: "code",
+  //           data: {
+  //             code: "import './config';\nimport express, { Request, Response } from 'express';\nimport { WeatherModel } from './models/WeatherModel';\nimport { WeatherController } from './controllers/WeatherController';\n\nconst app = express();\n\nconst weatherModel = new WeatherModel();\nconst weatherController = new WeatherController(weatherModel);\n\napp.post('/api/weather', weatherController.getWeather);\n",
+  //             language: "typescript",
+  //           },
+  //         },
+  //         {
+  //           id: "block-32",
+  //           type: "delimiter",
+  //           data: {},
+  //         },
+  //         {
+  //           id: "block-33",
+  //           type: "header",
+  //           data: {
+  //             text: "Testing the Server",
+  //             level: 2,
+  //           },
+  //         },
+  //         {
+  //           id: "block-34",
+  //           type: "paragraph",
+  //           data: {
+  //             text: "Use Postman or your preferred tool to test the endpoint with a POST request to `http://localhost:3000/api/weather` with a body containing the city name.",
+  //           },
+  //         },
+  //         {
+  //           id: "block-35",
+  //           type: "delimiter",
+  //           data: {},
+  //         },
+  //         {
+  //           id: "block-36",
+  //           type: "header",
+  //           data: {
+  //             text: "Conclusion",
+  //             level: 2,
+  //           },
+  //         },
+  //         {
+  //           id: "block-37",
+  //           type: "paragraph",
+  //           data: {
+  //             text: "You've successfully implemented an MCP Model Context Protocol server using TypeScript! This architecture provides a clean separation of concerns, making your code more maintainable and scalable. You can now expand this server by adding more models, contexts, and protocols for different functionalities.",
+  //           },
+  //         },
+  //         {
+  //           id: "block-38",
+  //           type: "quote",
+  //           data: {
+  //             text: "The art of writing code is the art of thinking clearly.",
+  //             caption: "Unknown",
+  //             alignment: "left",
+  //           },
+  //         },
+  //       ],
+  //       version: "2.28.0",
+  //     },
+  //     description:
+  //       "Learn how to build an MCP Model Context Protocol server with TypeScript, using a weather API example. Step-by-step guide with code.",
+  //     slug: "how-to-create-mcp-model-context-protocol-server-using-typescript",
+  //     tags: "typescript, mcp, model-context-protocol, weather-api, serverless, backend-development",
+  //     categories: ["Programming", "Web Development", "TypeScript"],
+  //   },
+  // });
   try {
     // Check authentication
     const session = await auth();
