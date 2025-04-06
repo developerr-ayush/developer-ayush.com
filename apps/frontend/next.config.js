@@ -21,6 +21,7 @@ const nextConfig = {
   compress: true, // Enable compression
   poweredByHeader: false, // Remove X-Powered-By header for security
   reactStrictMode: true, // Enable React strict mode for better error catching
+  sourceMaps: true,
 };
 
 export default nextConfig;

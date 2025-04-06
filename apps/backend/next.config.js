@@ -34,6 +34,7 @@ const nextConfig = {
   serverRuntimeConfig: {
     functionTimeout: 60, // Set 60 second function timeout
   },
+  sourceMaps: true,
 };
 
 export default nextConfig;
