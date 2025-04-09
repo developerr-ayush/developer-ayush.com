@@ -35,6 +35,7 @@ const nextConfig = {
     functionTimeout: 60, // Set 60 second function timeout
   },
   sourceMaps: true,
+  removeConsole: true,
 };
 
 export default nextConfig;
