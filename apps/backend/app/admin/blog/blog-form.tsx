@@ -60,9 +60,9 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
   const [blogIdea, setBlogIdea] = useState("");
   const [generatingContent, setGeneratingContent] = useState(false);
   const [longForm, setLongForm] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<"openai" | "groq">(
-    "openai"
-  );
+  const [selectedModel, setSelectedModel] = useState<
+    "openai" | "groq-llama-4" | "groq-deepseek" | "groq-llama-3.3"
+  >("openai");
 
   const {
     register,
@@ -322,6 +322,9 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
         body: JSON.stringify({
           prompt: blogIdea,
           simplified: !longForm, // Request simplified response unless long-form is selected
+          model: selectedModel.startsWith("groq-")
+            ? selectedModel.substring(5)
+            : undefined, // Extract model name if it's a groq model
         }),
         signal: controller.signal,
       });
@@ -524,9 +527,9 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
                             </div>
 
                             <div
-                              onClick={() => setSelectedModel("groq")}
+                              onClick={() => setSelectedModel("groq-llama-4")}
                               className={`flex items-center p-2 border rounded cursor-pointer ${
-                                selectedModel === "groq"
+                                selectedModel === "groq-llama-4"
                                   ? "border-indigo-500 bg-indigo-50"
                                   : "border-gray-300 hover:border-gray-400"
                               }`}
@@ -542,9 +545,61 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
                                 />
                               </svg>
                               <div>
-                                <div className="font-medium">Groq</div>
+                                <div className="font-medium">Llama 4</div>
                                 <div className="text-xs text-gray-500">
-                                  Mixtral / Llama
+                                  meta-llama/llama-4-scout-17b
+                                </div>
+                              </div>
+                            </div>
+
+                            <div
+                              onClick={() => setSelectedModel("groq-deepseek")}
+                              className={`flex items-center p-2 border rounded cursor-pointer ${
+                                selectedModel === "groq-deepseek"
+                                  ? "border-indigo-500 bg-indigo-50"
+                                  : "border-gray-300 hover:border-gray-400"
+                              }`}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                className="w-5 h-5 mr-2 text-gray-700"
+                              >
+                                <path
+                                  fill="currentColor"
+                                  d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 3a5 5 0 0 1 3.536 8.536 1 1 0 0 1-1.415-1.414A3 3 0 0 0 15 12a3 3 0 0 0-3-3 3 3 0 0 0-2.121.879A3 3 0 0 0 9 12a3 3 0 0 0 .879 2.121 1 1 0 0 1-1.415 1.415A5 5 0 0 1 12 7z"
+                                />
+                              </svg>
+                              <div>
+                                <div className="font-medium">DeepSeek</div>
+                                <div className="text-xs text-gray-500">
+                                  deepseek-r1-distill-qwen-32b
+                                </div>
+                              </div>
+                            </div>
+
+                            <div
+                              onClick={() => setSelectedModel("groq-llama-3.3")}
+                              className={`flex items-center p-2 border rounded cursor-pointer ${
+                                selectedModel === "groq-llama-3.3"
+                                  ? "border-indigo-500 bg-indigo-50"
+                                  : "border-gray-300 hover:border-gray-400"
+                              }`}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                className="w-5 h-5 mr-2 text-gray-700"
+                              >
+                                <path
+                                  fill="currentColor"
+                                  d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 3a5 5 0 0 1 3.536 8.536 1 1 0 0 1-1.415-1.414A3 3 0 0 0 15 12a3 3 0 0 0-3-3 3 3 0 0 0-2.121.879A3 3 0 0 0 9 12a3 3 0 0 0 .879 2.121 1 1 0 0 1-1.415 1.415A5 5 0 0 1 12 7z"
+                                />
+                              </svg>
+                              <div>
+                                <div className="font-medium">Llama 3.3</div>
+                                <div className="text-xs text-gray-500">
+                                  llama-3.3-70b-specdec
                                 </div>
                               </div>
                             </div>
@@ -552,7 +607,11 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
                           <p className="text-xs text-gray-500 mt-1">
                             {selectedModel === "openai"
                               ? "OpenAI typically provides more structured content."
-                              : "Groq is faster and optimized for long-form content."}
+                              : selectedModel === "groq-llama-4"
+                                ? "Llama 4 offers balanced quality and speed."
+                                : selectedModel === "groq-deepseek"
+                                  ? "DeepSeek is optimized for technical content."
+                                  : "Llama 3.3 is designed for long-form content."}
                           </p>
                         </div>
 

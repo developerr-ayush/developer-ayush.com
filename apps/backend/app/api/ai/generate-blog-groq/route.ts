@@ -322,7 +322,7 @@ export async function POST(req: NextRequest) {
 
     // Parse request body
     const body = await req.json();
-    const { prompt, simplified = false } = body;
+    const { prompt, simplified = false, model } = body;
 
     if (!prompt || typeof prompt !== "string") {
       return NextResponse.json(
@@ -332,7 +332,7 @@ export async function POST(req: NextRequest) {
     }
 
     console.log(
-      `Generating blog using Groq for prompt: ${prompt} (simplified: ${simplified})`
+      `Generating blog using Groq for prompt: ${prompt} (simplified: ${simplified}, model: ${model || "default"})`
     );
 
     // Construct the system message with instructions for blog generation
@@ -466,8 +466,19 @@ export async function POST(req: NextRequest) {
       setTimeout(() => reject(new Error("Groq request timed out")), 450000); // 45 second timeout
     });
 
+    // Determine which model to use based on the model parameter
+    let modelToUse = "meta-llama/llama-4-scout-17b-16e-instruct"; // Default model
+
+    if (model === "llama-4") {
+      modelToUse = "meta-llama/llama-4-scout-17b-16e-instruct";
+    } else if (model === "deepseek") {
+      modelToUse = "deepseek-r1-distill-qwen-32b";
+    } else if (model === "llama-3.3") {
+      modelToUse = "llama-3.3-70b-specdec";
+    }
+
     const groqPromise = groq.chat.completions.create({
-      model: "meta-llama/llama-4-scout-17b-16e-instruct", // Use different models based on complexity
+      model: modelToUse, // Use the selected model based on user preference
       messages: [
         { role: "system", content: systemMessage },
         { role: "user", content: prompt },
