@@ -467,7 +467,7 @@ export async function POST(req: NextRequest) {
     });
 
     const groqPromise = groq.chat.completions.create({
-      model: "deepseek-r1-distill-llama-70b", // Use different models based on complexity
+      model: "meta-llama/llama-4-scout-17b-16e-instruct", // Use different models based on complexity
       messages: [
         { role: "system", content: systemMessage },
         { role: "user", content: prompt },

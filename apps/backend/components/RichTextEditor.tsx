@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { EDITOR_JS_TOOLS, normalizeContent } from "../lib/editorjs";
 import type EditorJS from "@editorjs/editorjs";
 import { OutputData } from "@editorjs/editorjs";
 import "../app/blog-content.css";
+
 interface RichTextEditorProps {
   initialValue?: {
     blocks: { type: string; data: object }[];
@@ -24,100 +25,129 @@ export default function RichTextEditor({
   readOnly = false,
   AIGeneratedContent,
 }: RichTextEditorProps) {
-  console.log("initialValue", initialValue);
   const editorRef = useRef<EditorJS | null>(null);
-  const editorInstance = useRef<any>(null); // Keep a separate reference for the raw editor instance
   const containerRef = useRef<HTMLDivElement>(null);
   const [editorReady, setEditorReady] = useState(false);
-  const [initialData, setInitialData] = useState<OutputData | null>(null);
-  const hasInitialized = useRef(false);
+  const [editorError, setEditorError] = useState<string | null>(null);
+  const onChangeRef = useRef(onChange);
+  const initialValueRef = useRef(initialValue);
+  const mountedRef = useRef(false);
+
+  // Update refs when props change
+  useEffect(() => {
+    onChangeRef.current = onChange;
+    initialValueRef.current = initialValue;
+  }, [onChange, initialValue]);
 
   // Safe method to destroy editor
-  const safeDestroyEditor = () => {
+  const safeDestroyEditor = useCallback(() => {
+    if (!editorRef.current) return;
+
     try {
-      if (
-        editorRef.current &&
-        typeof editorRef.current.destroy === "function"
-      ) {
+      if (typeof editorRef.current.destroy === "function") {
         editorRef.current.destroy();
-      } else if (
-        editorInstance.current &&
-        typeof editorInstance.current.destroy === "function"
-      ) {
-        editorInstance.current.destroy();
       }
     } catch (error) {
       console.error("Error destroying editor:", error);
     } finally {
       editorRef.current = null;
-      editorInstance.current = null;
     }
-  };
+  }, []);
 
-  // Initialize editor with initial data
-  useEffect(() => {
+  // Initialize editor
+  const initializeEditor = useCallback(async () => {
     if (!containerRef.current) return;
 
-    // Prevent double initialization in development due to StrictMode
-    if (hasInitialized.current) return;
-    hasInitialized.current = true;
-
-    // Process the initial value
-    const data = normalizeContent(initialValue);
-    setInitialData(data || initialData);
-
-    // Clean up previous editor instance if it exists
+    // First make sure any existing editor is destroyed
     safeDestroyEditor();
 
-    // Dynamically import EditorJS to avoid SSR issues
-    let isComponentMounted = true;
-    import("@editorjs/editorjs").then(({ default: EditorJS }) => {
-      if (!containerRef.current || !isComponentMounted) return;
+    try {
+      setEditorReady(false);
+      setEditorError(null);
 
-      try {
-        // Initialize editor
-        const editor = new EditorJS({
-          holder: containerRef.current,
-          tools: EDITOR_JS_TOOLS,
-          data: data || initialData,
-          placeholder,
-          readOnly,
-          onChange: async () => {
-            try {
-              const savedData = await editorRef.current?.save();
-              console.log("savedData", savedData);
-              if (savedData) {
-                onChange(savedData);
-              }
-            } catch (error) {
-              console.error("Failed to save EditorJS data:", error);
+      // Process the initial value
+      const data = normalizeContent(initialValueRef.current);
+
+      // Dynamically import EditorJS to avoid SSR issues
+      const { default: EditorJS } = await import("@editorjs/editorjs");
+
+      // Make sure component is still mounted
+      if (!containerRef.current || !mountedRef.current) return;
+
+      // Initialize editor
+      const editor = new EditorJS({
+        holder: containerRef.current,
+        tools: EDITOR_JS_TOOLS,
+        data: data,
+        placeholder,
+        readOnly,
+        autofocus: false,
+        onChange: async () => {
+          try {
+            const savedData = await editor.save();
+            if (savedData && mountedRef.current) {
+              onChangeRef.current(savedData);
             }
-          },
-          onReady: () => {
+          } catch (error) {
+            console.error("Failed to save EditorJS data:", error);
+          }
+        },
+        onReady: () => {
+          if (mountedRef.current) {
             setEditorReady(true);
-          },
+            editorRef.current = editor;
+          }
+        },
+      });
+
+      // Handle errors
+      editor.isReady
+        .then(() => {
+          if (!mountedRef.current) {
+            // Component unmounted during initialization, clean up
+            try {
+              editor.destroy();
+            } catch (error) {
+              console.error("Error destroying editor:", error);
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Editor.js initialization failed:", error);
+          if (mountedRef.current) {
+            setEditorError("Failed to initialize editor");
+          }
         });
-
-        // Store both references
-        editorRef.current = editor;
-        editorInstance.current = editor;
-      } catch (error) {
-        console.error("Failed to initialize EditorJS:", error);
+    } catch (error) {
+      console.error("Failed to initialize EditorJS:", error);
+      if (mountedRef.current) {
+        setEditorError("Failed to load editor");
       }
-    });
+    }
+  }, [placeholder, readOnly, safeDestroyEditor]);
 
-    // Cleanup on component unmount
+  // Initialize editor on mount
+  useEffect(() => {
+    mountedRef.current = true;
+
+    // Wait for DOM to be ready
+    const timerId = setTimeout(() => {
+      if (mountedRef.current) {
+        initializeEditor();
+      }
+    }, 0);
+
     return () => {
-      isComponentMounted = false;
+      mountedRef.current = false;
+      clearTimeout(timerId);
       safeDestroyEditor();
     };
-  }, [initialValue, placeholder, readOnly, onChange, initialData]);
+  }, [initializeEditor, safeDestroyEditor]);
 
   // Handle AIGeneratedContent changes
   useEffect(() => {
-    if (!editorRef.current || !AIGeneratedContent) return;
-
-    console.log("Rendering AI content:", AIGeneratedContent);
+    if (!editorRef.current || !AIGeneratedContent || !mountedRef.current)
+      return;
 
     // Ensure code blocks have the correct structure
     const processedContent = {
@@ -152,11 +182,14 @@ export default function RichTextEditor({
     <div className="rich-text-editor blog-content">
       <div
         ref={containerRef}
+        id="editorjs-container"
         className={`border border-gray-300 rounded-md min-h-[300px] ${!editorReady ? "editor-loading" : ""}`}
       >
         {!editorReady && (
           <div className="flex items-center justify-center h-full min-h-[300px]">
-            <span className="text-gray-400">Loading editor...</span>
+            <span className="text-gray-400">
+              {editorError || "Loading editor..."}
+            </span>
           </div>
         )}
       </div>
