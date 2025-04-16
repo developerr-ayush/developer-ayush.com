@@ -1,3 +1,5 @@
+import type { OutputData } from "@editorjs/editorjs";
+
 /**
  * Check if a string is valid JSON
  * @param str - String to check
@@ -27,177 +29,72 @@ export function isEditorJsData(content: any): boolean {
 }
 
 /**
- * Render EditorJS blocks to HTML
- * @param data - EditorJS data
- * @returns HTML string
+ * Process blog content for display
+ * @param content - Blog content
+ * @param jsonContent - Optional JSON content from the json_content field
+ * @returns Processed HTML content
  */
-export function renderEditorJsContent(data: any): string {
-  if (
-    !data ||
-    !data.blocks ||
-    !Array.isArray(data.blocks) ||
-    data.blocks.length === 0
-  ) {
-    return "";
-  }
-
-  try {
-    return data.blocks
-      .map((block: any) => {
+export function processBlogContent(content: OutputData): string {
+  // First try jsonContent if available
+  if (content) {
+    console.log(content);
+    return content.blocks
+      .map((block) => {
         switch (block.type) {
-          case "header":
-            return `<h${block.data.level} id="${slugify(block.data.text)}">${block.data.text}</h${block.data.level}>`;
+          case "header": {
+            const level = block.data.level || 2;
+            return `<h${level}>${block.data.text}</h${level}>`;
+          }
 
           case "paragraph":
             return `<p>${block.data.text}</p>`;
 
-          case "list":
-            const listItems = block.data.items
-              .map((item: string) => `<li>${item}</li>`)
-              .join("");
-            return block.data.style === "ordered"
-              ? `<ol>${listItems}</ol>`
-              : `<ul>${listItems}</ul>`;
-
+          case "list": {
+            const tag = block.data.style === "ordered" ? "ol" : "ul";
+            const renderListItems = (items: any[]): string => {
+              return items
+                .map((item: any) => {
+                  if (typeof item === "string") {
+                    return `<li>${item}</li>`;
+                  }
+                  const nestedList =
+                    item.items && item.items.length > 0
+                      ? renderListItems(item.items)
+                      : "";
+                  return `<li>${item.content || item}${nestedList}</li>`;
+                })
+                .join("");
+            };
+            return `<${tag}>${renderListItems(block.data.items)}</${tag}>`;
+          }
           case "image":
-            const caption = block.data.caption
-              ? `<figcaption>${block.data.caption}</figcaption>`
-              : "";
-            return `
-            <figure class="my-8">
-              <img 
-                src="${block.data.file.url}" 
-                alt="${block.data.caption || ""}" 
-                class="rounded-lg mx-auto ${block.data.stretched ? "w-full" : ""}"
-              />
-              ${caption}
-            </figure>
-          `;
+            return `<img src="${block.data.file.url}" alt="${block.data.caption || ""}" />`;
 
           case "embed":
-            const embedCaption = block.data.caption
-              ? `<figcaption>${block.data.caption}</figcaption>`
-              : "";
-            return `
-            <div class="embed-container my-8">
-              <iframe
-                src="${block.data.embed}"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-                class="w-full aspect-video rounded"
-              ></iframe>
-              ${embedCaption}
-            </div>
-          `;
+            return `<iframe src="${block.data.embed}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
 
-          case "code":
-            // Ensure the language class is set correctly for highlight.js to detect it
-            const language = block.data.language || "plaintext";
-            // Escape HTML in the code to prevent rendering issues
+          case "code": {
             const escapedCode = block.data.code
               .replace(/&/g, "&amp;")
               .replace(/</g, "&lt;")
               .replace(/>/g, "&gt;")
               .replace(/"/g, "&quot;")
               .replace(/'/g, "&#039;");
+            return `<pre><code>${escapedCode}</code></pre>`;
+          }
 
-            // Use data attributes to help with client-side processing
-            return `<pre><code class="language-${language}" data-language="${language}">${escapedCode}</code></pre>`;
-
-          case "quote":
-            const cite = block.data.caption
-              ? `<cite>— ${block.data.caption}</cite>`
-              : "";
-            return `<blockquote><p>${block.data.text}</p>${cite}</blockquote>`;
-
-          case "delimiter":
-            return '<hr class="my-8" />';
+          // Add more block types if needed
 
           default:
-            console.warn(`Unknown block type: ${block.type}`);
             return "";
         }
       })
-      .join("");
-  } catch (error) {
-    console.error("Error rendering EditorJS content:", error);
-    return "";
-  }
-}
-
-/**
- * Create a slug from a string
- * @param text - Text to convert to slug
- * @returns Slug string
- */
-function slugify(text: string): string {
-  return text
-    .toString()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w-]+/g, "")
-    .replace(/--+/g, "-");
-}
-
-/**
- * Process blog content for display
- * @param content - Blog content
- * @param jsonContent - Optional JSON content from the json_content field
- * @returns Processed HTML content
- */
-export function processBlogContent(content: any, jsonContent?: any): string {
-  // First try jsonContent if available
-  if (jsonContent) {
-    // If it's a string, try to parse it
-    if (typeof jsonContent === "string") {
-      try {
-        const parsedContent = JSON.parse(jsonContent);
-        if (isEditorJsData(parsedContent)) {
-          return renderEditorJsContent(parsedContent);
-        }
-      } catch {
-        // If parsing fails, continue with regular content
-      }
-    }
-    // If it's already an object, check if it's EditorJS data
-    else if (isEditorJsData(jsonContent)) {
-      return renderEditorJsContent(jsonContent);
-    }
+      .join("\n");
   }
 
   // Handle null or undefined content
   if (content === null || content === undefined) {
     return "";
-  }
-
-  // If jsonContent is not available or not valid, use regular content
-  // If the content is already a string, return as is
-  if (typeof content === "string") {
-    // Check if it's EditorJS JSON in string format
-    if (content.trim().startsWith("{") && isValidJson(content)) {
-      try {
-        const parsedContent = JSON.parse(content);
-        if (isEditorJsData(parsedContent)) {
-          return renderEditorJsContent(parsedContent);
-        }
-      } catch (error) {
-        // If parsing fails, return the original content
-        console.error("Error parsing content JSON:", error);
-        return content;
-      }
-    }
-    return content;
-  }
-
-  // If the content is an object, check if it's EditorJS data
-  if (typeof content === "object" && content !== null) {
-    if (isEditorJsData(content)) {
-      return renderEditorJsContent(content);
-    }
   }
 
   // Fallback

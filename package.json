@@ -18,5 +18,8 @@
   "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "@editorjs/editorjs": "^2.30.8"
   }
 }
