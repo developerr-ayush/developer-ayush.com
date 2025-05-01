@@ -1,7 +1,7 @@
 "use client";
 
 import { personalInfo, socialLinks } from "../data";
-import { FaMapMarkerAlt, FaEnvelope, FaPhone } from "react-icons/fa";
+import { FaMapMarkerAlt, FaEnvelope } from "react-icons/fa";
 import ContactForm from "./ContactForm";
 
 export default function Contact() {
@@ -58,7 +58,7 @@ export default function Contact() {
                 </div>
               </div>
 
-              <div className="flex items-start">
+              {/* <div className="flex items-start">
                 <div className="w-12 h-12 flex items-center justify-center rounded-full bg-sky-500/10 text-sky-500 mr-4">
                   <FaPhone className="w-5 h-5" />
                 </div>
@@ -71,7 +71,7 @@ export default function Contact() {
                     {personalInfo.phone}
                   </a>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <h4 className="font-medium mb-4">Connect with me</h4>
@@ -98,15 +98,14 @@ export default function Contact() {
                 </span>
               </div>
               {/* You can replace with an actual map if you have the implementation */}
-              {/* <iframe 
+              <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241317.11609823277!2d72.74109995597222!3d19.08219783958221!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c6306644edc1%3A0x5da4ed8f8d648c69!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1662285219930!5m2!1sen!2sin"
-                width="100%" 
-                height="100%" 
-                style={{ border: 0 }} 
-                allowFullScreen="" 
-                loading="lazy" 
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-              ></iframe> */}
+              ></iframe>
             </div>
           </div>
 

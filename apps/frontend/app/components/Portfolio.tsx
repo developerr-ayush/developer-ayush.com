@@ -9,7 +9,6 @@ const Portfolio = () => {
   const [filteredProjects, setFilteredProjects] = useState(portfolioData);
   const [visibleProjects, setVisibleProjects] = useState(6);
 
-
   // Most common skills for filter buttons
   const popularSkills = ["React", "JavaScript", "HTML5", "SCSS", "CSS3"];
 
@@ -81,11 +80,11 @@ const Portfolio = () => {
               key={index}
               className="bg-white/5 rounded-xl overflow-hidden shadow-xl hover:shadow-sky-500/10 transition-all hover:-translate-y-1 hover:bg-white/10 group"
             >
-              <div className="relative h-56 w-full overflow-hidden">
+              <div className="relative aspect-video  w-full overflow-hidden">
                 <Image
                   src={project.image}
                   alt={project.title}
-                  className="object-cover transform group-hover:scale-105 transition-transform duration-500"
+                  className="object-cover transform group-hover:object-bottom object-top transition-object duration-[10s]"
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
