@@ -4,6 +4,7 @@ import { auth } from "../auth";
 import { db } from "../lib/db";
 import { blogSchema } from "../schemas";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 
 export const createBlog = async (values: z.infer<typeof blogSchema>) => {
   const validatedFields = blogSchema.safeParse(values);
@@ -222,6 +223,9 @@ export const publishBlog = async (id: string) => {
 export const showBlog = async () => {
   const blogs = await db.blog.findMany({
     include: { author: true, categories: true },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
   return blogs;
 };
@@ -264,5 +268,146 @@ export const deleteBlog = async (id: string) => {
   } catch (e) {
     console.error("Error deleting blog:", e);
     return { error: "something went wrong" };
+  }
+};
+
+// Auto-save function that creates or updates a blog with partial data
+export const autoSaveBlog = async (
+  partialBlogData: Partial<z.infer<typeof blogSchema>>,
+  existingBlogId?: string
+) => {
+  // Validate the session
+  const session = await auth();
+  if (!session?.user) return { error: "Not Authorized" };
+
+  try {
+    // If there's an existing blog ID, update it
+    if (existingBlogId) {
+      // Check if the blog exists and if the user has permission to edit it
+      const existingBlog = await db.blog.findUnique({
+        where: { id: existingBlogId },
+        include: { author: true },
+      });
+
+      if (!existingBlog) return { error: "Blog not found" };
+
+      // Check if the user is the author or has admin rights
+      const isAuthor = session.user.email === existingBlog.author.email;
+      const isAdmin =
+        session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN";
+
+      if (!isAuthor && !isAdmin) return { error: "Not Authorized" };
+
+      // Extract only the scalar fields that Prisma accepts directly
+      const {
+        title,
+        description,
+        status,
+        banner,
+        slug,
+        tags,
+        // Exclude: author, categories, date, id, json_content
+      } = partialBlogData;
+
+      // Create a clean update object with only valid fields
+      const updateData: Prisma.BlogUpdateInput = {};
+      if (title !== undefined) updateData.title = title;
+      if (description !== undefined) updateData.description = description;
+      if (status !== undefined) updateData.status = status;
+      if (banner !== undefined) updateData.banner = banner;
+      if (slug !== undefined) updateData.slug = slug;
+      if (tags !== undefined) updateData.tags = tags;
+
+      // Handle content separately
+      if (partialBlogData.content !== undefined) {
+        updateData.content =
+          typeof partialBlogData.content === "object"
+            ? JSON.stringify(partialBlogData.content)
+            : partialBlogData.content;
+      }
+
+      // Handle categories if provided
+      if (partialBlogData.categories?.length) {
+        const categoriesArray = Array.isArray(partialBlogData.categories)
+          ? partialBlogData.categories
+          : [];
+
+        updateData.categories = {
+          connectOrCreate: categoriesArray.map((cat: string) => ({
+            where: { name: cat },
+            create: { name: cat, slug: cat.toLowerCase().replace(/ /g, "-") },
+          })),
+        };
+      }
+
+      // Update the blog with the cleaned data
+      const updatedBlog = await db.blog.update({
+        where: { id: existingBlogId },
+        data: updateData,
+        include: {
+          author: true,
+          categories: true,
+        },
+      });
+
+      return { success: "Blog auto-saved", blog: updatedBlog };
+    }
+    // Otherwise, create a new blog with default values for required fields
+    else {
+      // Generate a temporary title if none is provided
+      const title = partialBlogData.title || "Untitled Draft";
+
+      // Generate a slug from the title or use a temporary one
+      const slug =
+        partialBlogData.slug ||
+        title
+          .toLowerCase()
+          .replace(/[^\w\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-")
+          .trim();
+
+      // Create a new blog with default values
+      const newBlog = await db.blog.create({
+        data: {
+          title,
+          slug,
+          content:
+            typeof partialBlogData.content === "object"
+              ? JSON.stringify(partialBlogData.content)
+              : partialBlogData.content || "",
+          description: partialBlogData.description || "",
+          status: "draft", // Always start as a draft
+          banner: partialBlogData.banner || "", // May need a default banner
+          tags: partialBlogData.tags || "",
+          approved: session.user.role !== "USER", // Auto-approve for admins
+          categories: {
+            connectOrCreate: (partialBlogData.categories || []).map(
+              (cat: string) => ({
+                where: { name: cat },
+                create: {
+                  name: cat,
+                  slug: cat.toLowerCase().replace(/ /g, "-"),
+                },
+              })
+            ),
+          },
+          author: {
+            connect: {
+              email: session.user.email || "",
+            },
+          },
+        },
+        include: {
+          author: true,
+          categories: true,
+        },
+      });
+
+      return { success: "Blog created and auto-saved", blog: newBlog };
+    }
+  } catch (error) {
+    console.error("Error auto-saving blog:", error);
+    return { error: "Failed to auto-save blog" };
   }
 };

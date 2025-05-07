@@ -1,11 +1,11 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { createBlog, updateBlog } from "../../../actions/blog";
+import { createBlog, updateBlog, autoSaveBlog } from "../../../actions/blog";
 import { blogSchema } from "../../../schemas";
 import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
@@ -63,6 +63,14 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
   const [selectedModel, setSelectedModel] = useState<
     "openai" | "groq-llama-4" | "groq-deepseek" | "groq-llama-3.3"
   >("openai");
+
+  // Auto-save related states
+  const [autoSaveStatus, setAutoSaveStatus] = useState<
+    "idle" | "saving" | "saved" | "error"
+  >("idle");
+  const [autoSaveMessage, setAutoSaveMessage] = useState<string>("");
+  const currentBlogIdRef = useRef<string | undefined>(blog?.id);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const {
     register,
@@ -133,6 +141,101 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
     }
   }, [blog, bannerUrl]);
 
+  // Function to handle auto-saving with debounce
+  const debouncedAutoSave = useCallback(
+    async (formData: Partial<FormValues>) => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+
+      autoSaveTimeoutRef.current = setTimeout(async () => {
+        // Only auto-save if we have meaningful content to save
+        if (!formData.title && !editorContent) return;
+
+        setAutoSaveStatus("saving");
+        setAutoSaveMessage("Saving changes...");
+
+        try {
+          // Prepare data for auto-save
+          const autoSaveData: Partial<FormValues> = {
+            ...formData,
+            content: editorContent,
+          };
+
+          // Call the auto-save action
+          const result = await autoSaveBlog(
+            autoSaveData,
+            currentBlogIdRef.current
+          );
+
+          if (result.error) {
+            setAutoSaveStatus("error");
+            setAutoSaveMessage(`Auto-save failed: ${result.error}`);
+            console.error("Auto-save error:", result.error);
+          } else {
+            // Store the blog ID if this is a new blog
+            if (result.blog && !currentBlogIdRef.current) {
+              currentBlogIdRef.current = result.blog.id;
+            }
+            setAutoSaveStatus("saved");
+            setAutoSaveMessage("All changes saved");
+            setTimeout(() => {
+              setAutoSaveStatus("idle");
+              setAutoSaveMessage("");
+            }, 3000);
+          }
+        } catch (err) {
+          console.error("Auto-save error:", err);
+          setAutoSaveStatus("error");
+          setAutoSaveMessage("Failed to auto-save");
+        }
+      }, 1500); // Debounce for 1.5 seconds
+    },
+    [editorContent]
+  );
+
+  // Monitor form changes and trigger auto-save
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      // Get current form values
+      const currentValues = {
+        title: value.title,
+        description: value.description,
+        slug: value.slug,
+        tags: value.tags,
+        categories: value.categories,
+      };
+
+      // Trigger auto-save when any of these fields change
+      if (
+        name &&
+        ["title", "description", "slug", "tags", "categories"].includes(name)
+      ) {
+        debouncedAutoSave(currentValues);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [watch, debouncedAutoSave]);
+
+  // Auto-save when editor content changes
+  useEffect(() => {
+    if (editorContent) {
+      const currentValues = {
+        title: watch("title"),
+        description: watch("description"),
+        slug: watch("slug"),
+        tags: watch("tags"),
+        categories: watch("categories"),
+      };
+
+      debouncedAutoSave({
+        ...currentValues,
+        content: editorContent,
+      });
+    }
+  }, [editorContent, debouncedAutoSave, watch]);
+
   // Handle editor content change
   const handleEditorChange = (data: OutputData) => {
     setEditorContent(data);
@@ -143,6 +246,8 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
       "content",
       typeof data === "object" ? JSON.stringify(data) : (data as string)
     );
+
+    // Auto-save is triggered via the editorContent useEffect
   };
 
   // Function to clear banner file input
@@ -976,6 +1081,21 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
                 Enter categories separated by commas
               </p>
             </div>
+          </div>
+
+          {/* Auto-save status indicator */}
+          <div
+            className={`text-sm ${
+              autoSaveStatus === "saving"
+                ? "text-amber-600"
+                : autoSaveStatus === "saved"
+                  ? "text-green-600"
+                  : autoSaveStatus === "error"
+                    ? "text-red-600"
+                    : "text-gray-400"
+            }`}
+          >
+            {autoSaveMessage}
           </div>
 
           <div className="pt-6 flex items-center justify-end border-t border-gray-200 gap-x-4">

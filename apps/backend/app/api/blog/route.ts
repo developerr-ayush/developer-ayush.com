@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       },
       skip,
       take: pageSize,
-      orderBy: { updatedAt: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     const totalPages = Math.ceil(totalCount / pageSize);

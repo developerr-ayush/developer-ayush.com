@@ -12,6 +12,9 @@ export default function NewBlogPage() {
           <p className="mt-2 text-sm text-gray-600">
             Write and publish a new article to your blog
           </p>
+          <p className="text-xs text-gray-500 mt-1">
+            Your changes will be auto-saved as you type
+          </p>
         </div>
         <Link
           href="/admin/blog"
