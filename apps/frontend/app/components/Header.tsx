@@ -83,6 +83,7 @@ const Header = () => {
     { name: "Skills", path: "/#skills", hash: "#skills" },
     { name: "Portfolio", path: "/#portfolio", hash: "#portfolio" },
     { name: "Blog", path: "/blog", hash: null },
+    { name: "Gallery", path: "/gallery", hash: null },
     { name: "Contact", path: "/#contact", hash: "#contact" },
   ];
 
