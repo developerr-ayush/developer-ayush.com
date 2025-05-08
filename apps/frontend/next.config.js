@@ -23,15 +23,15 @@ const nextConfig = {
   reactStrictMode: true, // Enable React strict mode for better error catching
   sourceMaps: true,
 
-  // Add configuration to serve static files from the ai-images directory
-  async rewrites() {
-    return [
-      {
-        source: "/ai-images/:path*",
-        destination: "/ai-images/:path*",
-      },
-    ];
-  },
+  // // Add configuration to serve static files from the ai-images directory
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: "/ai-images/:path*",
+  //       destination: "/ai-images/:path*",
+  //     },
+  //   ];
+  // },
 };
 
 export default nextConfig;
