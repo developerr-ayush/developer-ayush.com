@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function GalleryPage() {
@@ -17,6 +16,7 @@ export default function GalleryPage() {
         const response = await fetch("/api/gallery");
         if (response.ok) {
           const data = await response.json();
+          console.log(data);
           setImages(data.images);
         } else {
           console.error("Failed to fetch images");
