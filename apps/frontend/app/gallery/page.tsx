@@ -10,11 +10,13 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }>;
 }
 
 export default async function GalleryPage({ searchParams }: PageProps) {
-  // Pass the search query to the client component
+  // Await the searchParams promise
+  const params = await searchParams;
+
   return (
     <div className="container mx-auto px-4 py-8 pt-24">
       <div className="mb-8">
@@ -36,7 +38,7 @@ export default async function GalleryPage({ searchParams }: PageProps) {
           </div>
         }
       >
-        <GalleryClient searchQuery={searchParams.q || ""} />
+        <GalleryClient searchQuery={params.q || ""} />
       </Suspense>
     </div>
   );

@@ -100,7 +100,7 @@ export default function GalleryClient({
 
       observer.current = new IntersectionObserver(
         (entries) => {
-          if (entries[0].isIntersecting && galleryData?.hasMore) {
+          if (entries[0]?.isIntersecting && galleryData?.hasMore) {
             loadMoreImages();
           }
         },
@@ -424,7 +424,7 @@ export default function GalleryClient({
                       e.stopPropagation();
                       const currentIndex = images.indexOf(selectedImage);
                       if (currentIndex > 0) {
-                        setSelectedImage(images[currentIndex - 1]);
+                        setSelectedImage(images[currentIndex - 1] || null);
                       }
                     }}
                     disabled={images.indexOf(selectedImage) === 0}
@@ -451,7 +451,7 @@ export default function GalleryClient({
                       e.stopPropagation();
                       const currentIndex = images.indexOf(selectedImage);
                       if (currentIndex < images.length - 1) {
-                        setSelectedImage(images[currentIndex + 1]);
+                        setSelectedImage(images[currentIndex + 1] || null);
                       }
                     }}
                     disabled={
