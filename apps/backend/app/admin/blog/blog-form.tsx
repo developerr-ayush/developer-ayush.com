@@ -203,7 +203,11 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
         description: value.description,
         slug: value.slug,
         tags: value.tags,
-        categories: value.categories,
+        categories: Array.isArray(value.categories)
+          ? value.categories.filter(
+              (item): item is string => typeof item === "string"
+            )
+          : [],
       };
 
       // Trigger auto-save when any of these fields change
@@ -226,7 +230,11 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
         description: watch("description"),
         slug: watch("slug"),
         tags: watch("tags"),
-        categories: watch("categories"),
+        categories: Array.isArray(watch("categories"))
+          ? watch("categories").filter(
+              (item): item is string => typeof item === "string"
+            )
+          : [],
       };
 
       debouncedAutoSave({
