@@ -4,8 +4,8 @@ import path from "path";
 
 export async function GET() {
   try {
-    // Path to the ai-images directory
-    const imagesDir = path.join(process.cwd(), "ai-images");
+    // Path to the ai-images directory in public folder
+    const imagesDir = path.join(process.cwd(), "public", "ai-images");
 
     // Check if directory exists
     if (!fs.existsSync(imagesDir)) {

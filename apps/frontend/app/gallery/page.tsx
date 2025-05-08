@@ -67,7 +67,7 @@ export default function GalleryPage() {
             >
               <Image
                 src={`/ai-images/${imagePath}`}
-                alt={`AI Generated Image ${index + 1}`}
+                alt={`${imagePath.split("-").join(" ")}`}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 className="object-cover transition-transform duration-300 hover:scale-105"
