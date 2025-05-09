@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import { EDITOR_JS_TOOLS, normalizeContent } from "../lib/editorjs";
+import {
+  EDITOR_JS_TOOLS,
+  normalizeContent,
+  normalizeTableData,
+} from "../lib/editorjs";
 import type EditorJS from "@editorjs/editorjs";
 import { OutputData } from "@editorjs/editorjs";
 import "../app/blog-content.css";
@@ -149,12 +153,12 @@ export default function RichTextEditor({
     if (!editorRef.current || !AIGeneratedContent || !mountedRef.current)
       return;
 
-    // Ensure code blocks have the correct structure
+    // Process the content to ensure all blocks have the correct structure
     const processedContent = {
       ...AIGeneratedContent,
       blocks: AIGeneratedContent.blocks?.map((block) => {
+        // Handle code blocks
         if (block.type === "code" && block.data) {
-          // Ensure code blocks have text property
           return {
             ...block,
             data: {
@@ -164,6 +168,15 @@ export default function RichTextEditor({
             },
           };
         }
+
+        // Handle table blocks
+        if (block.type === "table" && block.data) {
+          return {
+            ...block,
+            data: normalizeTableData(block.data),
+          };
+        }
+
         return block;
       }),
     };
@@ -180,6 +193,12 @@ export default function RichTextEditor({
 
   return (
     <div className="rich-text-editor blog-content">
+      <div className="editor-toolbar-hint mb-2 text-xs text-gray-500">
+        <p className=" !text-xs !text-black">
+          Tip: Try using the + button or type / for more options including
+          tables and images.
+        </p>
+      </div>
       <div
         ref={containerRef}
         id="editorjs-container"

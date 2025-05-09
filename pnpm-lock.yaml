@@ -69,6 +69,9 @@ importers:
       '@editorjs/raw':
         specifier: ^2.5.1
         version: 2.5.1
+      '@editorjs/table':
+        specifier: ^2.4.4
+        version: 2.4.4
       '@hookform/resolvers':
         specifier: ^4.1.3
         version: 4.1.3(react-hook-form@7.55.0(react@19.1.0))
@@ -190,6 +193,9 @@ importers:
 
   apps/frontend:
     dependencies:
+      '@editorjs/table':
+        specifier: ^2.4.4
+        version: 2.4.4
       '@emailjs/browser':
         specifier: ^4.4.1
         version: 4.4.1
@@ -380,6 +386,9 @@ packages:
   '@codexteam/icons@0.0.5':
     resolution: {integrity: sha512-s6H2KXhLz2rgbMZSkRm8dsMJvyUNZsEjxobBEg9ztdrb1B2H3pEzY6iTwI4XUPJWJ3c3qRKwV4TrO3J5jUdoQA==}
 
+  '@codexteam/icons@0.0.6':
+    resolution: {integrity: sha512-L7Q5PET8PjKcBT5wp7VR+FCjwCi5PUp7rd/XjsgQ0CI5FJz0DphyHGRILMuDUdCW2MQT9NHbVr4QP31vwAkS/A==}
+
   '@codexteam/icons@0.3.3':
     resolution: {integrity: sha512-cp7mkZPgmBuSxigTm3Vb+DtVHYeX7qXfQd7o05vcLD8Ag5WvRlol2QSn5P10k0CDAJwmkH9nQGQLBycErS9lsQ==}
 
@@ -425,6 +434,9 @@ packages:
 
   '@editorjs/raw@2.5.1':
     resolution: {integrity: sha512-h7CjXtfSTe4Bj1CL84ch5NW0q0CdrlWsLzQ/kbaFTgx914CzKz4Ug+xgdvytVO1dd1QzB5/HCW0ic1VxtgkhMQ==}
+
+  '@editorjs/table@2.4.4':
+    resolution: {integrity: sha512-2wWjxk48C9Z7uaBZIS5dML81c2VsD47Va9J4RDd2UboxcnYV8OZ4oYxKafH5RJIGPj8ykGaROIzyDVR1N4e7Cg==}
 
   '@emailjs/browser@4.4.1':
     resolution: {integrity: sha512-DGSlP9sPvyFba3to2A50kDtZ+pXVp/0rhmqs2LmbMS3I5J8FSOgLwzY2Xb4qfKlOVHh29EAutLYwe5yuEZmEFg==}
@@ -3196,6 +3208,8 @@ snapshots:
 
   '@codexteam/icons@0.0.5': {}
 
+  '@codexteam/icons@0.0.6': {}
+
   '@codexteam/icons@0.3.3': {}
 
   '@cspotcode/source-map-support@0.8.1':
@@ -3251,6 +3265,10 @@ snapshots:
   '@editorjs/raw@2.5.1':
     dependencies:
       '@codexteam/icons': 0.0.4
+
+  '@editorjs/table@2.4.4':
+    dependencies:
+      '@codexteam/icons': 0.0.6
 
   '@emailjs/browser@4.4.1': {}
 

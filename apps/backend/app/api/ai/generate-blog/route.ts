@@ -7,104 +7,6 @@ const openai = new OpenAI({
 });
 
 export async function POST(req: NextRequest) {
-  // return NextResponse.json({
-  //   success: true,
-  //   content: {
-  //     title: "Why Companies Are Saying Goodbye to Next.js?",
-  //     content: {
-  //       time: 1743869505535,
-  //       blocks: [
-  //         {
-  //           id: "block-1",
-  //           type: "header",
-  //           data: {
-  //             text: "Introduction to Next.js and Its Popularity",
-  //             level: 2,
-  //           },
-  //         },
-  //         {
-  //           id: "block-2",
-  //           type: "paragraph",
-  //           data: {
-  //             text: "Next.js, developed by Vercel, is a popular React framework that offers features like server-side rendering and static site generation, aiming to improve both user and developer experiences. However, despite these benefits, some companies are choosing to move away from the framework.",
-  //           },
-  //         },
-  //         {
-  //           id: "block-3",
-  //           type: "header",
-  //           data: {
-  //             text: "Key Reasons for the Shift Away from Next.js",
-  //             level: 2,
-  //           },
-  //         },
-  //         {
-  //           id: "block-4",
-  //           type: "list",
-  //           data: {
-  //             style: "unordered",
-  //             items: [
-  //               "Complexity and Overhead",
-  //               "Cost of Deployment and Scaling",
-  //               "Limited Flexibility with Back-end Integration",
-  //               "Competitive Alternatives",
-  //             ],
-  //           },
-  //         },
-  //         {
-  //           id: "block-5",
-  //           type: "header",
-  //           data: {
-  //             text: "Exploring the Alternatives",
-  //             level: 2,
-  //           },
-  //         },
-  //         {
-  //           id: "block-6",
-  //           type: "paragraph",
-  //           data: {
-  //             text: "As some companies move away from Next.js, they often turn towards other frameworks and technologies such as Gatsby for static sites, Nuxt.js for Vue applications, or traditional React setups without a framework for more control and simplicity.",
-  //           },
-  //         },
-  //         {
-  //           id: "block-7",
-  //           type: "header",
-  //           data: {
-  //             text: "Case Studies: Successes Without Next.js",
-  //             level: 2,
-  //           },
-  //         },
-  //         {
-  //           id: "block-8",
-  //           type: "paragraph",
-  //           data: {
-  //             text: "Several companies have successfully transitioned away from Next.js, finding that alternatives can offer more control over their web infrastructure, reduce costs, or better align with their specific technical requirements and team expertise.",
-  //           },
-  //         },
-  //         {
-  //           id: "block-9",
-  //           type: "header",
-  //           data: {
-  //             text: "Conclusion",
-  //             level: 2,
-  //           },
-  //         },
-  //         {
-  //           id: "block-10",
-  //           type: "paragraph",
-  //           data: {
-  //             text: "While Next.js remains a powerful tool for many applications, the evolving web development landscape and diverse needs of businesses mean that it won't always be the best fit for every project.",
-  //           },
-  //         },
-  //       ],
-  //       version: "2.28.0",
-  //     },
-  //     description:
-  //       "Explore the reasons why some companies are moving away from Next.js despite its popularity as a React framework.",
-  //     slug: "why-companies-are-saying-goodbye-to-next-js",
-  //     tags: "Next.js, web development, technology trends",
-  //     categories: ["Web Development", "Technology Trends"],
-  //   },
-  // });
   try {
     // Check authentication
     const session = await auth();
@@ -157,6 +59,31 @@ export async function POST(req: NextRequest) {
             "data": {
               "text": "Paragraph text"
             }
+          },
+          {
+            "id": "block-3",
+            "type": "table",
+            "data": {
+              "withHeadings": false,
+              "stretched": false,
+              "content": [
+                [
+                  "Header 1", 
+                  "Header 2", 
+                  "Header 3"
+                ],
+                [
+                  "Row 1, Cell 1", 
+                  "Row 1, Cell 2", 
+                  "Row 1, Cell 3"
+                ],
+                [
+                  "Row 2, Cell 1", 
+                  "Row 2, Cell 2", 
+                  "Row 2, Cell 3"
+                ]
+              ]
+            }
           }
         ],
         "version": "2.28.0"
@@ -172,6 +99,7 @@ export async function POST(req: NextRequest) {
     3. Make the content focused and concise
     4. Generate a unique ID for each block (format "block-1", "block-2", etc.)
     5. The response MUST be a valid JSON object that can be parsed
+    6. When including tables, the EXACT format shown above MUST be used (with content array containing arrays of cell values)
     `;
     } else {
       systemMessage += `
@@ -221,6 +149,31 @@ export async function POST(req: NextRequest) {
               "caption": "Quote caption",
               "alignment": "left"
             }
+          },
+          {
+            "id": "block-6", 
+            "type": "table",
+            "data": {
+              "withHeadings": false,
+              "stretched": false,
+              "content": [
+                [
+                  "Header 1", 
+                  "Header 2", 
+                  "Header 3"
+                ],
+                [
+                  "Row 1, Cell 1", 
+                  "Row 1, Cell 2", 
+                  "Row 1, Cell 3"
+                ],
+                [
+                  "Row 2, Cell 1", 
+                  "Row 2, Cell 2", 
+                  "Row 2, Cell 3"
+                ]
+              ]
+            }
           }
         ],
         "version": "2.28.0"
@@ -234,7 +187,7 @@ export async function POST(req: NextRequest) {
     1. The content should be well-structured with headers, paragraphs, and lists where appropriate
     2. Include at least 4-6 content sections with appropriate headers
     3. Make the content informative, engaging, and factually accurate
-    4. Use various block types like headers, paragraphs, lists, quotes, and delimiters for better readability
+    4. Use various block types like headers, paragraphs, lists, quotes, tables, and delimiters for better readability
     5. Generate a unique ID for each block (you can use format "block-1", "block-2", etc.)
     6. Tags should be comma-separated relevant keywords
     7. Categories should be broader topics that the blog belongs to (1-3 categories)
@@ -244,6 +197,7 @@ export async function POST(req: NextRequest) {
     11. The description should be less than 1000 characters
     12. IMPORTANT: Make sure the "content" object has the exact structure shown above, with "time", "blocks", and "version" properties
     13. IMPORTANT: Each block MUST have an "id", "type", and "data" property exactly as shown in the examples
+    14. IMPORTANT: For tables, you MUST use the exact format shown with a 'content' array containing arrays of cell values
     `;
     }
 
@@ -285,7 +239,42 @@ export async function POST(req: NextRequest) {
       const jsonString = jsonMatch ? jsonMatch[0] : assistantResponse;
 
       // Parse the JSON
-      const parsedContent = JSON.parse(jsonString);
+      let parsedContent;
+      try {
+        parsedContent = JSON.parse(jsonString);
+      } catch (error) {
+        const parseError = error as Error;
+        console.error("JSON parse error:", parseError.message);
+
+        // Attempt to fix common JSON syntax errors
+        let fixedJsonString = jsonString
+          // Fix missing commas between properties
+          .replace(/("text"\s*:\s*"[^"]*")\s*("level"\s*:\s*\d+)/g, "$1,$2")
+          .replace(/("text"\s*:\s*"[^"]*")\s*("style"\s*:\s*"[^"]*")/g, "$1,$2")
+          .replace(
+            /("text"\s*:\s*"[^"]*")\s*("caption"\s*:\s*"[^"]*")/g,
+            "$1,$2"
+          )
+          .replace(
+            /("text"\s*:\s*"[^"]*")\s*("alignment"\s*:\s*"[^"]*")/g,
+            "$1,$2"
+          )
+          .replace(
+            /("caption"\s*:\s*"[^"]*")\s*("alignment"\s*:\s*"[^"]*")/g,
+            "$1,$2"
+          );
+
+        try {
+          parsedContent = JSON.parse(fixedJsonString);
+          console.log("Successfully fixed and parsed JSON");
+        } catch (error) {
+          const secondError = error as Error;
+          console.error("Failed to fix JSON:", secondError.message);
+          throw new Error(
+            `Invalid JSON response from OpenAI: ${parseError.message}`
+          );
+        }
+      }
 
       console.log(
         "Parsed content structure:",

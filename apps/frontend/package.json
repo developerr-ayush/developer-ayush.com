@@ -11,6 +11,7 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@editorjs/table": "^2.4.4",
     "@emailjs/browser": "^4.4.1",
     "@next/third-parties": "^15.2.4",
     "@repo/ui": "workspace:*",

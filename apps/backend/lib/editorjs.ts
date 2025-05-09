@@ -1,5 +1,5 @@
 import edjsHTML from "editorjs-html";
-import type { OutputData } from "@editorjs/editorjs";
+import type { OutputData, OutputBlockData } from "@editorjs/editorjs";
 // Import only the types we need
 import "@editorjs/header";
 import "@editorjs/list";
@@ -8,6 +8,7 @@ import "@editorjs/quote";
 import "@editorjs/paragraph";
 import "@editorjs/code";
 import "@editorjs/delimiter";
+import "@editorjs/table";
 import * as editorjsHeader from "@editorjs/header";
 import * as editorjsList from "@editorjs/list";
 import * as editorjsImage from "@editorjs/image";
@@ -18,9 +19,88 @@ import * as editorjsDelimiter from "@editorjs/delimiter";
 import * as editorjsEmbed from "@editorjs/embed";
 import * as editorjsRaw from "@editorjs/raw";
 import * as editorjsMarker from "@editorjs/marker";
+import * as editorjsTable from "@editorjs/table";
+
+// Define custom interface for table data to handle both formats
+interface TableData extends OutputBlockData<string, any> {
+  content?: string[][];
+  rows?: Array<{ cells: string[] } | string[]>;
+  withHeadings?: boolean;
+  stretched?: boolean;
+}
 
 // Initialize the EditorJS HTML parser
-const edjsParser = edjsHTML();
+const edjsParser = edjsHTML({
+  table: (data: TableData) => {
+    // If no data or no content/rows, return empty table
+    if (!data) {
+      return '<div class="table-responsive"><table class="table"><tbody><tr><td>No data</td></tr></tbody></table></div>';
+    }
+
+    let tableRows: string[][] = [];
+
+    // Handle new format with content property (2D array)
+    if (data.content && Array.isArray(data.content)) {
+      tableRows = data.content;
+    }
+    // Handle old format with rows property
+    else if (data.rows && Array.isArray(data.rows)) {
+      tableRows = data.rows.map((row) => {
+        // If row is an object with cells property
+        if (
+          row &&
+          typeof row === "object" &&
+          "cells" in row &&
+          Array.isArray(row.cells)
+        ) {
+          return row.cells;
+        }
+        // If row is directly an array (older format)
+        else if (Array.isArray(row)) {
+          return row;
+        }
+        // Fallback
+        return ["Empty cell"];
+      });
+    }
+    // Fallback if neither format is detected
+    else {
+      tableRows = [["No data available"]];
+    }
+
+    // Ensure we have at least one row
+    if (tableRows.length === 0) {
+      tableRows = [["No data available"]];
+    }
+
+    // Get the headers from the first row if withHeadings is true
+    const hasHeaders = data.withHeadings === true;
+    let headerHtml = "";
+
+    if (hasHeaders && tableRows.length > 0) {
+      const firstRow = tableRows[0] || [];
+      const headers = firstRow.map((cell) => `<th>${cell}</th>`).join("");
+      headerHtml = `<thead><tr>${headers}</tr></thead>`;
+      // Remove the header row from the data rows
+      tableRows = tableRows.slice(1);
+    }
+
+    // Process the data rows
+    const bodyRows = tableRows
+      .map((row) => {
+        const cells = row.map((cell) => `<td>${cell}</td>`).join("");
+        return `<tr>${cells}</tr>`;
+      })
+      .join("");
+
+    return `<div class="table-responsive">
+      <table class="table${data.stretched ? " table-stretched" : ""}">
+        ${headerHtml}
+        <tbody>${bodyRows}</tbody>
+      </table>
+    </div>`;
+  },
+});
 
 /**
  * Default EditorJS configuration
@@ -69,6 +149,14 @@ export const EDITOR_JS_TOOLS = {
       },
     },
   },
+  table: {
+    class: editorjsTable.default,
+    inlineToolbar: true,
+    config: {
+      rows: 2,
+      cols: 3,
+    },
+  } as any,
   embed: {
     class: editorjsEmbed.default,
     config: {
@@ -188,6 +276,89 @@ export function isValidJson(str: string): boolean {
 }
 
 /**
+ * Normalize table data to ensure compatibility with EditorJS table format
+ * @param tableData - Table data in various formats
+ * @returns Properly formatted table data for EditorJS
+ */
+export function normalizeTableData(tableData: any): any {
+  // Return the new format if it's already correct
+  if (
+    tableData.withHeadings !== undefined &&
+    tableData.content &&
+    Array.isArray(tableData.content)
+  ) {
+    return tableData;
+  }
+
+  // If tableData is falsy, return a default table structure in new format
+  if (!tableData) {
+    return {
+      withHeadings: false,
+      stretched: false,
+      content: [
+        ["Header 1", "Header 2", "Header 3"],
+        ["Cell 1", "Cell 2", "Cell 3"],
+        ["Cell 4", "Cell 5", "Cell 6"],
+      ],
+    };
+  }
+
+  // Handle EditorJS standard format with content array
+  if (tableData.content && Array.isArray(tableData.content)) {
+    return {
+      withHeadings: false,
+      stretched: false,
+      content: tableData.content,
+    };
+  }
+
+  // Handle old format with rows property
+  if (tableData.rows && Array.isArray(tableData.rows)) {
+    // Convert the rows/cells structure to content 2D array
+    const content = tableData.rows.map((row) => {
+      if (
+        row &&
+        typeof row === "object" &&
+        "cells" in row &&
+        Array.isArray(row.cells)
+      ) {
+        return row.cells;
+      }
+      if (Array.isArray(row)) {
+        return row;
+      }
+      return ["Empty cell"];
+    });
+
+    return {
+      withHeadings: false,
+      stretched: false,
+      content,
+    };
+  }
+
+  // Handle array of arrays format (old content format)
+  if (Array.isArray(tableData)) {
+    return {
+      withHeadings: false,
+      stretched: false,
+      content: tableData,
+    };
+  }
+
+  // Last resort fallback - just create a default table
+  return {
+    withHeadings: false,
+    stretched: false,
+    content: [
+      ["Header 1", "Header 2", "Header 3"],
+      ["Data 1", "Data 2", "Data 3"],
+      ["Data 4", "Data 5", "Data 6"],
+    ],
+  };
+}
+
+/**
  * Determine if content is EditorJS data or plain text
  * @param content - Content to check
  * @returns EditorJS data object
@@ -207,7 +378,21 @@ export function normalizeContent(
   // If content is already an object, check if it's valid EditorJS data
   if (typeof content === "object") {
     if (content.blocks && Array.isArray(content.blocks)) {
-      return content;
+      // Process blocks to ensure table blocks have the correct format
+      const normalizedBlocks = content.blocks.map((block) => {
+        if (block.type === "table" && block.data) {
+          return {
+            ...block,
+            data: normalizeTableData(block.data),
+          };
+        }
+        return block;
+      });
+
+      return {
+        ...content,
+        blocks: normalizedBlocks,
+      };
     }
     return convertPlainTextToEditorJs(JSON.stringify(content));
   }
@@ -217,7 +402,21 @@ export function normalizeContent(
     if (isValidJson(content)) {
       const parsed = JSON.parse(content);
       if (parsed && parsed.blocks && Array.isArray(parsed.blocks)) {
-        return parsed;
+        // Process blocks to ensure table blocks have the correct format
+        const normalizedBlocks = parsed.blocks.map((block) => {
+          if (block.type === "table" && block.data) {
+            return {
+              ...block,
+              data: normalizeTableData(block.data),
+            };
+          }
+          return block;
+        });
+
+        return {
+          ...parsed,
+          blocks: normalizedBlocks,
+        };
       }
     }
     // If not valid EditorJS JSON, treat as plain text

@@ -13,6 +13,9 @@ interface EditorJsBlock {
     caption?: string;
     embed?: string;
     code?: string;
+    rows?: { cells: string[] }[];
+    withHeadings?: boolean;
+    content?: string[][];
   };
 }
 
@@ -88,6 +91,123 @@ export function processBlogContent(content: OutputData): string {
             };
             return `<${tag}>${renderListItems(block.data.items || [])}</${tag}>`;
           }
+
+          case "table": {
+            // Handle case where table data is in the content property (EditorJS format)
+            if (block.data.content && Array.isArray(block.data.content)) {
+              const rows = block.data.content;
+              const withHeadings = block.data.withHeadings || false;
+
+              if (rows.length === 0) {
+                return '<div class="table-responsive"><table><tbody><tr><td>No data</td></tr></tbody></table></div>';
+              }
+
+              // If withHeadings is true or not specified but we have multiple rows
+              if (
+                (withHeadings || withHeadings === undefined) &&
+                rows.length > 1
+              ) {
+                // First row is header
+                const headerCells = rows[0]
+                  .map((cell) => `<th>${cell}</th>`)
+                  .join("");
+                const headerRow = `<tr>${headerCells}</tr>`;
+
+                // Rest are body rows
+                const bodyRows = rows
+                  .slice(1)
+                  .map((row) => {
+                    const cells = row
+                      .map((cell) => `<td>${cell}</td>`)
+                      .join("");
+                    return `<tr>${cells}</tr>`;
+                  })
+                  .join("");
+
+                return `<div class="table-responsive">
+                  <table>
+                    <thead>${headerRow}</thead>
+                    <tbody>${bodyRows}</tbody>
+                  </table>
+                </div>`;
+              } else {
+                // All rows are body rows
+                const bodyRows = rows
+                  .map((row) => {
+                    const cells = row
+                      .map((cell) => `<td>${cell}</td>`)
+                      .join("");
+                    return `<tr>${cells}</tr>`;
+                  })
+                  .join("");
+
+                return `<div class="table-responsive">
+                  <table>
+                    <tbody>${bodyRows}</tbody>
+                  </table>
+                </div>`;
+              }
+            }
+
+            // Handle case where table data is in the rows property
+            if (!block.data.rows || !Array.isArray(block.data.rows)) {
+              return '<div class="table-responsive"><table><tbody><tr><td>No data</td></tr></tbody></table></div>';
+            }
+
+            // If there are at least two rows, use the first row as header
+            if (block.data.rows.length >= 2) {
+              // Get header row
+              const headerRow = block.data.rows[0];
+              if (!headerRow.cells || !Array.isArray(headerRow.cells)) {
+                return '<div class="table-responsive"><table><tbody><tr><td>Invalid table data</td></tr></tbody></table></div>';
+              }
+
+              const headerCells = headerRow.cells
+                .map((cell) => `<th>${cell}</th>`)
+                .join("");
+
+              // Process body rows separately
+              const bodyRows = block.data.rows
+                .slice(1)
+                .map((row) => {
+                  if (!row.cells || !Array.isArray(row.cells)) {
+                    return "<tr><td>Invalid row data</td></tr>";
+                  }
+                  const cells = row.cells
+                    .map((cell) => `<td>${cell}</td>`)
+                    .join("");
+                  return `<tr>${cells}</tr>`;
+                })
+                .join("");
+
+              return `<div class="table-responsive">
+                <table>
+                  <thead><tr>${headerCells}</tr></thead>
+                  <tbody>${bodyRows}</tbody>
+                </table>
+              </div>`;
+            } else {
+              // Single row table, no header
+              const bodyRows = block.data.rows
+                .map((row) => {
+                  if (!row.cells || !Array.isArray(row.cells)) {
+                    return "<tr><td>Invalid row data</td></tr>";
+                  }
+                  const cells = row.cells
+                    .map((cell) => `<td>${cell}</td>`)
+                    .join("");
+                  return `<tr>${cells}</tr>`;
+                })
+                .join("");
+
+              return `<div class="table-responsive">
+                <table>
+                  <tbody>${bodyRows}</tbody>
+                </table>
+              </div>`;
+            }
+          }
+
           case "image":
             return `<img src="${block.data.file?.url}" alt="${block.data.caption || ""}" />`;
 

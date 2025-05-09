@@ -362,6 +362,31 @@ export async function POST(req: NextRequest) {
             "data": {
               "text": "Paragraph text"
             }
+          },
+          {
+            "id": "block-3",
+            "type": "table",
+            "data": {
+              "withHeadings": false,
+              "stretched": false,
+              "content": [
+                [
+                  "Header 1", 
+                  "Header 2", 
+                  "Header 3"
+                ],
+                [
+                  "Row 1, Cell 1", 
+                  "Row 1, Cell 2", 
+                  "Row 1, Cell 3"
+                ],
+                [
+                  "Row 2, Cell 1", 
+                  "Row 2, Cell 2", 
+                  "Row 2, Cell 3"
+                ]
+              ]
+            }
           }
         ],
         "version": "2.28.0"
@@ -377,6 +402,7 @@ export async function POST(req: NextRequest) {
     3. Make the content focused and concise
     4. Generate a unique ID for each block (format "block-1", "block-2", etc.)
     5. The response MUST be a valid JSON object that can be parsed
+    6. When including tables, the EXACT format shown above MUST be used (with content array containing arrays of cell values)
     `;
     } else {
       systemMessage += `
@@ -434,6 +460,31 @@ export async function POST(req: NextRequest) {
               "caption": "Quote caption",
               "alignment": "left"
             }
+          },
+          {
+            "id": "block-7", 
+            "type": "table",
+            "data": {
+              "withHeadings": false,
+              "stretched": false,
+              "content": [
+                [
+                  "Header 1", 
+                  "Header 2", 
+                  "Header 3"
+                ],
+                [
+                  "Row 1, Cell 1", 
+                  "Row 1, Cell 2", 
+                  "Row 1, Cell 3"
+                ],
+                [
+                  "Row 2, Cell 1", 
+                  "Row 2, Cell 2", 
+                  "Row 2, Cell 3"
+                ]
+              ]
+            }
           }
         ],
         "version": "2.28.0"
@@ -447,7 +498,7 @@ export async function POST(req: NextRequest) {
     1. The content should be well-structured with headers, paragraphs, and lists where appropriate
     2. Include at least 4-6 content sections with appropriate headers
     3. Make the content informative, engaging, and factually accurate
-    4. Use various block types like headers, paragraphs, lists, quotes, and delimiters for better readability
+    4. Use various block types like headers, paragraphs, lists, quotes, tables, code blocks, and delimiters for better readability
     5. Generate a unique ID for each block (you can use format "block-1", "block-2", etc.)
     6. Tags should be comma-separated relevant keywords
     7. Categories should be broader topics that the blog belongs to (1-3 categories)
@@ -458,6 +509,7 @@ export async function POST(req: NextRequest) {
     12. IMPORTANT: For code blocks, use the "code" field (not "text") and include a "language" field
     13. IMPORTANT: Make sure the "content" object has the exact structure shown above, with "time", "blocks", and "version" properties
     14. IMPORTANT: Each block MUST have an "id", "type", and "data" property exactly as shown in the examples
+    15. IMPORTANT: For tables, you MUST use the exact format shown with a 'content' array containing arrays of cell values
     `;
     }
 
@@ -521,7 +573,42 @@ export async function POST(req: NextRequest) {
       const jsonString = jsonMatch ? jsonMatch[0] : assistantResponse;
 
       // Parse the JSON
-      const parsedContent = JSON.parse(jsonString);
+      let parsedContent;
+      try {
+        parsedContent = JSON.parse(jsonString);
+      } catch (error) {
+        const parseError = error as Error;
+        console.error("JSON parse error:", parseError.message);
+
+        // Attempt to fix common JSON syntax errors
+        let fixedJsonString = jsonString
+          // Fix missing commas between properties
+          .replace(/("text"\s*:\s*"[^"]*")\s*("level"\s*:\s*\d+)/g, "$1,$2")
+          .replace(/("text"\s*:\s*"[^"]*")\s*("style"\s*:\s*"[^"]*")/g, "$1,$2")
+          .replace(
+            /("text"\s*:\s*"[^"]*")\s*("caption"\s*:\s*"[^"]*")/g,
+            "$1,$2"
+          )
+          .replace(
+            /("text"\s*:\s*"[^"]*")\s*("alignment"\s*:\s*"[^"]*")/g,
+            "$1,$2"
+          )
+          .replace(
+            /("caption"\s*:\s*"[^"]*")\s*("alignment"\s*:\s*"[^"]*")/g,
+            "$1,$2"
+          );
+
+        try {
+          parsedContent = JSON.parse(fixedJsonString);
+          console.log("Successfully fixed and parsed JSON");
+        } catch (error) {
+          const secondError = error as Error;
+          console.error("Failed to fix JSON:", secondError.message);
+          throw new Error(
+            `Invalid JSON response from Groq: ${parseError.message}`
+          );
+        }
+      }
 
       console.log(
         "Parsed content structure:",
