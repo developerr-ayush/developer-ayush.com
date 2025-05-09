@@ -43,6 +43,19 @@ export const createBlog = async (values: z.infer<typeof blogSchema>) => {
     approved = true;
   }
 
+  // Generate a unique slug by adding a timestamp suffix if needed
+  const baseSlug =
+    values.slug ||
+    title
+      ?.toLowerCase()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .trim();
+
+  // Add timestamp to make slug unique
+  const uniqueSlug = `${baseSlug}-${Date.now().toString().slice(-6)}`;
+
   try {
     // save blog to database
     await db.blog.create({
@@ -54,7 +67,7 @@ export const createBlog = async (values: z.infer<typeof blogSchema>) => {
         status: finalStatus,
         banner,
         tags: values.tags ? values.tags.toString() : "",
-        slug: values.slug,
+        slug: uniqueSlug,
         approved,
         categories: {
           connectOrCreate: categoriesArray.map((cat: string) => {
@@ -75,7 +88,7 @@ export const createBlog = async (values: z.infer<typeof blogSchema>) => {
     console.error("Error creating blog:", e);
     // checking if error is because of title
     if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
-      return { error: "Title or Slug cateogry already exists" };
+      return { error: "Title or Slug category already exists" };
     }
     return { error: "something went wrong" };
   }
@@ -358,7 +371,7 @@ export const autoSaveBlog = async (
       const title = partialBlogData.title || "Untitled Draft";
 
       // Generate a slug from the title or use a temporary one
-      const slug =
+      const baseSlug =
         partialBlogData.slug ||
         title
           .toLowerCase()
@@ -367,11 +380,14 @@ export const autoSaveBlog = async (
           .replace(/-+/g, "-")
           .trim();
 
+      // Add timestamp to make slug unique
+      const uniqueSlug = `${baseSlug}-${Date.now().toString().slice(-6)}`;
+
       // Create a new blog with default values
       const newBlog = await db.blog.create({
         data: {
           title,
-          slug,
+          slug: uniqueSlug,
           content:
             typeof partialBlogData.content === "object"
               ? JSON.stringify(partialBlogData.content)

@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { auth } from "../../../../auth";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize the GoogleGenerativeAI client with the API key
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+
+// Fallback to secondary API key if primary fails
+const genAI2 = new GoogleGenerativeAI(process.env.GEMINI_API_KEY_2 || "");
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,7 +21,7 @@ export async function POST(req: NextRequest) {
 
     // Parse request body
     const body = await req.json();
-    const { prompt, simplified = false } = body;
+    const { prompt, simplified = false, model } = body;
 
     if (!prompt || typeof prompt !== "string") {
       return NextResponse.json(
@@ -29,7 +31,7 @@ export async function POST(req: NextRequest) {
     }
 
     console.log(
-      `Generating blog for prompt: ${prompt} (simplified: ${simplified})`
+      `Generating blog using Gemini for prompt: ${prompt} (simplified: ${simplified}, model: ${model || "default"})`
     );
 
     // Construct the system message with instructions for blog generation
@@ -143,6 +145,14 @@ export async function POST(req: NextRequest) {
           },
           {
             "id": "block-5",
+            "type": "code",
+            "data": {
+              "code": "console.log('Hello world');",
+              "language": "javascript" 
+            }
+          },
+          {
+            "id": "block-6",
             "type": "quote",
             "data": {
               "text": "Quote text",
@@ -151,7 +161,7 @@ export async function POST(req: NextRequest) {
             }
           },
           {
-            "id": "block-6", 
+            "id": "block-7", 
             "type": "table",
             "data": {
               "withHeadings": false,
@@ -187,7 +197,7 @@ export async function POST(req: NextRequest) {
     1. The content should be well-structured with headers, paragraphs, and lists where appropriate
     2. Include at least 4-6 content sections with appropriate headers
     3. Make the content informative, engaging, and factually accurate
-    4. Use various block types like headers, paragraphs, lists, quotes, tables, and delimiters for better readability
+    4. Use various block types like headers, paragraphs, lists, quotes, tables, code blocks, and delimiters for better readability
     5. Generate a unique ID for each block (you can use format "block-1", "block-2", etc.)
     6. Tags should be comma-separated relevant keywords
     7. Categories should be broader topics that the blog belongs to (1-3 categories)
@@ -195,40 +205,96 @@ export async function POST(req: NextRequest) {
     9. The response MUST be a valid JSON object that can be parsed
     10. The title should be at least 10 characters and less than 255 characters
     11. The description should be less than 1000 characters
-    12. IMPORTANT: Make sure the "content" object has the exact structure shown above, with "time", "blocks", and "version" properties
-    13. IMPORTANT: Each block MUST have an "id", "type", and "data" property exactly as shown in the examples
-    14. IMPORTANT: For tables, you MUST use the exact format shown with a 'content' array containing arrays of cell values
+    12. IMPORTANT: For code blocks, use the "code" field (not "text") and include a "language" field
+    13. IMPORTANT: Make sure the "content" object has the exact structure shown above, with "time", "blocks", and "version" properties
+    14. IMPORTANT: Each block MUST have an "id", "type", and "data" property exactly as shown in the examples
+    15. IMPORTANT: For tables, you MUST use the exact format shown with a 'content' array containing arrays of cell values
     `;
     }
 
-    // Make the OpenAI request with a timeout
+    // Set up a timeout promise
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("OpenAI request timed out")), 450000); // Increase timeout to 45 seconds
+      setTimeout(() => reject(new Error("Gemini request timed out")), 450000); // 45 second timeout
     });
 
-    const openaiPromise = openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // Always use GPT-4 as requested by user
-      messages: [
-        { role: "system", content: systemMessage },
-        { role: "user", content: prompt },
-      ],
-      temperature: 0.7,
-    });
+    // Define available models and their order for fallback
+    const modelOptions = [
+      model || "gemini-2.5-pro-preview-05-06", // Default or user-specified model
+      "gemini-2.5-pro-preview-05-06",
+      "gemini-2.5-flash-preview-04-17",
+      "gemini-2.0-flash",
+      "gemini-2.0-flash-lite",
+      "gemini-1.5-flash-8b",
+      "gemini-1.5-flash",
+      "gemini-1.5-pro",
+      "gemini-1.5-pro-002",
+    ];
 
-    const response = (await Promise.race([
-      openaiPromise,
-      timeoutPromise,
-    ])) as OpenAI.ChatCompletion;
+    // Remove duplicates from model options
+    const uniqueModels = [...new Set(modelOptions)];
 
-    // Extract the response content
-    const assistantResponse = response.choices[0]?.message?.content;
+    // Try each model in sequence until one works
+    let assistantResponse: string | null = null;
+    let lastError: unknown = null;
+    let currentGenAI = genAI;
+    let successfulModel = null;
+
+    for (const modelName of uniqueModels) {
+      try {
+        console.log(`Attempting with model: ${modelName}`);
+
+        const geminiModel = currentGenAI.getGenerativeModel({
+          model: modelName,
+        });
+
+        const geminiPromise = geminiModel.generateContent([
+          { text: systemMessage },
+          { text: prompt },
+        ]);
+
+        const result = await Promise.race([geminiPromise, timeoutPromise]);
+
+        // Check if result is valid - using type assertions for the Google SDK response
+        const response = result as any;
+        if (
+          response &&
+          response.response &&
+          typeof response.response.text === "function"
+        ) {
+          assistantResponse = response.response.text();
+          successfulModel = modelName;
+          console.log(
+            `Successfully generated content with model: ${modelName}`
+          );
+          break;
+        }
+      } catch (error) {
+        console.error(`Error with model ${modelName}:`, error);
+        lastError = error;
+
+        // If this is the last model with the primary API key, try the backup API key
+        if (
+          modelName === uniqueModels[uniqueModels.length - 1] &&
+          currentGenAI === genAI &&
+          process.env.GEMINI_API_KEY_2
+        ) {
+          console.log("Switching to backup API key");
+          currentGenAI = genAI2;
+          continue;
+        }
+      }
+    }
 
     if (!assistantResponse) {
-      throw new Error("No response from OpenAI");
+      const errorDetails =
+        lastError instanceof Error
+          ? (lastError as Error).message
+          : "Unknown error";
+      throw new Error(`All Gemini models failed: ${errorDetails}`);
     }
 
     console.log(
-      "OpenAI response received:",
+      `Gemini response received from ${successfulModel}:`,
       assistantResponse.substring(0, 200) + "..."
     );
 
@@ -271,7 +337,7 @@ export async function POST(req: NextRequest) {
           const secondError = error as Error;
           console.error("Failed to fix JSON:", secondError.message);
           throw new Error(
-            `Invalid JSON response from OpenAI: ${parseError.message}`
+            `Invalid JSON response from Gemini: ${parseError.message}`
           );
         }
       }
@@ -397,7 +463,7 @@ export async function POST(req: NextRequest) {
       };
 
       console.log(
-        "Returning validated content:",
+        "Returning validated content from Gemini:",
         JSON.stringify(
           {
             title: contentToReturn.title.substring(0, 30) + "...",
@@ -409,6 +475,7 @@ export async function POST(req: NextRequest) {
             description: contentToReturn.description.substring(0, 30) + "...",
             slug: contentToReturn.slug,
             categories: contentToReturn.categories,
+            model: successfulModel,
           },
           null,
           2
@@ -419,6 +486,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         content: contentToReturn,
+        model: successfulModel,
       });
     } catch (jsonError) {
       console.error(
@@ -430,7 +498,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Failed to parse AI response",
+          error: "Failed to parse Gemini response",
           details:
             jsonError instanceof Error ? jsonError.message : "Unknown error",
         },
@@ -438,11 +506,11 @@ export async function POST(req: NextRequest) {
       );
     }
   } catch (error) {
-    console.error("OpenAI API error:", error);
+    console.error("Gemini API error:", error);
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to generate blog content",
+        error: "Failed to generate blog content with Gemini",
         details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }

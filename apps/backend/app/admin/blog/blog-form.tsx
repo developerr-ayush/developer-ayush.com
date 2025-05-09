@@ -61,7 +61,7 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
   const [generatingContent, setGeneratingContent] = useState(false);
   const [longForm, setLongForm] = useState(false);
   const [selectedModel, setSelectedModel] = useState<
-    "openai" | "groq-llama-4" | "groq-deepseek" | "groq-llama-3.3"
+    "openai" | "groq-llama-4" | "groq-deepseek" | "groq-llama-3.3" | "gemini"
   >("openai");
 
   // Auto-save related states
@@ -424,7 +424,9 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
       const endpoint =
         selectedModel === "openai"
           ? "/api/ai/generate-blog"
-          : "/api/ai/generate-blog-groq";
+          : selectedModel === "gemini"
+            ? "/api/ai/generate-blog-gemini"
+            : "/api/ai/generate-blog-groq";
 
       // Call the appropriate API endpoint with the controller signal
       const response = await fetch(endpoint, {
@@ -716,6 +718,32 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
                                 </div>
                               </div>
                             </div>
+
+                            <div
+                              onClick={() => setSelectedModel("gemini")}
+                              className={`flex items-center p-2 border rounded cursor-pointer ${
+                                selectedModel === "gemini"
+                                  ? "border-indigo-500 bg-indigo-50"
+                                  : "border-gray-300 hover:border-gray-400"
+                              }`}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                className="w-5 h-5 mr-2 text-gray-700"
+                              >
+                                <path
+                                  fill="currentColor"
+                                  d="M15.5 18.15a2.4 2.4 0 0 1-2.3 2.37H5.77a2.4 2.4 0 0 1-2.37-2.3V10.7a2.4 2.4 0 0 1 2.3-2.37h7.43a2.4 2.4 0 0 1 2.37 2.3v7.43ZM15.41 5.23a2.4 2.4 0 0 1-2.3 2.37H5.68a2.4 2.4 0 0 1-2.37-2.3V5.15a2.4 2.4 0 0 1 2.3-2.37h7.43a2.4 2.4 0 0 1 2.37 2.3v.08ZM20.23 13.33a2.4 2.4 0 0 1-2.3 2.37h-.16a2.4 2.4 0 0 1-2.37-2.3v-.16a2.4 2.4 0 0 1 2.3-2.37h.16a2.4 2.4 0 0 1 2.37 2.3v.16ZM20.32 5.23a2.4 2.4 0 0 1-2.3 2.37h-.16a2.4 2.4 0 0 1-2.37-2.3V5.15a2.4 2.4 0 0 1 2.3-2.37h.16a2.4 2.4 0 0 1 2.37 2.3v.08Z"
+                                />
+                              </svg>
+                              <div>
+                                <div className="font-medium">Gemini</div>
+                                <div className="text-xs text-gray-500">
+                                  gemini-2.5-pro
+                                </div>
+                              </div>
+                            </div>
                           </div>
                           <p className="text-xs text-gray-500 mt-1">
                             {selectedModel === "openai"
@@ -724,7 +752,9 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
                                 ? "Llama 4 offers balanced quality and speed."
                                 : selectedModel === "groq-deepseek"
                                   ? "DeepSeek is optimized for technical content."
-                                  : "Llama 3.3 is designed for long-form content."}
+                                  : selectedModel === "gemini"
+                                    ? "Gemini excels at creative and factually accurate content."
+                                    : "Llama 3.3 is designed for long-form content."}
                           </p>
                         </div>
 
