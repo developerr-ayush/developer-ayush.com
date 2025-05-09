@@ -1,0 +1,219 @@
+{
+  "aiModels": {
+    "openai": {
+      "default": "gpt-3.5-turbo",
+      "models": ["gpt-3.5-turbo", "gpt-4"]
+    },
+    "groq": {
+      "default": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "models": [
+        "meta-llama/llama-4-scout-17b-16e-instruct",
+        "deepseek-r1-distill-qwen-32b",
+        "llama-3.3-70b-specdec"
+      ]
+    },
+    "gemini": {
+      "default": "gemini-2.5-pro-preview-05-06",
+      "models": [
+        "gemini-2.5-pro-preview-05-06",
+        "gemini-2.5-flash-preview-04-17",
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite",
+        "gemini-1.5-flash-8b",
+        "gemini-1.5-flash",
+        "gemini-1.5-pro",
+        "gemini-1.5-pro-002"
+      ]
+    }
+  },
+  "requestTimeouts": {
+    "default": 45000,
+    "simplified": 25000
+  },
+  "prompts": {
+    "blogGeneration": {
+      "systemPrompt": "You are a professional blog writer. Generate a complete blog post based on the user's prompt do search the web for relevant information. You're a 22-year-old from Mumbai who's passionate about tech, finance, and fitness. You're a full-stack web developer working in the sports industry, and you run two Instagram channels — @developerr.ayush for tech content and @smart.moneyx for personal finance tips. Return a JSON object with the following structure:"
+    }
+  },
+  "responseFormats": {
+    "blog": {
+      "simplified": {
+        "template": {
+          "title": "Blog title",
+          "description": "A compelling meta description for the blog (100-160 characters)",
+          "content": {
+            "time": 0,
+            "blocks": [
+              {
+                "id": "block-1",
+                "type": "header",
+                "data": {
+                  "text": "Header text",
+                  "level": 2
+                }
+              },
+              {
+                "id": "block-2",
+                "type": "paragraph",
+                "data": {
+                  "text": "Paragraph text"
+                }
+              }
+            ],
+            "version": "2.28.0"
+          },
+          "slug": "url-friendly-slug",
+          "tags": "tag1, tag2",
+          "categories": ["Category1"]
+        },
+        "guidelines": [
+          "Keep the content brief with only 2-3 sections",
+          "Limit the total word count to 500 words",
+          "Make the content focused and concise",
+          "Generate a unique ID for each block (format \"block-1\", \"block-2\", etc.)",
+          "The response MUST be a valid JSON object that can be parsed"
+        ]
+      },
+      "detailed": {
+        "template": {
+          "title": "Blog title",
+          "description": "A compelling meta description for the blog (100-160 characters)",
+          "content": {
+            "time": 0,
+            "blocks": [
+              {
+                "id": "block-1",
+                "type": "header",
+                "data": {
+                  "text": "Header text",
+                  "level": 2
+                }
+              },
+              {
+                "id": "block-2",
+                "type": "paragraph",
+                "data": {
+                  "text": "Paragraph text with <b>formatting</b> if needed"
+                }
+              },
+              {
+                "id": "block-3",
+                "type": "list",
+                "data": {
+                  "style": "unordered",
+                  "items": [
+                    "Item 1",
+                    "Item 2",
+                    "Item 3"
+                  ]
+                }
+              },
+              {
+                "id": "block-4",
+                "type": "code",
+                "data": {
+                  "code": "console.log('Hello world');",
+                  "language": "javascript"
+                }
+              }
+            ],
+            "version": "2.28.0"
+          },
+          "slug": "url-friendly-slug",
+          "tags": "tag1, tag2, tag3",
+          "categories": ["Category1", "Category2"]
+        },
+        "guidelines": [
+          "The content should be well-structured with headers, paragraphs, and lists where appropriate",
+          "Include at least 4-6 content sections with appropriate headers",
+          "Make the content informative, engaging, and factually accurate",
+          "Use various block types like headers, paragraphs, lists, quotes, tables, code blocks, and delimiters for better readability",
+          "Generate a unique ID for each block (you can use format \"block-1\", \"block-2\", etc.)",
+          "Tags should be comma-separated relevant keywords",
+          "Categories should be broader topics that the blog belongs to (1-3 categories)",
+          "Slug should be URL-friendly with hyphens between words, derived from the title",
+          "The response MUST be a valid JSON object that can be parsed",
+          "The title should be at least 10 characters and less than 255 characters",
+          "The description should be less than 1000 characters"
+        ]
+      }
+    }
+  },
+  "blockTypes": {
+    "header": {
+      "data": {
+        "text": "Header text",
+        "level": "A number between 1-6, usually 2 for section headers"
+      }
+    },
+    "paragraph": {
+      "data": {
+        "text": "Paragraph text with <b>formatting</b> if needed"
+      }
+    },
+    "list": {
+      "data": {
+        "style": "unordered | ordered",
+        "items": ["Item 1", "Item 2", "Item 3"]
+      }
+    },
+    "delimiter": {
+      "data": {}
+    },
+    "code": {
+      "data": {
+        "code": "console.log('Hello world');",
+        "language": "javascript"
+      }
+    },
+    "quote": {
+      "data": {
+        "text": "Quote text",
+        "caption": "Quote caption",
+        "alignment": "left | center | right"
+      }
+    },
+    "table": {
+      "data": {
+        "withHeadings": false,
+        "stretched": false,
+        "content": [
+          ["Header 1", "Header 2", "Header 3"],
+          ["Row 1, Cell 1", "Row 1, Cell 2", "Row 1, Cell 3"],
+          ["Row 2, Cell 1", "Row 2, Cell 2", "Row 2, Cell 3"]
+        ]
+      }
+    }
+  },
+  "validation": {
+    "minTitleLength": 10,
+    "maxTitleLength": 255,
+    "maxDescriptionLength": 1000,
+    "minBlocksSimplified": 2,
+    "minBlocksDetailed": 4
+  },
+  "fixes": {
+    "jsonRegexPatterns": [
+      {
+        "pattern": "(\\"text\\"\\s*:\\s*\\"[^\\"]*\\")\\s*(\\"level\\"\\s*:\\s*\\d+)",
+        "replacement": "$1,$2"
+      },
+      {
+        "pattern": "(\\"text\\"\\s*:\\s*\\"[^\\"]*\\")\\s*(\\"style\\"\\s*:\\s*\\"[^\\"]*\\")",
+        "replacement": "$1,$2"
+      },
+      {
+        "pattern": "(\\"text\\"\\s*:\\s*\\"[^\\"]*\\")\\s*(\\"caption\\"\\s*:\\s*\\"[^\\"]*\\")",
+        "replacement": "$1,$2"
+      },
+      {
+        "pattern": "(\\"text\\"\\s*:\\s*\\"[^\\"]*\\")\\s*(\\"alignment\\"\\s*:\\s*\\"[^\\"]*\\")",
+        "replacement": "$1,$2"
+      },
+      {
+        "pattern": "(\\"caption\\"\\s*:\\s*\\"[^\\"]*\\")\\s*(\\"alignment\\"\\s*:\\s*\\"[^\\"]*\\")",
+        "replacement": "$1,$2"
+      }
+    ]
+  }
+} 
