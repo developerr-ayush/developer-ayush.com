@@ -8,7 +8,11 @@
     "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint --max-warnings 0",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "db:seed": "tsx prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
@@ -66,6 +70,8 @@
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
     "eslint": "^9.23.0",
+    "prisma": "^6.5.0",
+    "tsx": "^4.7.1",
     "typescript": "5.8.2"
   }
 }

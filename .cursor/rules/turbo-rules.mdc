@@ -4,11 +4,38 @@ globs:
 alwaysApply: true
 ---
 
-# Your rule content
+# Turbo Repo Rules
 
-- i am using turbo repo for this whole project so make sure that dependencies are install on correct place
-- always use pnpm for installing dependencies
-- there are apps/* so inside that there are individual project
-- dont migrate database utill i ask you to do 
-- i am usig next js 15 so you have to await params
-- if you think some information is needed to be added in cursor rules then make sure to add it in .cursor/rules/turbo-rules.mdc
+## Project Structure
+- Using turbo repo for this whole project so make sure that dependencies are installed in correct place
+- Always use pnpm for installing dependencies
+- There are apps/* so inside that there are individual projects
+- Don't migrate database until asked to do so
+- Using Next.js 15 so you have to await params
+- If you think some information is needed to be added in cursor rules then make sure to add it in .cursor/rules/turbo-rules.mdc
+
+## Database & APIs
+- Using Prisma with PostgreSQL
+- Database schema is in `apps/backend/prisma/schema.prisma`
+
+## Slang Dictionary Feature
+- Added SlangTerm and SlangCategory models to Prisma schema
+- **Public APIs:**
+  - GET `/api/slang` - Get all approved slang terms (with search, category, featured filters)
+  - POST `/api/slang` - Submit new slang term (automatically set to pending status for admin approval)
+- **Admin APIs (authenticated):**
+  - GET `/api/admin/slang` - Get all slang terms with pagination and admin functionality
+  - POST `/api/admin/slang` - Create new slang term as admin (auto-approved)
+  - PUT `/api/admin/slang/[id]` - Approve/reject/update/feature slang terms
+  - DELETE `/api/admin/slang/[id]` - Delete slang terms
+- **Admin Panel:**
+  - Admin slang management page at `/admin/slang`
+  - Includes stats dashboard, search/filter, bulk actions
+  - Pending submissions require manual approval by admin
+  - Can feature/unfeature approved terms
+- **Workflow:** User submits → Pending status → Admin approves/rejects → Public API shows only approved terms
+
+## Frontend Rules
+- Using Tailwind 4 with `@import "tailwindcss"` instead of `@tailwind base`
+- No tailwind config file in Tailwind 4
+- Prefer not to make changes to global.css, search web for Tailwind 4 changes if needed

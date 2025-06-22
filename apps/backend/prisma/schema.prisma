@@ -68,3 +68,38 @@ enum Status {
   published
   archived
 }
+
+enum SlangStatus {
+  pending
+  approved
+  rejected
+}
+
+model SlangTerm {
+  id          String      @id @default(cuid())
+  term        String      @unique
+  meaning     String      @db.Text
+  example     String?     @db.Text
+  category    String      @default("General")
+  status      SlangStatus @default(pending)
+  isFeatured  Boolean     @default(false)
+  submittedBy String?     @default("anonymous")
+  submittedAt DateTime    @default(now())
+  approvedBy  String?
+  approvedAt  DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([status])
+  @@index([category])
+  @@index([isFeatured])
+  @@index([term])
+}
+
+model SlangCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?  @db.Text
+  color       String   @default("#7c3aed")
+  createdAt   DateTime @default(now())
+}
