@@ -3,7 +3,12 @@
  * These routes do not require authentication
  * @type {string[]}
  */
-export const publicRoutes = ["/"];
+export const publicRoutes = [
+  "/",
+  "/api/slang",
+  "/api/slang/categories",
+  "/api/slang/featured",
+];
 /**
  * An Array of routes that are accessible to the public
  * These routes will redirect loggedIn user to settings
