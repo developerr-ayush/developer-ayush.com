@@ -28,6 +28,41 @@ export interface SlangResponse {
   message?: string;
 }
 
+// Helper function for making API requests with better error handling
+async function makeAPIRequest(url: string, options: RequestInit = {}) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    clearTimeout(timeoutId);
+
+    if (error instanceof Error) {
+      if (error.name === "AbortError") {
+        throw new Error("Request timeout - please try again");
+      }
+      throw error;
+    }
+    throw new Error("Network error - please check your connection");
+  }
+}
+
 export async function getSlangTerms(params?: {
   search?: string;
   category?: string;
@@ -45,47 +80,34 @@ export async function getSlangTerms(params?: {
     if (params?.page) url.searchParams.set("page", params.page.toString());
     if (params?.limit) url.searchParams.set("limit", params.limit.toString());
 
-    const response = await fetch(url.toString(), {
+    const data = await makeAPIRequest(url.toString(), {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      next: { revalidate: 300 }, // Cache for 5 minutes
+      cache: "no-store", // Disable caching for real-time data
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return await response.json();
+    return data;
   } catch (error) {
     console.error("Error fetching slang terms:", error);
-    // Return fallback data structure
+
+    // Return structured error response
     return {
       success: false,
       data: [],
       meta: { total: 0, categories: [] },
-      message: "Failed to fetch slang terms",
+      message:
+        error instanceof Error ? error.message : "Failed to fetch slang terms",
     };
   }
 }
 
 export async function getFeaturedSlang(): Promise<SlangTerm | null> {
   try {
-    const response = await fetch(`${API_BASE}/api/slang/featured`, {
+    const data = await makeAPIRequest(`${API_BASE}/api/slang/featured`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      next: { revalidate: 3600 }, // Cache for 1 hour
+      cache: "no-store",
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result.success ? result.data : null;
+    return data.success ? data.data : null;
   } catch (error) {
     console.error("Error fetching featured slang:", error);
     return null;
@@ -94,20 +116,12 @@ export async function getFeaturedSlang(): Promise<SlangTerm | null> {
 
 export async function getCategories(): Promise<string[]> {
   try {
-    const response = await fetch(`${API_BASE}/api/slang/categories`, {
+    const data = await makeAPIRequest(`${API_BASE}/api/slang/categories`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      next: { revalidate: 3600 }, // Cache for 1 hour
+      next: { revalidate: 3600 }, // Cache categories for 1 hour
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result.success ? result.data : [];
+    return data.success ? data.data : [];
   } catch (error) {
     console.error("Error fetching categories:", error);
     return ["General", "Compliment", "Behavior", "Quality", "Emotion"];
@@ -122,11 +136,8 @@ export async function submitSlangTerm(data: {
   submittedBy?: string;
 }): Promise<{ success: boolean; message: string; data?: SlangTerm }> {
   try {
-    const response = await fetch(`${API_BASE}/api/slang`, {
+    const result = await makeAPIRequest(`${API_BASE}/api/slang`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({
         term: data.term,
         meaning: data.meaning,
@@ -135,14 +146,6 @@ export async function submitSlangTerm(data: {
         submitted_by: data.submittedBy || "anonymous",
       }),
     });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        result.message || `HTTP error! status: ${response.status}`
-      );
-    }
 
     return {
       success: true,
@@ -170,21 +173,13 @@ export async function getSlangStats(): Promise<{
   categories: number;
 }> {
   try {
-    const response = await fetch(`${API_BASE}/api/slang/stats`, {
+    const data = await makeAPIRequest(`${API_BASE}/api/slang/stats`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
       next: { revalidate: 300 }, // Cache for 5 minutes
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result.success
-      ? result.data
+    return data.success
+      ? data.data
       : { total: 0, pending: 0, approved: 0, categories: 0 };
   } catch (error) {
     console.error("Error fetching slang stats:", error);

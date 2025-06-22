@@ -2,8 +2,9 @@
   "name": "slangs",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev --port 3002",
+    "dev": "next dev --port 3003",
     "build": "next build",
     "start": "next start",
     "lint": "next lint --max-warnings 0",

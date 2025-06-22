@@ -7,6 +7,7 @@ import {
   SlangTerm,
 } from "@/lib/slang-api";
 import SlangDictionaryClient from "@/components/SlangDictionaryClient";
+import SkeletonGrid from "@/components/SkeletonGrid";
 
 interface PageProps {
   searchParams: Promise<{
@@ -114,6 +115,63 @@ export async function generateMetadata({
   };
 }
 
+async function fetchInitialData() {
+  try {
+    // Try to fetch data, with fallbacks if any fail
+    const [slangResponse, categories, featuredSlang] = await Promise.allSettled(
+      [
+        getSlangTerms({
+          page: 1,
+          limit: 12,
+        }),
+        getCategories(),
+        getFeaturedSlang(),
+      ]
+    );
+
+    const slangData =
+      slangResponse.status === "fulfilled" && slangResponse.value.success
+        ? slangResponse.value.data
+        : [];
+
+    const totalResults =
+      slangResponse.status === "fulfilled" && slangResponse.value.meta?.total
+        ? slangResponse.value.meta.total
+        : 0;
+
+    const allCategories =
+      categories.status === "fulfilled"
+        ? ["All", ...categories.value]
+        : ["All", "General", "Compliment", "Behavior", "Quality", "Emotion"];
+
+    const featured =
+      featuredSlang.status === "fulfilled" ? featuredSlang.value : null;
+
+    return {
+      slangData,
+      totalResults,
+      allCategories,
+      featured,
+    };
+  } catch (error) {
+    console.error("Error fetching initial data:", error);
+    // Return fallback data
+    return {
+      slangData: [],
+      totalResults: 0,
+      allCategories: [
+        "All",
+        "General",
+        "Compliment",
+        "Behavior",
+        "Quality",
+        "Emotion",
+      ],
+      featured: null,
+    };
+  }
+}
+
 export default async function Home({ searchParams }: PageProps) {
   const params = await searchParams;
   const search = params.search || "";
@@ -121,23 +179,11 @@ export default async function Home({ searchParams }: PageProps) {
   const currentPage = parseInt(params.page || "1", 10);
   const itemsPerPage = 12;
 
-  // Fetch data on server side
-  const [slangResponse, categories, featuredSlang] = await Promise.all([
-    getSlangTerms({
-      search: search || undefined,
-      category: selectedCategory !== "All" ? selectedCategory : undefined,
-      page: currentPage,
-      limit: itemsPerPage,
-    }),
-    getCategories(),
-    getFeaturedSlang(),
-  ]);
+  // Fetch initial data with error handling
+  const { slangData, totalResults, allCategories, featured } =
+    await fetchInitialData();
 
-  const slangData = slangResponse.success ? slangResponse.data : [];
-  const totalResults = slangResponse.meta?.total || 0;
-  const allCategories = ["All", ...categories];
-
-  // Generate structured data for SEO
+  // Generate structured data for SEO (only for initial load)
   const structuredData = {
     "@context": "https://schema.org",
     "@graph": [
@@ -236,16 +282,28 @@ export default async function Home({ searchParams }: PageProps) {
       <Suspense
         fallback={
           <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-purple-900 dark:to-blue-900">
-            <div className="flex items-center justify-center min-h-screen">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mx-auto mb-4"></div>
-                <p className="text-xl text-gray-600 dark:text-gray-300">
-                  Loading slang terms...
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                  Getting the latest Gen Z slang for you! 🔥
-                </p>
+            {/* Header Skeleton */}
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md border-b border-purple-200 dark:border-gray-700 sticky top-0 z-20">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div className="text-center mb-8 animate-pulse">
+                  <div className="h-12 bg-purple-200 dark:bg-purple-800/50 rounded-lg w-3/4 mx-auto mb-4"></div>
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto mb-6"></div>
+
+                  {/* Search and Filter Skeleton */}
+                  <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                    <div className="flex-1 h-12 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                    <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl sm:min-w-[200px]"></div>
+                  </div>
+
+                  {/* Results count skeleton */}
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32 mx-auto"></div>
+                </div>
               </div>
+            </div>
+
+            {/* Content Skeleton */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <SkeletonGrid count={12} />
             </div>
           </div>
         }
@@ -253,7 +311,7 @@ export default async function Home({ searchParams }: PageProps) {
         <SlangDictionaryClient
           initialSlangData={slangData}
           initialCategories={allCategories}
-          initialFeaturedSlang={featuredSlang}
+          initialFeaturedSlang={featured}
           initialTotalResults={totalResults}
           initialSearch={search}
           initialCategory={selectedCategory}
