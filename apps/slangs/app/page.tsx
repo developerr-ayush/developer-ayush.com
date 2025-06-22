@@ -127,12 +127,12 @@ export default function Home() {
     try {
       const featured = await getFeaturedSlang();
       if (featured) {
-        setDailySpotlight(featured);
+        setDailySpotlight(featured || null);
       } else {
         // Fallback: get a random featured term from the main data
         const response = await getSlangTerms({ featured: true, limit: 1 });
         if (response.success && response.data.length > 0) {
-          setDailySpotlight(response.data[0]);
+          setDailySpotlight(response.data[0] || null);
         }
       }
     } catch (err) {
@@ -271,17 +271,7 @@ export default function Home() {
                   className={`h-5 w-5 text-purple-600 ${isLoading ? "animate-spin" : ""}`}
                 />
               </button>
-              <button
-                onClick={toggleTheme}
-                className="p-3 rounded-xl bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm border border-purple-200 dark:border-gray-600 hover:bg-purple-50 dark:hover:bg-gray-600 transition-colors duration-200"
-                aria-label="Toggle theme"
-              >
-                {darkMode ? (
-                  <IoSunny className="h-5 w-5 text-yellow-500" />
-                ) : (
-                  <IoMoon className="h-5 w-5 text-purple-600" />
-                )}
-              </button>
+
               <button
                 onClick={() => setShowSubmissionModal(true)}
                 className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-md hover:shadow-lg"
