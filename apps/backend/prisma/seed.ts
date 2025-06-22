@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { db } from "@/lib/db";
 
 interface SlangTerm {
   term: string;
@@ -427,7 +425,7 @@ async function main() {
   console.log("🌱 Starting seed...");
 
   // Clear existing slang terms (optional)
-  await prisma.slangTerm.deleteMany({});
+  await db.slangTerm.deleteMany({});
   console.log("🗑️  Cleared existing slang terms");
 
   // Get unique categories
@@ -436,7 +434,7 @@ async function main() {
   // Create slang categories first
   console.log("📁 Creating slang categories...");
   for (const categoryName of categories) {
-    await prisma.slangCategory.upsert({
+    await db.slangCategory.upsert({
       where: { name: categoryName },
       update: {},
       create: {
@@ -459,7 +457,7 @@ async function main() {
     if (isFeatured) featuredCount++;
 
     try {
-      await prisma.slangTerm.create({
+      await db.slangTerm.create({
         data: {
           term: slang.term.toLowerCase(),
           meaning: slang.meaning,
@@ -505,5 +503,5 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    await db.$disconnect();
   });

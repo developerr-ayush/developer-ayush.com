@@ -30,6 +30,7 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: "4mb", // Increase body size limit for longer content
     },
+    serverComponentsExternalPackages: ["@prisma/client"],
   },
   serverRuntimeConfig: {
     functionTimeout: 60, // Set 60 second function timeout

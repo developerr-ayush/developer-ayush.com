@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { db } from "@/lib/db";
 
 // CORS headers helper function
 function corsHeaders(origin?: string) {
@@ -38,7 +36,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // Get all featured terms
-    const featuredSlangs = await prisma.slangTerm.findMany({
+    const featuredSlangs = await db.slangTerm.findMany({
       where: {
         status: "approved",
         isFeatured: true,
@@ -76,13 +74,13 @@ export async function GET(request: NextRequest) {
       {
         success: true,
         data: {
-          id: featuredSlang.id,
-          term: featuredSlang.term,
-          meaning: featuredSlang.meaning,
-          example: featuredSlang.example,
-          category: featuredSlang.category,
-          is_featured: featuredSlang.isFeatured,
-          submitted_at: featuredSlang.createdAt,
+          id: featuredSlang?.id,
+          term: featuredSlang?.term,
+          meaning: featuredSlang?.meaning,
+          example: featuredSlang?.example,
+          category: featuredSlang?.category,
+          is_featured: featuredSlang?.isFeatured,
+          submitted_at: featuredSlang?.createdAt,
         },
       },
       {

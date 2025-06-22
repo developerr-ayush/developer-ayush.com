@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { auth } from "../../../../../auth";
-
-const prisma = new PrismaClient();
+import { db } from "@/lib/db";
 
 // PUT /api/admin/slang/[id] - Update or approve/reject slang term
 export async function PUT(
@@ -23,7 +21,7 @@ export async function PUT(
     const { action, term, meaning, example, category, isFeatured } = body;
 
     // Check if slang term exists
-    const existingSlang = await prisma.slangTerm.findUnique({
+    const existingSlang = await db.slangTerm.findUnique({
       where: { id },
     });
 
@@ -65,7 +63,7 @@ export async function PUT(
 
       // If updating term, check for uniqueness
       if (term && term.toLowerCase().trim() !== existingSlang.term) {
-        const duplicateTerm = await prisma.slangTerm.findUnique({
+        const duplicateTerm = await db.slangTerm.findUnique({
           where: { term: term.toLowerCase().trim() },
         });
 
@@ -78,7 +76,7 @@ export async function PUT(
       }
     }
 
-    const updatedSlang = await prisma.slangTerm.update({
+    const updatedSlang = await db.slangTerm.update({
       where: { id },
       data: updateData,
     });
@@ -123,7 +121,7 @@ export async function DELETE(
     const { id } = await params;
 
     // Check if slang term exists
-    const existingSlang = await prisma.slangTerm.findUnique({
+    const existingSlang = await db.slangTerm.findUnique({
       where: { id },
     });
 
@@ -134,7 +132,7 @@ export async function DELETE(
       );
     }
 
-    await prisma.slangTerm.delete({
+    await db.slangTerm.delete({
       where: { id },
     });
 

@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { db } from "@/lib/db";
 
 // CORS headers helper function
 function corsHeaders(origin?: string) {
@@ -65,11 +63,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Get total count for pagination
-    const total = await prisma.slangTerm.count({
+    const total = await db.slangTerm.count({
       where: whereClause,
     });
 
-    const slangs = await prisma.slangTerm.findMany({
+    const slangs = await db.slangTerm.findMany({
       where: whereClause,
       select: {
         id: true,
@@ -88,7 +86,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Get categories for meta info
-    const categories = await prisma.slangTerm.groupBy({
+    const categories = await db.slangTerm.groupBy({
       by: ["category"],
       where: { status: "approved" },
       _count: true,
@@ -146,7 +144,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if term already exists
-    const existingTerm = await prisma.slangTerm.findFirst({
+    const existingTerm = await db.slangTerm.findFirst({
       where: {
         term: {
           equals: term.toLowerCase().trim(),
@@ -163,7 +161,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new slang term with pending status
-    const newSlang = await prisma.slangTerm.create({
+    const newSlang = await db.slangTerm.create({
       data: {
         term: term.toLowerCase().trim(),
         meaning: meaning.trim(),

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { auth } from "../../../../auth";
-
-const prisma = new PrismaClient();
+import { db } from "@/lib/db";
 
 // GET /api/admin/slang - Get all slang terms for admin (authenticated)
 export async function GET(request: NextRequest) {
@@ -42,7 +40,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     const [slangs, total] = await Promise.all([
-      prisma.slangTerm.findMany({
+      db.slangTerm.findMany({
         where: whereClause,
         select: {
           id: true,
@@ -66,17 +64,17 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
       }),
-      prisma.slangTerm.count({ where: whereClause }),
+      db.slangTerm.count({ where: whereClause }),
     ]);
 
     // Get stats
-    const stats = await prisma.slangTerm.groupBy({
+    const stats = await db.slangTerm.groupBy({
       by: ["status"],
       _count: true,
     });
 
     const statsFormatted = {
-      total: await prisma.slangTerm.count(),
+      total: await db.slangTerm.count(),
       pending: stats.find((s) => s.status === "pending")?._count || 0,
       approved: stats.find((s) => s.status === "approved")?._count || 0,
       rejected: stats.find((s) => s.status === "rejected")?._count || 0,
@@ -124,7 +122,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if term already exists
-    const existingTerm = await prisma.slangTerm.findUnique({
+    const existingTerm = await db.slangTerm.findUnique({
       where: { term: term.toLowerCase().trim() },
     });
 
@@ -135,7 +133,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newSlang = await prisma.slangTerm.create({
+    const newSlang = await db.slangTerm.create({
       data: {
         term: term.toLowerCase().trim(),
         meaning: meaning.trim(),

@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { db } from "@/lib/db";
 
 // CORS headers helper function
 function corsHeaders(origin?: string) {
@@ -37,8 +35,8 @@ export async function GET(request: NextRequest) {
   const origin = request.headers.get("origin") || undefined;
 
   try {
-    const categories = await prisma.slangTerm.groupBy({
-      by: ["category"],
+    const categories = await db.slangTerm.groupBy({
+      by: ["category"], 
       where: { status: "approved" },
       _count: true,
     });
