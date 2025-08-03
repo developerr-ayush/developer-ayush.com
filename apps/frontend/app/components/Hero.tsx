@@ -87,14 +87,14 @@ const Hero = () => {
                 Hello there, I&apos;m
               </p>
               <h1
-                className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight animate-fade-in opacity-0"
+                className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight animate-fade-in opacity-0"
                 style={{
                   animationDelay: "0.4s",
                   animationFillMode: "forwards",
                 }}
               >
                 <span className="text-foreground">{personalInfo.name}</span>
-                <span className="block mt-2 h-[60px] md:h-[72px]">
+                <span className="block mt-2 min-h-[60px] md:h-[72px]">
                   <span className="text-sky-500">{text.split(" ")[0]}</span>
                   {text.includes(" ") && (
                     <span> {text.split(" ").slice(1).join(" ")}</span>
@@ -188,7 +188,7 @@ const Hero = () => {
         </div>
       </div>
 
-      <style >{`
+      <style>{`
         @keyframes fade-in {
           from {
             opacity: 0;
