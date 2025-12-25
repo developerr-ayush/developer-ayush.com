@@ -103,3 +103,24 @@ model SlangCategory {
   color       String   @default("#7c3aed")
   createdAt   DateTime @default(now())
 }
+
+model GenerationJob {
+  id        String    @id @default(cuid())
+  type      JobType   @default(BLOG)
+  status    JobStatus @default(PENDING)
+  result    String?   @db.Text
+  error     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum JobType {
+  BLOG
+  IMAGE
+}
+
+enum JobStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}

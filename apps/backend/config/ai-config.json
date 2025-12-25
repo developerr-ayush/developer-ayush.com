@@ -1,28 +1,10 @@
 {
   "aiModels": {
-    "openai": {
-      "default": "gpt-3.5-turbo",
-      "models": ["gpt-3.5-turbo", "gpt-4"]
-    },
-    "groq": {
-      "default": "meta-llama/llama-4-scout-17b-16e-instruct",
-      "models": [
-        "meta-llama/llama-4-scout-17b-16e-instruct",
-        "deepseek-r1-distill-qwen-32b",
-        "llama-3.3-70b-specdec"
-      ]
-    },
     "gemini": {
-      "default": "gemini-2.5-pro-preview-05-06",
+      "default": "gemini-3-pro-preview",
       "models": [
-        "gemini-2.5-pro-preview-05-06",
-        "gemini-2.5-flash-preview-04-17",
-        "gemini-2.0-flash",
-        "gemini-2.0-flash-lite",
-        "gemini-1.5-flash-8b",
-        "gemini-1.5-flash",
-        "gemini-1.5-pro",
-        "gemini-1.5-pro-002"
+        "gemini-3-pro-preview",
+        "gemini-3-flash-preview"
       ]
     }
   },
@@ -64,7 +46,9 @@
           },
           "slug": "url-friendly-slug",
           "tags": "tag1, tag2",
-          "categories": ["Category1"]
+          "categories": [
+            "Category1"
+          ]
         },
         "guidelines": [
           "Keep the content brief with only 2-3 sections",
@@ -121,7 +105,10 @@
           },
           "slug": "url-friendly-slug",
           "tags": "tag1, tag2, tag3",
-          "categories": ["Category1", "Category2"]
+          "categories": [
+            "Category1",
+            "Category2"
+          ]
         },
         "guidelines": [
           "The content should be well-structured with headers, paragraphs, and lists where appropriate",
@@ -154,7 +141,11 @@
     "list": {
       "data": {
         "style": "unordered | ordered",
-        "items": ["Item 1", "Item 2", "Item 3"]
+        "items": [
+          "Item 1",
+          "Item 2",
+          "Item 3"
+        ]
       }
     },
     "delimiter": {
@@ -178,9 +169,21 @@
         "withHeadings": false,
         "stretched": false,
         "content": [
-          ["Header 1", "Header 2", "Header 3"],
-          ["Row 1, Cell 1", "Row 1, Cell 2", "Row 1, Cell 3"],
-          ["Row 2, Cell 1", "Row 2, Cell 2", "Row 2, Cell 3"]
+          [
+            "Header 1",
+            "Header 2",
+            "Header 3"
+          ],
+          [
+            "Row 1, Cell 1",
+            "Row 1, Cell 2",
+            "Row 1, Cell 3"
+          ],
+          [
+            "Row 2, Cell 1",
+            "Row 2, Cell 2",
+            "Row 2, Cell 3"
+          ]
         ]
       }
     }
@@ -195,25 +198,25 @@
   "fixes": {
     "jsonRegexPatterns": [
       {
-        "pattern": "(\\"text\\"\\s*:\\s*\\"[^\\"]*\\")\\s*(\\"level\\"\\s*:\\s*\\d+)",
+        "pattern": "(\"text\"\\s*:\\s*\"[^\"]*\")\\s*(\"level\"\\s*:\\s*\\d+)",
         "replacement": "$1,$2"
       },
       {
-        "pattern": "(\\"text\\"\\s*:\\s*\\"[^\\"]*\\")\\s*(\\"style\\"\\s*:\\s*\\"[^\\"]*\\")",
+        "pattern": "(\"text\"\\s*:\\s*\"[^\"]*\")\\s*(\"style\"\\s*:\\s*\"[^\"]*\")",
         "replacement": "$1,$2"
       },
       {
-        "pattern": "(\\"text\\"\\s*:\\s*\\"[^\\"]*\\")\\s*(\\"caption\\"\\s*:\\s*\\"[^\\"]*\\")",
+        "pattern": "(\"text\"\\s*:\\s*\"[^\"]*\")\\s*(\"caption\"\\s*:\\s*\"[^\"]*\")",
         "replacement": "$1,$2"
       },
       {
-        "pattern": "(\\"text\\"\\s*:\\s*\\"[^\\"]*\\")\\s*(\\"alignment\\"\\s*:\\s*\\"[^\\"]*\\")",
+        "pattern": "(\"text\"\\s*:\\s*\"[^\"]*\")\\s*(\"alignment\"\\s*:\\s*\"[^\"]*\")",
         "replacement": "$1,$2"
       },
       {
-        "pattern": "(\\"caption\\"\\s*:\\s*\\"[^\\"]*\\")\\s*(\\"alignment\\"\\s*:\\s*\\"[^\\"]*\\")",
+        "pattern": "(\"caption\"\\s*:\\s*\"[^\"]*\")\\s*(\"alignment\"\\s*:\\s*\"[^\"]*\")",
         "replacement": "$1,$2"
       }
     ]
   }
-} 
+}

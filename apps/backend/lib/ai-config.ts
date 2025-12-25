@@ -4,14 +4,6 @@ import path from 'path';
 // Define types for the configuration
 export interface AIConfig {
   aiModels: {
-    openai: {
-      default: string;
-      models: string[];
-    };
-    groq: {
-      default: string;
-      models: string[];
-    };
     gemini: {
       default: string;
       models: string[];
@@ -70,17 +62,9 @@ try {
   // Provide a minimal default configuration if file can't be loaded
   aiConfig = {
     aiModels: {
-      openai: {
-        default: 'gpt-3.5-turbo',
-        models: ['gpt-3.5-turbo']
-      },
-      groq: {
-        default: 'meta-llama/llama-4-scout-17b-16e-instruct',
-        models: ['meta-llama/llama-4-scout-17b-16e-instruct']
-      },
       gemini: {
-        default: 'gemini-2.5-pro-preview-05-06',
-        models: ['gemini-2.5-pro-preview-05-06', 'gemini-1.5-flash']
+        default: 'gemini-3-pro-preview',
+        models: ['gemini-3-pro-preview']
       }
     },
     requestTimeouts: {
@@ -119,12 +103,13 @@ try {
 }
 
 // Helper functions for working with the configuration
-export function getDefaultModel(provider: 'openai' | 'groq' | 'gemini'): string {
-  return aiConfig.aiModels[provider].default;
+export function getDefaultModel(provider: 'gemini' = 'gemini'): string {
+  // Safe access in case config structure doesn't match
+  return aiConfig?.aiModels?.gemini?.default || 'gemini-3-pro-preview';
 }
 
-export function getModelList(provider: 'openai' | 'groq' | 'gemini'): string[] {
-  return aiConfig.aiModels[provider].models;
+export function getModelList(provider: 'gemini' = 'gemini'): string[] {
+  return aiConfig?.aiModels?.gemini?.models || ['gemini-3-pro-preview', 'gemini-3-flash-preview'];
 }
 
 export function getTimeout(simplified = false): number {
@@ -139,8 +124,8 @@ export function getBlogResponseFormat(detailed = true): {
   template: any;
   guidelines: string[];
 } {
-  return detailed 
-    ? aiConfig.responseFormats.blog.detailed 
+  return detailed
+    ? aiConfig.responseFormats.blog.detailed
     : aiConfig.responseFormats.blog.simplified;
 }
 
@@ -153,4 +138,4 @@ export function getJsonFixPatterns(): typeof aiConfig.fixes.jsonRegexPatterns {
 }
 
 // Export the entire configuration
-export default aiConfig; 
+export default aiConfig;
