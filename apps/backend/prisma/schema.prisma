@@ -124,3 +124,38 @@ enum JobStatus {
   SUCCESS
   FAILED
 }
+
+enum ProductStatus {
+  draft
+  published
+  archived
+}
+
+model Product {
+  id               String        @id @default(cuid())
+  name             String
+  slug             String        @unique
+  description      String?       @db.Text
+  shortDescription String?       @db.VarChar(500)
+  price            Float?
+  salePrice        Float?
+  image            String?       @db.VarChar(1000)
+  images           String[]
+  affiliateLink    String?       @db.VarChar(1000)
+  amazonLink       String?       @db.VarChar(1000)
+  flipkartLink     String?       @db.VarChar(1000)
+  category         String?
+  brand            String?
+  rating           Float?
+  instagramPost    String?       @db.VarChar(1000)
+  tags             String?
+  status           ProductStatus @default(draft)
+  featured         Boolean       @default(false)
+  views            Int           @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([status])
+  @@index([category])
+  @@index([featured])
+}

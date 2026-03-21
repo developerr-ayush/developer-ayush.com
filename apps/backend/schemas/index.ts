@@ -23,6 +23,30 @@ export const UpdateUserSchema = z.object({
   role: z.enum(["USER", "ADMIN", "SUPER_ADMIN"]),
 });
 
+export const productSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
+  slug: z.string().min(2, { message: "Slug is required" }),
+  shortDescription: z.string().max(500).optional(),
+  description: z.string().optional(),
+  price: z.coerce.number().optional(),
+  salePrice: z.coerce.number().optional(),
+  image: z.string().optional(),
+  images: z.array(z.string()).optional(),
+  affiliateLink: z.string().optional(),
+  amazonLink: z.string().optional(),
+  flipkartLink: z.string().optional(),
+  category: z.string().optional(),
+  brand: z.string().optional(),
+  rating: z.coerce.number().min(0).max(5).optional(),
+  instagramPost: z.string().optional(),
+  tags: z.string().optional(),
+  status: z
+    .union([z.literal("draft"), z.literal("published"), z.literal("archived")])
+    .optional(),
+  featured: z.boolean().optional(),
+});
+
 export const blogSchema = z.object({
   id: z.string().optional(),
   title: z

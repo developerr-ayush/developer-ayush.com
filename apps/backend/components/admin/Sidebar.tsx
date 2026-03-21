@@ -151,6 +151,26 @@ export default function AdminSidebar() {
               <span>Users</span>
             </Link>
             <Link
+              href="/admin/products"
+              className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition group"
+              onClick={() => setIsOpen(false)}
+            >
+              <svg
+                className="w-5 h-5 mr-3 text-indigo-300 group-hover:text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
+              </svg>
+              <span>Products</span>
+            </Link>
+            <Link
               href="/admin/slang"
               className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition group"
               onClick={() => setIsOpen(false)}
