@@ -83,7 +83,7 @@ export const metadata: Metadata = {
     description:
       "Discover the latest Gen Z slang terms and their meanings. Search through hundreds of slang words with examples and learn modern internet language. No cap!",
     images: ["/og-image.png"],
-    creator: "@ayushshah__",
+    creator: "@ayushh_io_",
   },
   robots: {
     index: true,

@@ -96,7 +96,7 @@ export async function generateMetadata({
       title,
       description,
       images: ["/og-image.png"],
-      creator: "@ayushshah__",
+      creator: "@ayushh_io_",
     },
     robots: {
       index: true,

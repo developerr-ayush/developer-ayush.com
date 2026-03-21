@@ -44,7 +44,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
               </p>
             </div>
             <a
-              href="https://instagram.com/ayushshah__"
+              href="https://instagram.com/ayushh_io_"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm font-medium text-pink-600 hover:text-pink-700 transition-colors"
