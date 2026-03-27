@@ -8,12 +8,9 @@ export async function GET(
 ) {
   const { slug } = await params;
   try {
-    // Increment view count
-    const blog = await db.blog.update({
+    // Fetch blog post without incrementing views
+    const blog = await db.blog.findUnique({
       where: { slug },
-      data: {
-        views: { increment: 1 },
-      },
       include: {
         author: {
           select: {
