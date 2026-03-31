@@ -66,6 +66,20 @@ export const listBlogsSchema = z.object({
   status: z.enum(["draft", "published", "archived"]).optional(),
 });
 
+/** EditorJS Content Structure for validation */
+const editorJsBlockSchema = z.object({
+  id: z.string().optional(),
+  type: z.string(),
+  data: z.record(z.any()),
+  tunes: z.record(z.any()).optional(),
+});
+
+const editorJsOutputSchema = z.object({
+  time: z.number().optional(),
+  blocks: z.array(editorJsBlockSchema),
+  version: z.string().optional(),
+});
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function generateSlug(title: string): string {
@@ -90,16 +104,40 @@ function resolveCategories(categories: string[]) {
   };
 }
 
-function serializeContent(content: string | undefined): string {
-  if (!content) return "";
-  // Try parsing to validate JSON, then re-stringify for consistency
-  try {
-    const parsed = JSON.parse(content);
-    return JSON.stringify(parsed);
-  } catch {
-    // Plain text — store as-is
-    return content;
+/** 
+ * Validates and serializes content. 
+ * If it's valid JSON, it MUST be valid EditorJS. 
+ * If not JSON, it's treated as plain text. 
+ */
+function serializeContent(content: string | undefined): { success: true; data: string } | { success: false; error: string } {
+  if (!content) return { success: true, data: "" };
+
+  // Heuristic: if it looks like JSON (starts with { or [), try parsing
+  const looksLikeJson = content.trim().startsWith("{") || content.trim().startsWith("[");
+
+  if (looksLikeJson) {
+    try {
+      const parsed = JSON.parse(content);
+      const validated = editorJsOutputSchema.safeParse(parsed);
+      
+      if (!validated.success) {
+        const issues = validated.error.issues.map(i => `${i.path.join(".")}: ${i.message}`).join(", ");
+        return { 
+          success: false, 
+          error: `Invalid EditorJS JSON: ${issues}`
+        };
+      }
+      
+      return { success: true, data: JSON.stringify(validated.data) };
+    } catch {
+      // If it looks like JSON but failed to parse, it might be malformed JSON or just a weird text
+      // We'll report it as an error to be safe
+      return { success: false, error: "Content starts with '{' but is not valid JSON." };
+    }
   }
+
+  // Plain text / markdown — store as-is
+  return { success: true, data: content };
 }
 
 // ─── Tool Handlers ────────────────────────────────────────────────────────────
@@ -149,11 +187,16 @@ export async function handleCreateBlog(args: unknown) {
   const baseSlug = slug || generateSlug(title);
   const uniqueSlug = makeUniqueSlug(baseSlug);
 
+  const contentResult = serializeContent(content);
+  if (!contentResult.success) {
+    return { error: contentResult.error };
+  }
+
   try {
     const blog = await db.blog.create({
       data: {
         title,
-        content: serializeContent(content),
+        content: contentResult.data,
         description: description ?? "",
         status: finalStatus,
         banner: banner ?? "",
@@ -245,7 +288,15 @@ export async function handleUpdateBlog(args: unknown) {
   // Build update payload — only include fields that were actually provided
   const updateData: Record<string, unknown> = {};
   if (title !== undefined) updateData.title = title;
-  if (content !== undefined) updateData.content = serializeContent(content);
+  
+  if (content !== undefined) {
+    const contentResult = serializeContent(content);
+    if (!contentResult.success) {
+      return { error: contentResult.error };
+    }
+    updateData.content = contentResult.data;
+  }
+
   if (description !== undefined) updateData.description = description;
   if (banner !== undefined) updateData.banner = banner;
   if (status !== undefined) {
