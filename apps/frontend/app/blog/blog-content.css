@@ -125,12 +125,14 @@
 .blog-content td {
   padding: 0.75rem;
   border: 1px solid rgba(var(--foreground-rgb), 0.2);
+  color: var(--background);
 }
 
 .blog-content th {
   background-color: rgba(var(--foreground-rgb), 0.05);
   font-weight: 600;
 }
+
 /* // table style */
 .blog-content table {
   width: 100%;
@@ -147,4 +149,5 @@
 .blog-content th {
   background-color: var(--foreground);
   font-weight: 600;
+  color: var(--background);
 }
