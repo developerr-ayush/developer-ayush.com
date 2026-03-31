@@ -1,5 +1,8 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { getQueryClient } from "../get-query-client";
+import { getImagesMetadata } from "./actions";
 
 // Import the Gallery component directly
 import GalleryClient from "./Gallery-client";
@@ -16,6 +19,14 @@ interface PageProps {
 export default async function GalleryPage({ searchParams }: PageProps) {
   // Await the searchParams promise
   const params = await searchParams;
+  const searchQuery = params.q || "";
+
+  const queryClient = getQueryClient();
+  await queryClient.prefetchInfiniteQuery({
+    queryKey: ["gallery", searchQuery],
+    queryFn: ({ pageParam = 1 }) => getImagesMetadata(pageParam as number, 12, searchQuery),
+    initialPageParam: 1,
+  });
 
   return (
     <div className="container mx-auto px-4 py-8 pt-24">
@@ -26,20 +37,22 @@ export default async function GalleryPage({ searchParams }: PageProps) {
         </p>
       </div>
 
-      <Suspense
-        fallback={
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {Array.from({ length: 12 }).map((_, index) => (
-              <div
-                key={index}
-                className="aspect-square rounded-lg bg-gray-200 animate-pulse"
-              />
-            ))}
-          </div>
-        }
-      >
-        <GalleryClient searchQuery={params.q || ""} />
-      </Suspense>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <Suspense
+          fallback={
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 12 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="aspect-square rounded-lg bg-gray-200 animate-pulse"
+                />
+              ))}
+            </div>
+          }
+        >
+          <GalleryClient searchQuery={searchQuery} />
+        </Suspense>
+      </HydrationBoundary>
     </div>
   );
 }

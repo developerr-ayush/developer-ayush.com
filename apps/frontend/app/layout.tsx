@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { personalInfo } from "./data";
+import { Providers } from "./providers";
 import Script from "next/script";
 // import { GoogleTagManager } from "@next/third-parties/google";
 
@@ -131,9 +132,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         </noscript>
         {/* End Google Tag Manager (noscript) */}
         {/* <GoogleTagManager gtmId="GTM-WVCN3W56" /> */}
-        <Header />
-        {children}
-        <Footer />
+        <Providers>
+          <Header />
+          {children}
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

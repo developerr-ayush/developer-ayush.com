@@ -4,51 +4,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
-
-// Define types directly in this file to avoid declaration file issues
-type GalleryData = {
-  images: string[];
-  total: number;
-  page: number;
-  limit: number;
-  hasMore: boolean;
-};
-
-async function fetchGalleryData(
-  page: number = 1,
-  limit: number = 12,
-  searchQuery: string = ""
-): Promise<GalleryData> {
-  try {
-    let url = `/api/gallery?page=${page}&limit=${limit}`;
-
-    // Add search query if provided
-    if (searchQuery) {
-      url += `&q=${encodeURIComponent(searchQuery)}`;
-    }
-
-    const response = await fetch(url, {
-      cache: page === 1 ? "force-cache" : "no-store",
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch gallery images");
-    }
-
-    const data = await response.json();
-    return data as GalleryData;
-  } catch (error) {
-    console.error("Error fetching gallery images:", error);
-    // Return empty data on error
-    return {
-      images: [],
-      total: 0,
-      page,
-      limit,
-      hasMore: false,
-    };
-  }
-}
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { getImagesMetadata } from "./actions";
 
 interface GalleryClientProps {
   searchQuery: string;
@@ -60,48 +17,45 @@ export default function GalleryClient({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [galleryData, setGalleryData] = useState<GalleryData | null>(null);
-  const [images, setImages] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState(
     initialSearchQuery || searchParams.get("q") || ""
   );
-  const [isSearching, setIsSearching] = useState(false);
 
-  // Initial data fetch
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      setIsLoading(true);
-      try {
-        const data = await fetchGalleryData(1, 12, searchQuery);
-        setGalleryData(data);
-        setImages(data.images);
-        setCurrentPage(1);
-      } catch (err) {
-        setError("Failed to load images");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status
+  } = useInfiniteQuery({
+    queryKey: ["gallery", searchQuery],
+    queryFn: async ({ pageParam = 1 }) => {
+      return getImagesMetadata(pageParam as number, 12, searchQuery);
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      // If the backend hasMore flag is true, compute next page
+      if (lastPage.hasMore && lastPage.images.length > 0) {
+        return allPages.length + 1;
       }
-    };
-
-    fetchInitialData();
-  }, []);
+      return undefined;
+    },
+  });
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const observer = useRef<IntersectionObserver | null>(null);
   const lastImageElementRef = useCallback(
     (node: HTMLDivElement | null) => {
-      if (isLoading) return;
+      if (isFetchingNextPage) return;
       if (observer.current) observer.current.disconnect();
 
       observer.current = new IntersectionObserver(
         (entries) => {
-          if (entries[0]?.isIntersecting && galleryData?.hasMore) {
-            loadMoreImages();
+          if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
           }
         },
         { threshold: 0.1 }
@@ -109,62 +63,23 @@ export default function GalleryClient({
 
       if (node) observer.current.observe(node);
     },
-    [isLoading, galleryData?.hasMore]
+    [isFetchingNextPage, hasNextPage, fetchNextPage]
   );
 
   // Perform search when query changes
   const performSearch = useCallback(async () => {
-    setIsSearching(true);
-    setIsLoading(true);
-    setCurrentPage(1);
-
-    try {
-      // Update the URL with search query
-      const params = new URLSearchParams(searchParams.toString());
-      if (searchQuery) {
-        params.set("q", searchQuery);
-      } else {
-        params.delete("q");
-      }
-
-      // Replace URL with new search params
-      const newPath = `/gallery${params.toString() ? `?${params.toString()}` : ""}`;
-      router.replace(newPath);
-
-      // Fetch new results
-      const newData = await fetchGalleryData(1, 12, searchQuery);
-      setGalleryData(newData);
-      setImages(newData.images);
-      setError(null);
-    } catch (err) {
-      setError("Failed to search images. Please try again.");
-      console.error("Error searching images:", err);
-    } finally {
-      setIsLoading(false);
-      setIsSearching(false);
+    // Update the URL with search query
+    const params = new URLSearchParams(searchParams.toString());
+    if (searchQuery) {
+      params.set("q", searchQuery);
+    } else {
+      params.delete("q");
     }
+
+    // Replace URL with new search params
+    const newPath = `/gallery${params.toString() ? `?${params.toString()}` : ""}`;
+    router.replace(newPath);
   }, [searchQuery, router, searchParams]);
-
-  // Load more images when scrolling
-  const loadMoreImages = async () => {
-    if (isLoading || !galleryData?.hasMore) return;
-
-    setIsLoading(true);
-    try {
-      const nextPage = currentPage + 1;
-      const newData = await fetchGalleryData(nextPage, 12, searchQuery);
-
-      setGalleryData(newData);
-      setImages((prevImages) => [...prevImages, ...newData.images]);
-      setCurrentPage(nextPage);
-      setError(null);
-    } catch (err) {
-      setError("Failed to load more images. Please try again.");
-      console.error("Error loading more images:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   // Handle image click to show full view
   const handleImageClick = (imagePath: string) => {
@@ -208,6 +123,10 @@ export default function GalleryClient({
       document.body.style.overflow = "";
     };
   }, []);
+
+  const images = data?.pages.flatMap((page) => page.images) || [];
+  const isLoading = status === "pending";
+  const isSearching = isFetching && !isFetchingNextPage && images.length > 0;
 
   return (
     <>
@@ -344,7 +263,7 @@ export default function GalleryClient({
         </div>
       )}
 
-      {isLoading && images.length > 0 && (
+      {isFetchingNextPage && (
         <div className="flex justify-center mt-8 pb-8">
           <div className="flex items-center space-x-2">
             <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500"></div>
@@ -353,9 +272,9 @@ export default function GalleryClient({
         </div>
       )}
 
-      {error && (
+      {status === "error" && (
         <div className="text-center mt-8 pb-8">
-          <p className="text-red-500">{error}</p>
+          <p className="text-red-500">{error instanceof Error ? error.message : "Error loaded images"}</p>
           <button
             onClick={() => performSearch()}
             className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
@@ -365,7 +284,7 @@ export default function GalleryClient({
         </div>
       )}
 
-      {!isLoading && galleryData?.hasMore === false && images.length > 0 && (
+      {!isLoading && !hasNextPage && images.length > 0 && (
         <div className="text-center text-gray-500 mt-8 pb-8">
           {searchQuery
             ? `End of results for "${searchQuery}"`

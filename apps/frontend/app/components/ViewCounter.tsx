@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 
 interface ViewCounterProps {
   slug: string;
@@ -11,33 +12,38 @@ export default function ViewCounter({ slug, initialViews }: ViewCounterProps) {
   const [views, setViews] = useState(initialViews);
   const [hasIncremented, setHasIncremented] = useState(false);
 
-  useEffect(() => {
-    if (hasIncremented) return;
-
-    const incrementView = async () => {
-      try {
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL_ADMIN || "https://admin.developer-ayush.com";
-        const response = await fetch(`${baseUrl}/api/blog/${slug}/view`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.ok ? await response.json() : null;
-          if (data && typeof data.views === "number") {
-            setViews(data.views);
-          }
-        }
-        setHasIncremented(true);
-      } catch (error) {
-        console.error("Failed to increment view count:", error);
+  const incrementMutation = useMutation({
+    mutationFn: async () => {
+      const baseUrl =
+        process.env.NEXT_PUBLIC_BASE_URL_ADMIN ||
+        "https://admin.developer-ayush.com";
+      const response = await fetch(`${baseUrl}/api/blog/${slug}/view`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to increment views");
       }
-    };
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data && typeof data.views === "number") {
+        setViews(data.views);
+      }
+    },
+    onError: (error) => {
+      console.error("Failed to increment view count:", error);
+    },
+  });
 
-    incrementView();
-  }, [slug, hasIncremented]);
+  useEffect(() => {
+    if (!hasIncremented && !incrementMutation.isPending && !incrementMutation.isSuccess) {
+      setHasIncremented(true);
+      incrementMutation.mutate();
+    }
+  }, [hasIncremented, incrementMutation]);
 
   return (
     <div className="flex items-center">

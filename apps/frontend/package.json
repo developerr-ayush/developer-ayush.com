@@ -16,6 +16,8 @@
     "@next/third-parties": "^15.2.4",
     "@repo/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.0.17",
+    "@tanstack/react-query": "^5.95.2",
+    "@tanstack/react-query-devtools": "^5.95.2",
     "framer-motion": "^12.6.2",
     "highlight.js": "^11.11.1",
     "next": "15.2.8",

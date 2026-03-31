@@ -1,7 +1,9 @@
-import { getBlogPosts } from "../blogData";
+import { getBlogPosts, BlogPost } from "../blogData";
 import BlogList from "../components/BlogList";
 import Script from "next/script";
 import { Metadata } from "next";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { getQueryClient } from "../get-query-client";
 
 export const metadata: Metadata = {
   title: "Blog | Frontend Development, UI/UX, and Web Technologies",
@@ -13,8 +15,19 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  // Fetch the initial data on the server
-  const initialBlogData = await getBlogPosts(1);
+  const queryClient = getQueryClient();
+
+  // Prefetch the initial data into the react-query cache instance
+  await queryClient.prefetchInfiniteQuery({
+    queryKey: ["blogPosts"],
+    queryFn: ({ pageParam = 1 }) => getBlogPosts(pageParam),
+    initialPageParam: 1,
+  });
+
+  const initialBlogDataContext = queryClient.getQueryData<{
+    pages: { data: BlogPost[]; meta: any }[];
+  }>(["blogPosts"]);
+  const initialBlogData = initialBlogDataContext?.pages?.[0] || { data: [] };
 
   // Create structured data for the blog listing page
   const structuredData = {
@@ -63,8 +76,10 @@ export default async function BlogPage() {
           </p>
         </div>
 
-        {/* Pass the initial data to the client component */}
-        <BlogList initialData={initialBlogData} />
+        {/* Ensure HydrationBoundary passes context to the client seamlessly */}
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <BlogList />
+        </HydrationBoundary>
       </div>
     </div>
   );
