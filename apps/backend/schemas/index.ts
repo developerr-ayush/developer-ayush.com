@@ -75,7 +75,7 @@ export const blogSchema = z.object({
   json_content: z.any().optional(),
   date: z.date(),
   author: z.string().optional(),
-  banner: z.string(),
+  banner: z.string().optional().default(""),
   description: z.string().max(1000).optional(),
   status: z
     .union([z.literal("draft"), z.literal("published"), z.literal("archived")])

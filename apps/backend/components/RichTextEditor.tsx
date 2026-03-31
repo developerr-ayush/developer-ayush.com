@@ -194,7 +194,7 @@ export default function RichTextEditor({
   return (
     <div className="rich-text-editor blog-content">
       <div className="editor-toolbar-hint mb-2 text-xs text-slate-500">
-        <p>
+        <p className="!text-xs">
           Tip: Try using the + button or type / for more options including tables and images.
         </p>
       </div>

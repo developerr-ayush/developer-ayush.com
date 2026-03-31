@@ -376,9 +376,18 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
             return;
           }
         }
-      } else if (!blog?.banner) {
-        // If no file is selected and this is a new post or an edit without an existing banner
-        setError("Please upload a banner image");
+      }
+
+      // If bannerUrl is set (e.g. from AI generation) but not yet in form data, apply it
+      if (!data.banner && bannerUrl) {
+        data.banner = bannerUrl;
+      }
+
+      // Banner is required only when publishing — drafts can be saved without one
+      const isPublishing = data.status === "published";
+      const hasBanner = !!(data.banner || blog?.banner || bannerUrl);
+      if (isPublishing && !hasBanner) {
+        setError("A banner image is required before publishing. Please upload one or save as draft.");
         setIsSubmitting(false);
         return;
       }
@@ -398,13 +407,20 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
           .filter((cat) => cat.length > 0);
       }
 
-      // Submit the blog post
-      if (blog) {
-        const result = await updateBlog(data, blog.id);
+      // Determine the record ID to update:
+      // 1. Editing an existing blog (passed as prop)  → blog.id
+      // 2. Auto-save already created a draft          → currentBlogIdRef.current
+      // 3. Brand new submission with no prior autosave → call createBlog
+      const existingId = blog?.id ?? currentBlogIdRef.current;
+
+      if (existingId) {
+        const result = await updateBlog(data, existingId);
         if (result.error) {
           setError(result.error);
         } else {
-          toast.success("Blog post updated successfully!");
+          toast.success(
+            blog ? "Blog post updated successfully!" : "Blog post created successfully!"
+          );
           router.push("/admin/blog");
           router.refresh();
         }
