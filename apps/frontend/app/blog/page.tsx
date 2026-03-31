@@ -2,8 +2,6 @@ import { getBlogPosts, BlogPost } from "../blogData";
 import BlogList from "../components/BlogList";
 import Script from "next/script";
 import { Metadata } from "next";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { getQueryClient } from "../get-query-client";
 
 export const metadata: Metadata = {
   title: "Blog | Frontend Development, UI/UX, and Web Technologies",
@@ -15,21 +13,10 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  const queryClient = getQueryClient();
+  const initialData = await getBlogPosts(1);
+  const initialPosts: BlogPost[] = initialData?.data || [];
+  const initialMeta = initialData?.meta || {};
 
-  // Prefetch the initial data into the react-query cache instance
-  await queryClient.prefetchInfiniteQuery({
-    queryKey: ["blogPosts"],
-    queryFn: ({ pageParam = 1 }) => getBlogPosts(pageParam),
-    initialPageParam: 1,
-  });
-
-  const initialBlogDataContext = queryClient.getQueryData<{
-    pages: { data: BlogPost[]; meta: any }[];
-  }>(["blogPosts"]);
-  const initialBlogData = initialBlogDataContext?.pages?.[0] || { data: [] };
-
-  // Create structured data for the blog listing page
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Blog",
@@ -37,34 +24,25 @@ export default async function BlogPage() {
     description:
       "Thoughts, technical guides, and insights about web development, programming, and my journey as a developer.",
     url: "https://developer-ayush.com/blog",
-    author: {
-      "@type": "Person",
-      name: "Ayush Shah",
-    },
-    blogPost:
-      initialBlogData.data?.map((post) => ({
-        "@type": "BlogPosting",
-        headline: post.title,
-        description: post.description,
-        image: post.banner,
-        datePublished: post.updatedAt,
-        author: {
-          "@type": "Person",
-          name: post.author.name,
-        },
-        url: `https://developer-ayush.com/blog/${post.slug}`,
-      })) || [],
+    author: { "@type": "Person", name: "Ayush Shah" },
+    blogPost: initialPosts.map((post) => ({
+      "@type": "BlogPosting",
+      headline: post.title,
+      description: post.description,
+      image: post.banner,
+      datePublished: post.updatedAt,
+      author: { "@type": "Person", name: post.author.name },
+      url: `https://developer-ayush.com/blog/${post.slug}`,
+    })),
   };
 
   return (
     <div className="py-20 md:py-28">
-      {/* Add JSON-LD structured data */}
       <Script
         id="blog-list-structured-data"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-12 md:mb-16">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
@@ -76,10 +54,7 @@ export default async function BlogPage() {
           </p>
         </div>
 
-        {/* Ensure HydrationBoundary passes context to the client seamlessly */}
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          <BlogList />
-        </HydrationBoundary>
+        <BlogList initialPosts={initialPosts} initialMeta={initialMeta} />
       </div>
     </div>
   );

@@ -1,75 +1,82 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import {
-  getBlogPosts,
-  type BlogPost,
-  type PaginationResponse,
-} from "../blogData";
+import { useEffect, useRef, useState } from "react";
+import { getBlogPosts, BlogPost } from "../blogData";
 import BlogCard from "./BlogCard";
-import { useInView } from "react-intersection-observer";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+interface Meta {
+  totalPages?: number;
+  [key: string]: any;
+}
 
-export default function BlogList() {
-  const { ref, inView } = useInView({
-    threshold: 0.1,
-    triggerOnce: false,
-  });
+interface BlogListProps {
+  initialPosts: BlogPost[];
+  initialMeta: Meta;
+}
 
-  const {
-    data,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetching,
-    isFetchingNextPage,
-    status,
-  } = useInfiniteQuery({
-    queryKey: ["blogPosts"],
-    queryFn: async ({ pageParam = 1 }) => {
-      console.log("Fetching more posts for page:", pageParam);
-      const response = await getBlogPosts(pageParam);
-      if (!response || !response.data) {
-        throw new Error("Invalid response format from API");
-      }
-      return response;
-    },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
-      const postsPerPage = 10;
-      const currentPage = allPages.length;
+const POSTS_PER_PAGE = 10;
+
+export default function BlogList({ initialPosts, initialMeta }: BlogListProps) {
+  const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
+  const [page, setPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(
+    initialPosts.length >= POSTS_PER_PAGE
+  );
+  const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+
+  const fetchNextPage = async () => {
+    if (isFetching || !hasNextPage) return;
+    setIsFetching(true);
+    setError(null);
+
+    try {
+      const nextPage = page + 1;
+      const response = await getBlogPosts(nextPage);
+
+      if (!response?.data) throw new Error("Invalid response from API");
+
+      setPosts((prev) => [...prev, ...response.data]);
+      setPage(nextPage);
+
       const totalPages =
-        lastPage.meta?.totalPages ||
-        Math.ceil(lastPage.data.length / postsPerPage) + currentPage;
-      
-      const hasMorePages = lastPage.data.length >= postsPerPage;
-      return hasMorePages && lastPage.data.length > 0 && currentPage < totalPages
-        ? currentPage + 1
-        : undefined;
-    },
-  });
+        response.meta?.totalPages ||
+        Math.ceil(response.data.length / POSTS_PER_PAGE) + nextPage;
 
-  useEffect(() => {
-    // If the loader is in view and we have more pages to load
-    if (inView && hasNextPage && !isFetchingNextPage) {
-      console.log("Loading next page...");
-      fetchNextPage();
+      setHasNextPage(
+        response.data.length >= POSTS_PER_PAGE && nextPage < totalPages
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load more posts");
+    } finally {
+      setIsFetching(false);
     }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  };
 
-  // Flatten the pages array into a single array of posts
-  const posts = data?.pages.flatMap((page) => page.data) || [];
+  // Intersection observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.length > 0 && entries[0] && entries[0].isIntersecting && hasNextPage && !isFetching) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
 
+    if (loaderRef.current) observer.observe(loaderRef.current);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetching]);
+  console.log(initialPosts)
   return (
     <>
-      {status === "error" && (
+      {error && (
         <div className="text-center py-8 mb-8 bg-red-500/10 rounded-lg border border-red-500/20">
-          <p className="text-red-500">
-            {error instanceof Error ? error.message : "Failed to load more blog posts. Please try again."}
-          </p>
+          <p className="text-red-500">{error}</p>
           <button
-            onClick={() => fetchNextPage()}
+            onClick={fetchNextPage}
             className="mt-4 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg"
           >
             Try Again
@@ -90,24 +97,17 @@ export default function BlogList() {
         </div>
       )}
 
-      {/* Loading indicator */}
-      <div ref={ref} className="mt-10 py-6 flex justify-center items-center">
-        {(isFetchingNextPage || (isFetching && !isFetchingNextPage)) && (
+      {/* Scroll trigger */}
+      <div ref={loaderRef} className="mt-10 py-6 flex justify-center items-center">
+        {isFetching && (
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-4 h-4 rounded-full bg-sky-500 animate-pulse"></div>
-            <div
-              className="w-4 h-4 rounded-full bg-sky-500 animate-pulse"
-              style={{ animationDelay: "0.2s" }}
-            ></div>
-            <div
-              className="w-4 h-4 rounded-full bg-sky-500 animate-pulse"
-              style={{ animationDelay: "0.4s" }}
-            ></div>
+            <div className="w-4 h-4 rounded-full bg-sky-500 animate-pulse" />
+            <div className="w-4 h-4 rounded-full bg-sky-500 animate-pulse" style={{ animationDelay: "0.2s" }} />
+            <div className="w-4 h-4 rounded-full bg-sky-500 animate-pulse" style={{ animationDelay: "0.4s" }} />
           </div>
         )}
       </div>
 
-      {/* No more posts indicator */}
       {!hasNextPage && posts.length > 0 && !isFetching && (
         <div className="mt-10 text-center text-foreground/60">
           You&apos;ve reached the end of the blog posts

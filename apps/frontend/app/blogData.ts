@@ -80,7 +80,6 @@ export async function getBlogPosts(
     const url = page === -1 ? baseUrl : `${baseUrl}?p=${page}`;
 
     const res = await fetch(url, options);
-
     if (!res.ok) {
       console.error(`API response not OK: ${res.status} ${res.statusText}`);
       throw new Error(
@@ -89,30 +88,7 @@ export async function getBlogPosts(
     }
 
     const data = await res.json();
-    console.log(
-      `API data retrieved for page ${page}:`,
-      typeof data,
-      Array.isArray(data) ? data.length : "not array"
-    );
-
-    // If the API returns a flat array instead of pagination data,
-    // we'll wrap it in our pagination structure
-    if (Array.isArray(data)) {
-      const postsPerPage = 10; // Assuming 10 posts per page
-      const totalPages = page === 1 && data.length < postsPerPage ? 1 : 2;
-
-      return {
-        data,
-        meta: {
-          currentPage: page,
-          totalPages: totalPages,
-          totalItems: data.length * totalPages, // Estimate total items
-          itemsPerPage: postsPerPage,
-        },
-      };
-    }
-
-    return data;
+    return data as PaginationResponse<BlogPost>;
   } catch (error) {
     console.error("Error fetching blog posts:", error);
     return {
