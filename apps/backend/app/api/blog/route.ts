@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../lib/db";
+import { corsHeaders, handleCORS } from "../../../lib/cors";
+
+export async function OPTIONS(request: Request) {
+  return handleCORS(request);
+}
 
 // GET handler for listing all blogs with pagination
 export async function GET(request: NextRequest) {
+  const origin = request.headers.get("origin") || undefined;
   try {
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("p") || "1");
@@ -36,20 +42,23 @@ export async function GET(request: NextRequest) {
     const totalPages = Math.ceil(totalCount / pageSize);
 
     // Return paginated response
-    return NextResponse.json({
-      data: blogs,
-      meta: {
-        currentPage: page,
-        totalPages: totalPages,
-        totalItems: totalCount,
-        itemsPerPage: pageSize,
+    return NextResponse.json(
+      {
+        data: blogs,
+        meta: {
+          currentPage: page,
+          totalPages: totalPages,
+          totalItems: totalCount,
+          itemsPerPage: pageSize,
+        },
       },
-    });
+      { headers: corsHeaders(origin) }
+    );
   } catch (error) {
     console.error("Error fetching blogs:", error);
     return NextResponse.json(
       { error: "Failed to fetch blogs" },
-      { status: 500 }
+      { status: 500, headers: corsHeaders(origin) }
     );
   }
 }

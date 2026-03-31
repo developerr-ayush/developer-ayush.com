@@ -17,7 +17,10 @@ export default auth((req) => {
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-  const isSlangApiRoute = nextUrl.pathname.startsWith("/api/slang");
+  const isPublicApiRoute =
+    nextUrl.pathname.startsWith("/api/slang") ||
+    nextUrl.pathname.startsWith("/api/blog") ||
+    nextUrl.pathname.startsWith("/api/products");
   // MCP transport routes (/api/mcp, /api/sse) — use their own JWT auth
   const isMcpRoute =
     nextUrl.pathname.startsWith("/api/mcp") ||
@@ -38,8 +41,8 @@ export default auth((req) => {
     return;
   }
 
-  // Handle CORS for slang API routes
-  if (isSlangApiRoute) {
+  // Handle CORS for public API routes
+  if (isPublicApiRoute) {
     const origin = req.headers.get("origin") || undefined;
 
     // Handle preflight OPTIONS requests
@@ -50,7 +53,7 @@ export default auth((req) => {
       });
     }
 
-    // Allow slang API routes to be accessed publicly with CORS
+    // Allow public API routes to be accessed with CORS
     return;
   }
 
