@@ -193,20 +193,19 @@ export default function RichTextEditor({
 
   return (
     <div className="rich-text-editor blog-content">
-      <div className="editor-toolbar-hint mb-2 text-xs text-gray-500">
-        <p className=" !text-xs !text-black">
-          Tip: Try using the + button or type / for more options including
-          tables and images.
+      <div className="editor-toolbar-hint mb-2 text-xs text-slate-500">
+        <p>
+          Tip: Try using the + button or type / for more options including tables and images.
         </p>
       </div>
       <div
         ref={containerRef}
         id="editorjs-container"
-        className={`border border-gray-300 rounded-md min-h-[300px] ${!editorReady ? "editor-loading" : ""}`}
+        className={`editor-dark border border-white/10 rounded-xl min-h-[300px] ${!editorReady ? "editor-loading" : ""}`}
       >
         {!editorReady && (
           <div className="flex items-center justify-center h-full min-h-[300px]">
-            <span className="text-gray-400">
+            <span className="text-slate-500">
               {editorError || "Loading editor..."}
             </span>
           </div>

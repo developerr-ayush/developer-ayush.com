@@ -1,42 +1,30 @@
 import BlogForm from "../blog-form";
 import Link from "next/link";
+import { ArrowLeft, Save } from "lucide-react";
 
 export default function NewBlogPage() {
   return (
-    <div>
-      <div className="mb-8 flex items-center justify-between">
+    <div className="space-y-6">
+      {/* Back */}
+      <Link href="/admin/blog"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors">
+        <ArrowLeft className="w-3.5 h-3.5" /> Back to Posts
+      </Link>
+
+      {/* Header */}
+      <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Create New Blog Post
-          </h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Write and publish a new article to your blog
-          </p>
-          <p className="text-xs text-gray-500 mt-1">
-            Your changes will be auto-saved as you type
+          <h1 className="text-2xl font-bold text-white">Create New Blog Post</h1>
+          <p className="mt-1 text-sm text-slate-400">
+            Write and publish a new article · changes auto-save as you type
           </p>
         </div>
-        <Link
-          href="/admin/blog"
-          className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
-        >
-          <svg
-            className="h-4 w-4 mr-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          Back to Posts
-        </Link>
       </div>
-      <BlogForm />
+
+      {/* Form card */}
+      <div className="bg-white/[0.03] border border-white/8 rounded-2xl overflow-hidden">
+        <BlogForm />
+      </div>
     </div>
   );
 }

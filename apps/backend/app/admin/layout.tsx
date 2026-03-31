@@ -8,8 +8,8 @@ import { ToastContainer } from "react-toastify";
 import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
-  title: "Admin Dashboard",
-  description: "Admin dashboard for managing the website",
+  title: "Admin — BackendCore",
+  description: "Admin dashboard for managing all products",
 };
 
 export default async function AdminLayout({
@@ -20,11 +20,11 @@ export default async function AdminLayout({
   const session = await auth();
 
   if (!session) {
-    redirect("/admin/login");
+    redirect("/login");
   }
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-[#080d1a] text-slate-200">
       <SessionProvider>
         <AdminSidebar />
         <main className="flex-1 w-full overflow-auto">
@@ -40,7 +40,7 @@ export default async function AdminLayout({
           pauseOnFocusLoss
           draggable
           pauseOnHover
-          theme="light"
+          theme="dark"
         />
       </SessionProvider>
     </div>

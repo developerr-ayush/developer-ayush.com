@@ -150,7 +150,7 @@
 
 .blog-content li {
   margin-bottom: 0.5rem;
-  color: rgba(0, 0, 0, 0.8);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .blog-content li > ul,
@@ -654,4 +654,101 @@
 .blog-content blockquote.error::before {
   content: "❌";
   color: rgba(244, 63, 94, 0.8);
+}
+
+/* ========================================
+   Admin EditorJS Dark Theme Overrides
+   Forces EditorJS internal text to be
+   readable on the dark admin background.
+   ======================================== */
+.editor-dark {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1rem;
+}
+
+.editor-dark .ce-block,
+.editor-dark .cdx-block,
+.editor-dark .ce-paragraph {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.editor-dark .ce-header {
+  color: #ffffff !important;
+}
+
+.editor-dark h1.ce-header,
+.editor-dark h2.ce-header {
+  color: #ffffff !important;
+}
+
+.editor-dark h3.ce-header,
+.editor-dark h4.ce-header {
+  color: rgba(56, 189, 248, 0.9) !important;
+}
+
+.editor-dark .cdx-list__item,
+.editor-dark .cdx-checklist__item-text {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.editor-dark .ce-toolbar__actions,
+.editor-dark .ce-toolbar__plus,
+.editor-dark .ce-toolbar__settings-btn {
+  color: rgba(255, 255, 255, 0.5) !important;
+  background: transparent !important;
+}
+
+.editor-dark .ce-toolbar__plus:hover,
+.editor-dark .ce-toolbar__settings-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: white !important;
+}
+
+.editor-dark .ce-inline-toolbar,
+.editor-dark .ce-settings,
+.editor-dark .ce-popover {
+  background: #1a2035 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+.editor-dark .ce-inline-tool,
+.editor-dark .ce-settings__button,
+.editor-dark .ce-popover-item {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.editor-dark .ce-inline-tool:hover,
+.editor-dark .ce-settings__button:hover,
+.editor-dark .ce-popover-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: white !important;
+}
+
+.editor-dark .ce-inline-tool--active,
+.editor-dark .ce-settings__button--active {
+  color: #3b82f6 !important;
+}
+
+.editor-dark .cdx-quote {
+  border-left-color: rgba(56, 189, 248, 0.6) !important;
+}
+
+.editor-dark .cdx-quote__text,
+.editor-dark .cdx-quote__caption {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.editor-dark .cdx-input {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.editor-dark .ce-block--selected .ce-block__content {
+  background: rgba(59, 130, 246, 0.1) !important;
+}
+
+.editor-dark .codex-editor__redactor {
+  padding-bottom: 2rem !important;
 }

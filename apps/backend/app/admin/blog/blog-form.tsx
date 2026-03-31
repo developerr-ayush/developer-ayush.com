@@ -622,29 +622,10 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-xl border border-gray-200 overflow-hidden">
+    <div className="overflow-hidden">
       {error && (
-        <div className="border-l-4 border-red-400 bg-red-50 p-4 m-6">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg
-                className="h-5 w-5 text-red-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          </div>
+        <div className="flex items-center gap-3 bg-rose-500/10 border border-rose-500/20 rounded-xl px-4 py-3 mx-6 mt-6 text-sm text-rose-300">
+          {error}
         </div>
       )}
 
@@ -834,27 +815,15 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
         <div className="space-y-6">
           <div>
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
                 Basic Information
               </h3>
               <button
                 type="button"
                 onClick={() => setShowAIPopup(true)}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
+                className="inline-flex items-center px-3 py-1.5 border border-white/10 text-xs font-semibold rounded-xl text-slate-300 bg-white/5 hover:bg-white/10 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 Generate with AI
               </button>
@@ -863,14 +832,14 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
               <div className="space-y-2">
                 <label
                   htmlFor="title"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-xs font-semibold text-slate-400 uppercase tracking-wide"
                 >
                   Title <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="title"
                   type="text"
-                  className={`block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 shadow-sm ring-1 ring-inset ${errors.title ? "ring-red-300" : "ring-gray-300"} placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
+                  className={`block w-full rounded-xl border-0 py-2.5 px-3.5 bg-white/5 text-white placeholder-slate-600 shadow-sm ring-1 ring-inset ${errors.title ? "ring-rose-500/50" : "ring-white/10"} focus:ring-2 focus:ring-inset focus:ring-blue-500/50 sm:text-sm sm:leading-6`}
                   placeholder="Enter blog title"
                   {...register("title")}
                 />
@@ -884,14 +853,14 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
               <div className="space-y-2">
                 <label
                   htmlFor="slug"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-xs font-semibold text-slate-400 uppercase tracking-wide"
                 >
                   Slug <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="slug"
                   type="text"
-                  className={`block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 shadow-sm ring-1 ring-inset ${errors.slug ? "ring-red-300" : "ring-gray-300"} placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
+                  className={`block w-full rounded-xl border-0 py-2.5 px-3.5 bg-white/5 text-white placeholder-slate-600 shadow-sm ring-1 ring-inset ${errors.slug ? "ring-rose-500/50" : "ring-white/10"} focus:ring-2 focus:ring-inset focus:ring-blue-500/50 sm:text-sm sm:leading-6`}
                   placeholder="enter-url-slug"
                   onInput={() => setSlugManuallyEdited(true)}
                   {...register("slug")}
@@ -908,7 +877,7 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
             </div>
           </div>
 
-          <div className="pt-5 border-t border-gray-200">
+          <div className="pt-5 border-t border-white/5">
             <div className="space-y-2">
               <label
                 htmlFor="banner"
@@ -1052,39 +1021,31 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
           </div>
         </div>
 
-        <div className="pt-5 border-t border-gray-200">
+        <div className="pt-5 border-t border-white/5">
           <div className="space-y-2">
-            <label
-              htmlFor="description"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="description" className="block text-xs font-semibold text-slate-400 uppercase tracking-wide">
               Description
             </label>
             <textarea
               id="description"
               rows={3}
-              className={`block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 shadow-sm ring-1 ring-inset ${errors.description ? "ring-red-300" : "ring-gray-300"} placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
+              className={`block w-full rounded-xl border-0 py-2.5 px-3.5 bg-white/5 text-white placeholder-slate-600 shadow-sm ring-1 ring-inset ${errors.description ? "ring-rose-500/50" : "ring-white/10"} focus:ring-2 focus:ring-inset focus:ring-blue-500/50 sm:text-sm sm:leading-6`}
               placeholder="Brief description of your blog post"
               {...register("description")}
             />
             {errors.description && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.description.message}
-              </p>
+              <p className="mt-1 text-xs text-rose-400">{errors.description.message}</p>
             )}
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-slate-500">
               A short summary that appears in blog listings
             </p>
           </div>
         </div>
 
-        <div className="pt-5 border-t border-gray-200">
+        <div className="pt-5 border-t border-white/5">
           <div className="space-y-2">
-            <label
-              htmlFor="content"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Content <span className="text-red-500">*</span>
+            <label htmlFor="content" className="block text-xs font-semibold text-slate-400 uppercase tracking-wide">
+              Content <span className="text-rose-400">*</span>
             </label>
             <RichTextEditor
               initialValue={blog?.content ? JSON.parse(blog.content) : null}
@@ -1099,78 +1060,62 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
           </div>
         </div>
 
-        <div className="pt-5 border-t border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900 mb-6">
+        <div className="pt-5 border-t border-white/5">
+          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-6">
             Publishing Options
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label
-                htmlFor="status"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="status" className="block text-xs font-semibold text-slate-400 uppercase tracking-wide">
                 Status
               </label>
               <select
                 id="status"
-                className={`block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 shadow-sm ring-1 ring-inset ${errors.status ? "ring-red-300" : "ring-gray-300"} focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
+                className={`block w-full rounded-xl border-0 py-2.5 px-3.5 bg-white/5 text-white shadow-sm ring-1 ring-inset ${errors.status ? "ring-rose-500/50" : "ring-white/10"} focus:ring-2 focus:ring-inset focus:ring-blue-500/50 sm:text-sm sm:leading-6`}
                 {...register("status")}
               >
-                <option value="draft">Draft</option>
-                {isAdmin && <option value="published">Published</option>}
-                {isAdmin && <option value="archived">Archived</option>}
+                <option value="draft" className="bg-slate-900">Draft</option>
+                {isAdmin && <option value="published" className="bg-slate-900">Published</option>}
+                {isAdmin && <option value="archived" className="bg-slate-900">Archived</option>}
               </select>
               {!isAdmin && (
-                <p className="text-xs text-amber-600 mt-1">
-                  As a regular user, your posts will need approval before they
-                  can be published.
+                <p className="text-xs text-amber-400 mt-1">
+                  As a regular user, your posts will need approval before they can be published.
                 </p>
               )}
               {errors.status && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.status.message}
-                </p>
+                <p className="mt-1 text-xs text-rose-400">{errors.status.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <label
-                htmlFor="tags"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="tags" className="block text-xs font-semibold text-slate-400 uppercase tracking-wide">
                 Tags
               </label>
               <input
                 id="tags"
                 type="text"
-                className={`block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 shadow-sm ring-1 ring-inset ${errors.tags ? "ring-red-300" : "ring-gray-300"} placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
+                className={`block w-full rounded-xl border-0 py-2.5 px-3.5 bg-white/5 text-white placeholder-slate-600 shadow-sm ring-1 ring-inset ${errors.tags ? "ring-rose-500/50" : "ring-white/10"} focus:ring-2 focus:ring-inset focus:ring-blue-500/50 sm:text-sm sm:leading-6`}
                 placeholder="tag1, tag2, tag3"
                 {...register("tags")}
               />
               {errors.tags && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.tags.message}
-                </p>
+                <p className="mt-1 text-xs text-rose-400">{errors.tags.message}</p>
               )}
-              <p className="text-xs text-gray-500">
-                Separate tags with commas
-              </p>
+              <p className="text-xs text-slate-500">Separate tags with commas</p>
             </div>
           </div>
         </div>
 
-        <div className="pt-5 border-t border-gray-200">
+        <div className="pt-5 border-t border-white/5">
           <div className="space-y-2">
-            <label
-              htmlFor="categories"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Categories <span className="text-red-500">*</span>
+            <label htmlFor="categories" className="block text-xs font-semibold text-slate-400 uppercase tracking-wide">
+              Categories <span className="text-rose-400">*</span>
             </label>
             <input
               id="categories"
               type="text"
-              className={`block w-full rounded-md border-0 py-2 px-3.5 text-gray-900 shadow-sm ring-1 ring-inset ${errors.categories ? "ring-red-300" : "ring-gray-300"} placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
+              className={`block w-full rounded-xl border-0 py-2.5 px-3.5 bg-white/5 text-white placeholder-slate-600 shadow-sm ring-1 ring-inset ${errors.categories ? "ring-rose-500/50" : "ring-white/10"} focus:ring-2 focus:ring-inset focus:ring-blue-500/50 sm:text-sm sm:leading-6`}
               placeholder="Category1, Category2"
               defaultValue={
                 Array.isArray(blog?.categories)
@@ -1180,11 +1125,9 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
               {...register("categories")}
             />
             {errors.categories && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.categories.message}
-              </p>
+              <p className="mt-1 text-xs text-rose-400">{errors.categories.message}</p>
             )}
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-slate-500">
               Enter categories separated by commas
             </p>
           </div>
@@ -1192,60 +1135,35 @@ export default function BlogForm({ blog }: { blog?: BlogFormProps }) {
 
         {/* Auto-save status indicator */}
         <div
-          className={`text-sm ${autoSaveStatus === "saving"
-            ? "text-amber-600"
-            : autoSaveStatus === "saved"
-              ? "text-green-600"
-              : autoSaveStatus === "error"
-                ? "text-red-600"
-                : "text-gray-400"
-            }`}
+          className={`text-xs font-medium ${
+            autoSaveStatus === "saving"
+              ? "text-amber-400"
+              : autoSaveStatus === "saved"
+                ? "text-emerald-400"
+                : autoSaveStatus === "error"
+                  ? "text-rose-400"
+                  : "text-slate-600"
+          }`}
         >
           {autoSaveMessage}
         </div>
 
-        <div className="pt-6 flex items-center justify-end border-t border-gray-200 gap-x-4">
-          <button
-            type="button"
-            onClick={() => router.push("/admin/blog")}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-          >
+        <div className="pt-6 flex items-center justify-end border-t border-white/5 gap-x-3">
+          <button type="button" onClick={() => router.push("/admin/blog")}
+            className="px-5 py-2.5 text-sm font-semibold text-slate-400 border border-white/10 rounded-xl hover:text-white hover:border-white/20 transition-all">
             Cancel
           </button>
-          <button
-            type="submit"
-            disabled={isSubmitting || uploadingBanner}
-            className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center"
-          >
+          <button type="submit" disabled={isSubmitting || uploadingBanner}
+            className="px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 border border-transparent rounded-xl hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98] inline-flex items-center gap-2">
             {isSubmitting || uploadingBanner ? (
               <>
-                <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
+                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
                 {uploadingBanner ? "Uploading Image..." : "Saving..."}
               </>
-            ) : blog ? (
-              "Update Post"
-            ) : (
-              "Create Post"
-            )}
+            ) : blog ? "Update Post" : "Create Post"}
           </button>
         </div>
       </form>

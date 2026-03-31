@@ -5,7 +5,9 @@ import { auth } from "../../../../auth";
 import ApprovalActions from "../approval-actions";
 import DeleteButton from "../delete-button";
 import Link from "next/link";
+import { ArrowLeft, ShieldAlert } from "lucide-react";
 /* eslint-disable  @typescript-eslint/no-explicit-any */
+
 export default async function BlogPage({
   params,
 }: {
@@ -15,7 +17,7 @@ export default async function BlogPage({
   const session = await auth();
 
   if (!session?.user) {
-    return <div>Not authenticated</div>;
+    return <div className="text-slate-400 p-6">Not authenticated</div>;
   }
 
   const isAdmin =
@@ -23,108 +25,64 @@ export default async function BlogPage({
 
   try {
     const blog = await db.blog.findUnique({
-      where: {
-        id,
-      },
+      where: { id },
       include: {
         categories: true,
         author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-          },
+          select: { id: true, name: true, email: true, role: true },
         },
       },
     });
 
-    if (!blog) {
-      notFound();
-    }
+    if (!blog) notFound();
 
-    // Check if user has permission to edit this blog
-    // Only the author or admin can edit
     const isAuthor = blog.author.email === session.user.email;
     if (!isAuthor && !isAdmin) {
       return (
-        <div className="max-w-4xl mx-auto py-8">
-          <div className="bg-red-50 border-l-4 border-red-400 p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-5 w-5 text-red-400"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">
-                  Permission Denied
-                </h3>
-                <div className="mt-2 text-sm text-red-700">
-                  <p>You don&apos;t have permission to edit this blog post.</p>
-                </div>
-              </div>
-            </div>
+        <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-6 py-16">
+          <div className="w-16 h-16 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center justify-center mb-5">
+            <ShieldAlert className="w-7 h-7 text-rose-400" />
           </div>
+          <h2 className="text-xl font-bold text-white mb-2">Permission Denied</h2>
+          <p className="text-sm text-slate-400">You don&apos;t have permission to edit this blog post.</p>
         </div>
       );
     }
 
-    // Add approval actions for admins viewing other users' blogs
-    const showApprovalActions =
-      isAdmin && !isAuthor && blog.author.role === "USER";
+    const showApprovalActions = isAdmin && !isAuthor && blog.author.role === "USER";
 
     return (
-      <div>
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Edit Blog Post</h1>
+      <div className="space-y-6">
+        {/* Back */}
+        <Link href="/admin/blog"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors">
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to Posts
+        </Link>
 
-          <div className="flex items-center space-x-4">
-            <Link
-              href="/admin/blog"
-              className="text-gray-600 hover:text-gray-900 transition-colors flex items-center"
-            >
-              <svg
-                className="w-4 h-4 mr-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              Back to Blogs
-            </Link>
-
-            <DeleteButton blogId={blog.id} authorEmail={blog.author.email} />
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Edit Blog Post</h1>
+            <p className="mt-1 text-sm text-slate-400 truncate max-w-xl">{blog.title}</p>
           </div>
+          <DeleteButton blogId={blog.id} authorEmail={blog.author.email} />
         </div>
 
+        {/* Approval actions */}
         {showApprovalActions && (
-          <div className="mb-6">
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4">
             <ApprovalActions blog={blog} />
           </div>
         )}
 
-        <BlogForm blog={blog as any} />
+        {/* Form card */}
+        <div className="bg-white/[0.03] border border-white/8 rounded-2xl overflow-hidden">
+          <BlogForm blog={blog as any} />
+        </div>
       </div>
     );
   } catch (error) {
     console.error("Error fetching blog:", error);
-    return <div>Error loading blog post</div>;
+    return <div className="text-slate-400 p-6">Error loading blog post</div>;
   }
 }

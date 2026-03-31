@@ -1,228 +1,228 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  ChevronRight, 
-  ChevronDown, 
-  Search, 
-  Copy, 
-  Terminal, 
-  Check, 
-  Database, 
-  ShoppingBag, 
-  Sparkles,
-  BookOpen
-} from "lucide-react";
+import { Copy, Check, ChevronDown, Search, Terminal } from "lucide-react";
+import type { Endpoint, HttpMethod } from "./products.config";
 
-interface Endpoint {
-  method: "GET" | "POST" | "PUT" | "DELETE";
-  path: string;
-  description: string;
-  category: "Content" | "E-commerce" | "AI";
-  request?: string;
-  response: string;
+// ── Method badge ────────────────────────────────────────────────
+const METHOD_STYLES: Record<HttpMethod, string> = {
+  GET: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
+  POST: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
+  PUT: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
+  PATCH: "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20",
+  DELETE: "bg-rose-500/10 text-rose-400 border border-rose-500/20",
+};
+
+function MethodBadge({ method }: { method: HttpMethod }) {
+  return (
+    <span
+      className={`flex-shrink-0 px-2 py-0.5 rounded text-[10px] font-bold tracking-wide ${METHOD_STYLES[method]}`}
+    >
+      {method}
+    </span>
+  );
 }
 
-const endpoints: Endpoint[] = [
-  {
-    method: "GET",
-    path: "/api/blog",
-    description: "Fetch paginated list of published blog posts.",
-    category: "Content",
-    request: "curl -X GET 'https://api.example.com/api/blog?p=1&size=10'",
-    response: `{
-  "data": [
-    { "id": "1", "title": "Hello World", "slug": "hello-world", ... }
-  ],
-  "meta": { "currentPage": 1, "totalPages": 5, "totalItems": 50 }
-}`
-  },
-  {
-    method: "GET",
-    path: "/api/blog/[slug]",
-    description: "Fetch a single blog post by its unique slug.",
-    category: "Content",
-    request: "curl -X GET 'https://api.example.com/api/blog/my-first-post'",
-    response: `{
-  "id": "1",
-  "title": "My First Post",
-  "content": "...",
-  "author": { "name": "Admin" }
-}`
-  },
-  {
-    method: "GET",
-    path: "/api/products",
-    description: "List products with search and category filtering.",
-    category: "E-commerce",
-    request: "curl -X GET 'https://api.example.com/api/products?search=shoes&category=fashion'",
-    response: `{
-  "success": true,
-  "data": [
-    { "id": "p1", "name": "Running Shoes", "price": 89.99, ... }
-  ],
-  "meta": { "currentPage": 1, "totalPages": 2 }
-}`
-  },
-  {
-    method: "POST",
-    path: "/api/ai/generate-blog",
-    description: "Generate a blog post content using AI models.",
-    category: "AI",
-    request: "curl -X POST 'https://api.example.com/api/ai/generate-blog' -H 'Content-Type: application/json' -d '{ \"topic\": \"Next.js 15 Features\" }'",
-    response: `{
-  "success": true,
-  "jobId": "job_12345",
-  "status": "queued"
-}`
-  }
-];
+// ── Code block with copy button ──────────────────────────────────
+function CodeBlock({
+  code,
+  id,
+  label,
+  colorClass = "text-slate-300",
+}: {
+  code: string;
+  id: string;
+  label: string;
+  colorClass?: string;
+}) {
+  const [copied, setCopied] = useState(false);
 
-export function ApiExplorer() {
-  const [activeTab, setActiveTab] = useState<Endpoint["category"] | "All">("All");
-  const [expanded, setExpanded] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [copied, setCopied] = useState<string | null>(null);
-
-  const filteredEndpoints = endpoints.filter(e => {
-    const matchesTab = activeTab === "All" || e.category === activeTab;
-    const matchesSearch = e.path.toLowerCase().includes(search.toLowerCase()) || 
-                          e.description.toLowerCase().includes(search.toLowerCase());
-    return matchesTab && matchesSearch;
-  });
-
-  const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(id);
-    setTimeout(() => setCopied(null), 2000);
+  const copy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm">
-      {/* Header */}
-      <div className="p-6 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-500/10 rounded-lg">
-            <Terminal className="w-5 h-5 text-blue-400" />
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+          {label}
+        </span>
+        <button
+          onClick={copy}
+          className="flex items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-white transition-colors"
+        >
+          {copied ? (
+            <><Check className="w-3 h-3 text-emerald-400" /> Copied</>
+          ) : (
+            <><Copy className="w-3 h-3" /> Copy</>
+          )}
+        </button>
+      </div>
+      <pre
+        className={`p-3.5 bg-black/50 rounded-xl text-xs font-mono leading-relaxed overflow-x-auto border border-white/5 ${colorClass}`}
+      >
+        {code}
+      </pre>
+    </div>
+  );
+}
+
+// ── Query params table ───────────────────────────────────────────
+function QueryParamsTable({
+  params,
+}: {
+  params: NonNullable<Endpoint["queryParams"]>;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+        Query Parameters
+      </span>
+      <div className="rounded-xl border border-white/5 overflow-hidden">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="bg-white/[0.03] border-b border-white/5">
+              <th className="px-3 py-2 text-left font-semibold text-slate-400">Param</th>
+              <th className="px-3 py-2 text-left font-semibold text-slate-400">Type</th>
+              <th className="px-3 py-2 text-left font-semibold text-slate-400">Description</th>
+              <th className="px-3 py-2 text-left font-semibold text-slate-400">Default</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/5">
+            {params.map((p) => (
+              <tr key={p.name} className="hover:bg-white/[0.02]">
+                <td className="px-3 py-2 font-mono text-blue-300">
+                  {p.name}
+                  {p.required && (
+                    <span className="ml-1 text-rose-400 text-[9px]">*</span>
+                  )}
+                </td>
+                <td className="px-3 py-2 text-slate-500 font-mono">{p.type}</td>
+                <td className="px-3 py-2 text-slate-400">{p.description}</td>
+                <td className="px-3 py-2 text-slate-500 font-mono">
+                  {p.default ?? "—"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+// ── Single endpoint row ──────────────────────────────────────────
+function EndpointRow({ endpoint, idx }: { endpoint: Endpoint; idx: number }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="border-b border-white/5 last:border-0">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-start gap-3 px-5 py-4 text-left hover:bg-white/[0.02] transition-colors group"
+      >
+        <MethodBadge method={endpoint.method} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap mb-0.5">
+            <span className="text-sm font-mono text-slate-200">{endpoint.path}</span>
+            {endpoint.tags?.map((tag) => (
+              <span
+                key={tag}
+                className="px-1.5 py-0.5 bg-white/5 border border-white/5 rounded text-[9px] text-slate-500 font-medium"
+              >
+                {tag}
+              </span>
+            ))}
           </div>
-          <h2 className="text-xl font-semibold text-white">API Reference</h2>
+          <p className="text-xs text-slate-500 truncate">{endpoint.summary}</p>
         </div>
-        
-        <div className="relative group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-400 transition-colors" />
-          <input 
-            type="text" 
-            placeholder="Search endpoints..." 
-            className="pl-10 pr-4 py-2 bg-black/20 border border-white/10 rounded-xl text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 w-full md:w-64 transition-all"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+        <ChevronDown
+          className={`w-4 h-4 text-slate-500 flex-shrink-0 mt-0.5 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {open && (
+        <div className="px-5 pb-5 space-y-4 animate-fadeIn">
+          <p className="text-sm text-slate-400 leading-relaxed">{endpoint.description}</p>
+
+          {endpoint.queryParams && endpoint.queryParams.length > 0 && (
+            <QueryParamsTable params={endpoint.queryParams} />
+          )}
+
+          {endpoint.requestBody && (
+            <CodeBlock
+              id={`body-${idx}`}
+              label="Request Body (JSON)"
+              code={endpoint.requestBody}
+              colorClass="text-amber-200"
+            />
+          )}
+
+          <CodeBlock
+            id={`req-${idx}`}
+            label="Example Request (cURL)"
+            code={endpoint.exampleRequest}
+            colorClass="text-blue-200"
+          />
+
+          <CodeBlock
+            id={`res-${idx}`}
+            label="Example Response"
+            code={endpoint.exampleResponse}
+            colorClass="text-emerald-200"
           />
         </div>
-      </div>
+      )}
+    </div>
+  );
+}
 
-      {/* Tabs */}
-      <div className="flex px-6 py-4 gap-2 overflow-x-auto no-scrollbar border-b border-white/10">
-        {["All", "Content", "E-commerce", "AI"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab as any)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
-              activeTab === tab 
-                ? "bg-blue-500 text-white shadow-lg shadow-blue-500/20" 
-                : "text-gray-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+// ── Public component ─────────────────────────────────────────────
+export interface ApiExplorerProps {
+  endpoints: Endpoint[];
+}
 
-      {/* List */}
-      <div className="divide-y divide-white/5 max-h-[600px] overflow-y-auto">
-        {filteredEndpoints.length > 0 ? (
-          filteredEndpoints.map((endpoint, idx) => (
-            <div key={`${endpoint.path}-${idx}`} className="group transition-colors hover:bg-white/[0.02]">
-              <button 
-                className="w-full px-6 py-5 flex items-start gap-4 text-left"
-                onClick={() => setExpanded(expanded === endpoint.path ? null : endpoint.path)}
-              >
-                <div className={`mt-1 flex-shrink-0 px-2 py-0.5 rounded text-[10px] font-bold ${
-                  endpoint.method === "GET" ? "bg-emerald-500/10 text-emerald-400" : 
-                  endpoint.method === "POST" ? "bg-amber-500/10 text-amber-400" : 
-                  "bg-blue-500/10 text-blue-400"
-                }`}>
-                  {endpoint.method}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-mono text-gray-200 truncate">{endpoint.path}</span>
-                    <span className="px-1.5 py-0.5 bg-white/5 rounded text-[10px] text-gray-500 border border-white/5">
-                      {endpoint.category}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-400 line-clamp-1">{endpoint.description}</p>
-                </div>
-                <div className={`transition-transform duration-200 ${expanded === endpoint.path ? "rotate-180" : ""}`}>
-                  <ChevronDown className="w-4 h-4 text-gray-500" />
-                </div>
-              </button>
+export function ApiExplorer({ endpoints }: ApiExplorerProps) {
+  const [search, setSearch] = useState("");
 
-              {expanded === endpoint.path && (
-                <div className="px-6 pb-6 pt-0 animate-fadeIn">
-                  <div className="space-y-4">
-                    {endpoint.request && (
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Example Request</span>
-                          <button 
-                            onClick={() => copyToClipboard(endpoint.request!, `req-${idx}`)}
-                            className="text-[10px] font-medium text-blue-400 flex items-center gap-1 hover:text-blue-300"
-                          >
-                            {copied === `req-${idx}` ? (
-                              <><Check className="w-3 h-3" /> Copied</>
-                            ) : (
-                              <><Copy className="w-3 h-3" /> Copy</>
-                            )}
-                          </button>
-                        </div>
-                        <pre className="p-4 bg-black/40 rounded-xl text-xs font-mono text-blue-200 border border-white/5 leading-relaxed overflow-x-auto">
-                          {endpoint.request}
-                        </pre>
-                      </div>
-                    )}
-                    
-                    <div className="space-y-1.5">
-                      <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Example Response</span>
-                      <pre className="p-4 bg-black/40 rounded-xl text-xs font-mono text-emerald-100 border border-white/5 overflow-x-auto">
-                        {endpoint.response}
-                      </pre>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))
-        ) : (
-          <div className="px-6 py-20 text-center">
-            <div className="inline-block p-3 bg-white/5 rounded-full mb-4">
-              <Search className="w-6 h-6 text-gray-500" />
-            </div>
-            <p className="text-gray-400">No endpoints found matching your search.</p>
-          </div>
-        )}
-      </div>
+  const filtered = endpoints?.filter(
+    (e) =>
+      e.path.toLowerCase().includes(search.toLowerCase()) ||
+      e.summary.toLowerCase().includes(search.toLowerCase())
+  );
 
-      {/* Footer */}
-      <div className="px-6 py-4 bg-white/[0.02] border-t border-white/10 flex items-center justify-center gap-6">
-        <div className="flex items-center gap-2 text-xs text-gray-500">
-          <BookOpen className="w-3.5 h-3.5" />
-          <span>Full Docs Coming Soon</span>
+  return (
+    <div className="rounded-2xl bg-white/[0.03] border border-white/10 overflow-hidden">
+      {/* Search bar */}
+      <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2">
+        <Terminal className="w-4 h-4 text-slate-500 flex-shrink-0" />
+        <div className="relative flex-1">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
+          <input
+            type="text"
+            placeholder="Filter endpoints..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-7 pr-3 py-1.5 bg-transparent text-xs text-slate-300 placeholder-slate-600 focus:outline-none"
+          />
         </div>
-        <div className="flex items-center gap-2 text-xs text-gray-500">
-          <Database className="w-3.5 h-3.5" />
-          <span>PostgreSQL DB</span>
-        </div>
+        <span className="text-[10px] text-slate-600 flex-shrink-0">
+          {filtered?.length} endpoint{filtered?.length !== 1 ? "s" : ""}
+        </span>
       </div>
+
+      {/* Endpoint list */}
+      {filtered?.length > 0 ? (
+        filtered.map((ep, idx) => (
+          <EndpointRow key={`${ep.method}-${ep.path}`} endpoint={ep} idx={idx} />
+        ))
+      ) : (
+        <div className="py-10 text-center text-slate-600 text-sm">
+          No endpoints match &quot;{search}&quot;
+        </div>
+      )}
     </div>
   );
 }

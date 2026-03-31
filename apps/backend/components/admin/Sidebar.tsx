@@ -1,225 +1,209 @@
 "use client";
+
 import { useState } from "react";
 import Link from "next/link";
-import LogoutButton from "../LogoutButton";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { User } from "lucide-react";
+import LogoutButton from "../LogoutButton";
+import {
+  LayoutDashboard,
+  BookOpen,
+  Tag,
+  ShoppingBag,
+  MessageSquare,
+  Clock,
+  Users,
+  Menu,
+  X,
+  Terminal,
+  ChevronRight,
+} from "lucide-react";
+
+// ── Nav config — add new feature sections here ──────────────────
+const NAV_SECTIONS = [
+  {
+    label: "Overview",
+    items: [
+      { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
+    ],
+  },
+  {
+    label: "Blog",
+    items: [
+      { icon: BookOpen, label: "Posts", href: "/admin/blog" },
+      { icon: Tag, label: "Categories", href: "/admin/categories" },
+    ],
+  },
+  {
+    label: "Products",
+    items: [
+      { icon: ShoppingBag, label: "Product Store", href: "/admin/products" },
+    ],
+  },
+  {
+    label: "Slangs",
+    items: [
+      { icon: MessageSquare, label: "All Terms", href: "/admin/slang" },
+      { icon: Clock, label: "Pending Review", href: "/admin/slang/pending" },
+    ],
+  },
+  {
+    label: "System",
+    items: [
+      { icon: Users, label: "Users", href: "/admin/users" },
+    ],
+  },
+] as const;
+
+function NavItem({
+  icon: Icon,
+  label,
+  href,
+  onClick,
+}: {
+  icon: React.ElementType;
+  label: string;
+  href: string;
+  onClick?: () => void;
+}) {
+  const pathname = usePathname();
+  // exact match for /admin, prefix match for nested routes
+  const isActive =
+    href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
+
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group ${
+        isActive
+          ? "bg-blue-600/15 text-blue-400 border border-blue-500/20"
+          : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+      }`}
+    >
+      <Icon
+        className={`w-4 h-4 flex-shrink-0 transition-colors ${
+          isActive ? "text-blue-400" : "text-slate-500 group-hover:text-slate-300"
+        }`}
+      />
+      <span className="flex-1">{label}</span>
+      {isActive && (
+        <ChevronRight className="w-3 h-3 text-blue-400/60" />
+      )}
+    </Link>
+  );
+}
 
 export default function AdminSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = useSession();
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
+  const close = () => setIsOpen(false);
+
+  const sidebarContent = (
+    <div className="flex flex-col h-full">
+      {/* Logo */}
+      <div className="px-5 py-5 border-b border-white/5">
+        <div className="flex items-center justify-between">
+          <Link href="/admin" onClick={close} className="flex items-center gap-2.5">
+            <div className="w-7 h-7 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-lg flex items-center justify-center shadow shadow-blue-500/30">
+              <Terminal className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="text-sm font-bold text-white tracking-tight">
+              Backend<span className="text-blue-500">Core</span>
+            </span>
+          </Link>
+          <button
+            onClick={close}
+            className="lg:hidden text-slate-500 hover:text-white p-1"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-4 space-y-6 overflow-y-auto">
+        {NAV_SECTIONS.map((section) => (
+          <div key={section.label}>
+            <p className="px-3 mb-2 text-[10px] font-semibold text-slate-600 uppercase tracking-[0.12em]">
+              {section.label}
+            </p>
+            <div className="space-y-0.5">
+              {section.items.map((item) => (
+                <NavItem
+                  key={item.href}
+                  icon={item.icon}
+                  label={item.label}
+                  href={item.href}
+                  onClick={close}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </nav>
+
+      {/* User + Logout */}
+      <div className="px-3 py-4 border-t border-white/5 space-y-1">
+        <div className="px-3 py-3 rounded-xl bg-white/[0.03] border border-white/5 mb-2">
+          <p className="text-xs font-semibold text-white truncate">
+            {session?.user?.name ?? "Admin"}
+          </p>
+          <p className="text-[11px] text-slate-500 truncate">
+            {session?.user?.email ?? ""}
+          </p>
+        </div>
+        <LogoutButton
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-rose-400 hover:bg-rose-500/5 transition-all border border-transparent"
+          onClick={close}
+        >
+          <svg
+            className="w-4 h-4 flex-shrink-0"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            />
+          </svg>
+          Sign Out
+        </LogoutButton>
+      </div>
+    </div>
+  );
 
   return (
     <>
-      {/* Mobile toggle button */}
+      {/* Mobile toggle */}
       <button
-        onClick={toggleSidebar}
-        className="lg:hidden fixed z-40 bottom-4 right-4 bg-indigo-800 text-white p-2 rounded-full shadow-lg"
-        aria-label="Toggle Sidebar"
+        onClick={() => setIsOpen(true)}
+        className="lg:hidden fixed z-40 bottom-4 right-4 bg-blue-600 text-white p-3 rounded-full shadow-lg shadow-blue-600/30"
+        aria-label="Open menu"
       >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          {isOpen ? (
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          ) : (
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          )}
-        </svg>
+        <Menu className="w-5 h-5" />
       </button>
+
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-30 lg:hidden"
+          onClick={close}
+        />
+      )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-30 h-screen bg-gradient-to-b from-indigo-800 to-purple-900 text-white shadow-xl transition-all duration-300 ease-in-out lg:sticky lg:translate-x-0 ${
+        className={`fixed top-0 left-0 z-40 h-screen w-64 bg-[#0a0f1e] border-r border-white/5 transition-transform duration-300 lg:sticky lg:translate-x-0 lg:z-auto ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:w-72`}
+        }`}
       >
-        <div className="p-6">
-          {/* User Profile Section */}
-          <div className="mb-8 pb-6 border-b border-white/10">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                <User className="w-5 h-5 text-white/80" />
-              </div>
-              <div>
-                <h2 className="font-medium text-white">
-                  {session?.user?.name || "Admin User"}
-                </h2>
-                <p className="text-sm text-white/60">{session?.user?.email}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
-            <button
-              onClick={toggleSidebar}
-              className="lg:hidden text-white"
-              aria-label="Close Sidebar"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-          <nav className="space-y-1">
-            <Link
-              href="/admin/blog"
-              className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition group"
-              onClick={() => setIsOpen(false)}
-            >
-              <svg
-                className="w-5 h-5 mr-3 text-indigo-300 group-hover:text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
-                />
-              </svg>
-              <span>Blog Posts</span>
-            </Link>
-            <Link
-              href="/admin/categories"
-              className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition group"
-              onClick={() => setIsOpen(false)}
-            >
-              <svg
-                className="w-5 h-5 mr-3 text-indigo-300 group-hover:text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                />
-              </svg>
-              <span>Categories</span>
-            </Link>
-            <Link
-              href="/admin/users"
-              className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition group"
-              onClick={() => setIsOpen(false)}
-            >
-              <svg
-                className="w-5 h-5 mr-3 text-indigo-300 group-hover:text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                />
-              </svg>
-              <span>Users</span>
-            </Link>
-            <Link
-              href="/admin/products"
-              className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition group"
-              onClick={() => setIsOpen(false)}
-            >
-              <svg
-                className="w-5 h-5 mr-3 text-indigo-300 group-hover:text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                />
-              </svg>
-              <span>Products</span>
-            </Link>
-            <Link
-              href="/admin/slang"
-              className="flex items-center px-4 py-3 rounded-lg hover:bg-white/10 transition group"
-              onClick={() => setIsOpen(false)}
-            >
-              <svg
-                className="w-5 h-5 mr-3 text-indigo-300 group-hover:text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-                />
-              </svg>
-              <span>Slang Dictionary</span>
-            </Link>
-            <LogoutButton
-              className="flex items-center w-full px-4 py-3 rounded-lg hover:bg-white/10 transition group text-left"
-              onClick={() => setIsOpen(false)}
-            >
-              <svg
-                className="w-5 h-5 mr-3 text-indigo-300 group-hover:text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
-              <span>Logout</span>
-            </LogoutButton>
-          </nav>
-        </div>
+        {sidebarContent}
       </aside>
-
-      {/* Overlay when sidebar is open on mobile */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
-          onClick={toggleSidebar}
-        />
-      )}
     </>
   );
 }

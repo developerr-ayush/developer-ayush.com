@@ -179,26 +179,26 @@ export default function ProductForm({ product }: ProductFormProps) {
   };
 
   const inputClass =
-    "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500";
-  const labelClass = "block text-sm font-medium text-gray-700";
+    "mt-1 block w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:border-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all";
+  const labelClass = "block text-xs font-semibold text-slate-400 uppercase tracking-wide";
   const isLoading = isPending || uploadingImage;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {error && (
-        <div className="rounded-md bg-red-50 p-4 text-sm text-red-700 border border-red-200">
+        <div className="flex items-center gap-3 bg-rose-500/10 border border-rose-500/20 rounded-xl px-4 py-3 text-sm text-rose-300">
           {error}
         </div>
       )}
       {success && (
-        <div className="rounded-md bg-green-50 p-4 text-sm text-green-700 border border-green-200">
+        <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 text-sm text-emerald-300">
           {success}
         </div>
       )}
 
       {/* Section: Basic Info */}
       <div>
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
+        <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-4">
           Basic Information
         </h2>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -271,42 +271,31 @@ export default function ProductForm({ product }: ProductFormProps) {
 
       {/* Section: Main Image */}
       <div>
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
+        <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-4">
           Product Image
         </h2>
 
         {imagePreview ? (
           <div className="flex items-start gap-6">
-            <div className="relative w-40 h-40 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0">
-              <Image
-                src={imagePreview}
-                alt="Product preview"
-                fill
-                className="object-contain p-2"
-              />
+            <div className="relative w-40 h-40 rounded-xl overflow-hidden border border-white/10 bg-white/5 flex-shrink-0">
+              <Image src={imagePreview} alt="Product preview" fill className="object-contain p-2" />
             </div>
             <div className="flex flex-col gap-2 justify-center">
-              <p className="text-sm font-medium text-gray-700">
+              <p className="text-sm font-medium text-slate-300">
                 {selectedFile ? selectedFile.name : "Current image"}
               </p>
               {selectedFile && (
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-slate-500">
                   {(selectedFile.size / 1024 / 1024).toFixed(2)} MB — will upload on save
                 </p>
               )}
               <div className="flex gap-2 mt-1">
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="text-xs px-3 py-1.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                >
+                <button type="button" onClick={() => fileInputRef.current?.click()}
+                  className="text-xs px-3 py-1.5 border border-white/10 rounded-lg text-slate-400 hover:bg-white/5 transition-colors">
                   Change image
                 </button>
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  className="text-xs px-3 py-1.5 border border-red-200 rounded-md text-red-600 hover:bg-red-50"
-                >
+                <button type="button" onClick={handleRemoveImage}
+                  className="text-xs px-3 py-1.5 border border-rose-500/30 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-colors">
                   Remove
                 </button>
               </div>
@@ -320,28 +309,19 @@ export default function ProductForm({ product }: ProductFormProps) {
             onClick={() => fileInputRef.current?.click()}
             className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
               isDragging
-                ? "border-indigo-400 bg-indigo-50"
-                : "border-gray-300 hover:border-indigo-400 hover:bg-gray-50"
+                ? "border-blue-500/50 bg-blue-500/5"
+                : "border-white/10 hover:border-blue-500/30 hover:bg-white/[0.02]"
             }`}
           >
-            <svg
-              className="mx-auto w-10 h-10 text-gray-300 mb-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
+            <svg className="mx-auto w-10 h-10 text-slate-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <p className="text-sm text-gray-600 font-medium">
-              Drag & drop an image here, or{" "}
-              <span className="text-indigo-600">browse</span>
+            <p className="text-sm text-slate-400 font-medium">
+              Drag &amp; drop an image here, or{" "}
+              <span className="text-blue-400">browse</span>
             </p>
-            <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP up to 10MB</p>
+            <p className="text-xs text-slate-600 mt-1">PNG, JPG, WEBP up to 10MB</p>
           </div>
         )}
 
@@ -355,7 +335,7 @@ export default function ProductForm({ product }: ProductFormProps) {
 
         {/* Also allow pasting a URL directly */}
         <div className="mt-3">
-          <label className="block text-xs text-gray-500 mb-1">
+          <label className="block text-xs text-slate-500 mb-1">
             Or paste an image URL directly
           </label>
           <input
@@ -374,7 +354,7 @@ export default function ProductForm({ product }: ProductFormProps) {
 
       {/* Section: Pricing */}
       <div>
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
+        <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-4">
           Pricing
         </h2>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
@@ -418,7 +398,7 @@ export default function ProductForm({ product }: ProductFormProps) {
 
       {/* Section: Affiliate Links */}
       <div>
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
+        <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-4">
           Affiliate Links
         </h2>
         <div className="space-y-4">
@@ -485,28 +465,22 @@ export default function ProductForm({ product }: ProductFormProps) {
       </div>
 
       {/* Section: Publish Settings */}
-      <div className="bg-gray-50 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center gap-5">
+      <div className="bg-white/[0.03] border border-white/8 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center gap-5">
         <div className="flex-1">
           <label className={labelClass}>Status</label>
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className={inputClass}
-          >
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-            <option value="archived">Archived</option>
+          <select value={status} onChange={(e) => setStatus(e.target.value)}
+            className={inputClass}>
+            <option value="draft" className="bg-slate-900">Draft</option>
+            <option value="published" className="bg-slate-900">Published</option>
+            <option value="archived" className="bg-slate-900">Archived</option>
           </select>
         </div>
         <div className="flex items-center gap-3 sm:pt-6">
-          <input
-            type="checkbox"
-            id="featured"
-            checked={featured}
+          <input type="checkbox" id="featured" checked={featured}
             onChange={(e) => setFeatured(e.target.checked)}
-            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+            className="h-4 w-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500"
           />
-          <label htmlFor="featured" className="text-sm font-medium text-gray-700">
+          <label htmlFor="featured" className="text-sm font-medium text-slate-300">
             Featured Product
           </label>
         </div>
@@ -514,24 +488,12 @@ export default function ProductForm({ product }: ProductFormProps) {
 
       {/* Submit */}
       <div className="flex gap-4 pt-2">
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-colors"
-        >
-          {uploadingImage
-            ? "Uploading image..."
-            : isPending
-              ? "Saving..."
-              : isEditing
-                ? "Update Product"
-                : "Create Product"}
+        <button type="submit" disabled={isLoading}
+          className="inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-semibold rounded-xl text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50 transition-all active:scale-[0.98]">
+          {uploadingImage ? "Uploading image..." : isPending ? "Saving..." : isEditing ? "Update Product" : "Create Product"}
         </button>
-        <button
-          type="button"
-          onClick={() => router.push("/admin/products")}
-          className="px-6 py-2.5 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50"
-        >
+        <button type="button" onClick={() => router.push("/admin/products")}
+          className="px-6 py-2.5 border border-white/10 text-sm font-semibold rounded-xl text-slate-400 hover:text-white hover:border-white/20 transition-all">
           Cancel
         </button>
       </div>

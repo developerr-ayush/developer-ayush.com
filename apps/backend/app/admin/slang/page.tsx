@@ -1,7 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
+import { PageHeader } from "../../../components/admin/PageHeader";
+import { StatCard } from "../../../components/admin/StatCard";
+import { DataTable, Td, Tr } from "../../../components/admin/DataTable";
+import { StatusBadge } from "../../../components/admin/StatusBadge";
+import { MessageSquare, Clock, CheckCircle, XCircle, Search, Star } from "lucide-react";
 
 interface SlangTerm {
   id: string;
@@ -13,8 +18,6 @@ interface SlangTerm {
   isFeatured: boolean;
   submittedBy?: string;
   submittedAt: string;
-  approvedBy?: string;
-  approvedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -26,21 +29,25 @@ interface Stats {
   rejected: number;
 }
 
+const COLUMNS = [
+  { label: "Term" },
+  { label: "Meaning" },
+  { label: "Category" },
+  { label: "Status" },
+  { label: "Submitted" },
+  { label: "Actions", className: "text-right" },
+];
+
 export default function SlangManagementPage() {
   const [slangs, setSlangs] = useState<SlangTerm[]>([]);
-  const [stats, setStats] = useState<Stats>({
-    total: 0,
-    pending: 0,
-    approved: 0,
-    rejected: 0,
-  });
+  const [stats, setStats] = useState<Stats>({ total: 0, pending: 0, approved: 0, rejected: 0 });
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchSlangs = async () => {
+  const fetchSlangs = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -49,427 +56,204 @@ export default function SlangManagementPage() {
         page: page.toString(),
         limit: "10",
       });
-
-      const response = await fetch(`/api/admin/slang?${params}`);
-      const data = await response.json();
-
+      const res = await fetch(`/api/admin/slang?${params}`);
+      const data = await res.json();
       if (data.success) {
         setSlangs(data.data);
         setStats(data.meta.stats);
         setTotalPages(data.meta.totalPages);
       } else {
-        toast.error(data.error || "Failed to fetch slang terms");
+        toast.error(data.error ?? "Failed to fetch slang terms");
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to fetch slang terms");
-      console.error("Error fetching slangs:", error);
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchSlangs();
   }, [statusFilter, searchTerm, page]);
+
+  useEffect(() => { fetchSlangs(); }, [fetchSlangs]);
 
   const handleAction = async (id: string, action: string) => {
     try {
-      const response = await fetch(`/api/admin/slang/${id}`, {
+      const res = await fetch(`/api/admin/slang/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
       });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success(data.message);
-        fetchSlangs(); // Refresh the list
-      } else {
-        toast.error(data.error || "Action failed");
-      }
-    } catch (error) {
-      toast.error("Action failed");
-      console.error("Error performing action:", error);
-    }
+      const data = await res.json();
+      if (data.success) { toast.success(data.message); fetchSlangs(); }
+      else toast.error(data.error ?? "Action failed");
+    } catch { toast.error("Action failed"); }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this slang term?")) return;
-
+    if (!confirm("Delete this slang term?")) return;
     try {
-      const response = await fetch(`/api/admin/slang/${id}`, {
-        method: "DELETE",
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success(data.message);
-        fetchSlangs(); // Refresh the list
-      } else {
-        toast.error(data.error || "Delete failed");
-      }
-    } catch (error) {
-      toast.error("Delete failed");
-      console.error("Error deleting slang:", error);
-    }
+      const res = await fetch(`/api/admin/slang/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) { toast.success(data.message); fetchSlangs(); }
+      else toast.error(data.error ?? "Delete failed");
+    } catch { toast.error("Delete failed"); }
   };
 
-  const getStatusBadge = (status: string) => {
-    const classes = {
-      pending: "bg-yellow-100 text-yellow-800",
-      approved: "bg-green-100 text-green-800",
-      rejected: "bg-red-100 text-red-800",
-    };
-
-    return (
-      <span
-        className={`px-2 py-1 rounded-full text-xs font-medium ${classes[status as keyof typeof classes]}`}
-      >
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
-    );
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString("en-US", {
+      month: "short", day: "numeric", year: "numeric",
     });
-  };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">
-          Slang Dictionary Management
-        </h1>
-        <p className="text-gray-600 mt-2">
-          Manage and moderate user-submitted slang terms
-        </p>
+    <div className="space-y-8">
+      <PageHeader
+        title="Slang Dictionary"
+        description="Moderate and manage community-submitted slang terms"
+      />
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard label="Total Terms" value={stats.total}
+          icon={<MessageSquare className="w-5 h-5" />} color="blue" />
+        <StatCard label="Pending Review" value={stats.pending}
+          icon={<Clock className="w-5 h-5" />} color="amber" />
+        <StatCard label="Approved" value={stats.approved}
+          icon={<CheckCircle className="w-5 h-5" />} color="emerald" />
+        <StatCard label="Rejected" value={stats.rejected}
+          icon={<XCircle className="w-5 h-5" />} color="rose" />
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <svg
-                className="w-6 h-6 text-blue-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Terms</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-            </div>
-          </div>
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <input
+            type="text"
+            placeholder="Search terms..."
+            value={searchTerm}
+            onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+            className="w-full pl-9 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+          />
         </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <svg
-                className="w-6 h-6 text-yellow-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">
-                Pending Review
-              </p>
-              <p className="text-2xl font-bold text-gray-900">
-                {stats.pending}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <svg
-                className="w-6 h-6 text-green-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Approved</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {stats.approved}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-          <div className="flex items-center">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <svg
-                className="w-6 h-6 text-red-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Rejected</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {stats.rejected}
-              </p>
-            </div>
-          </div>
-        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
+          className="px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+        >
+          <option value="all" className="bg-slate-900">All Status</option>
+          <option value="pending" className="bg-slate-900">Pending</option>
+          <option value="approved" className="bg-slate-900">Approved</option>
+          <option value="rejected" className="bg-slate-900">Rejected</option>
+        </select>
       </div>
 
-      {/* Filters and Search */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <input
-              type="text"
-              placeholder="Search slang terms..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setPage(1);
-              }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div>
-          <div>
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setPage(1);
-              }}
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </div>
-        </div>
-      </div>
+      {/* Table */}
+      <DataTable
+        columns={COLUMNS}
+        isEmpty={!loading && slangs.length === 0}
+        emptyState={
+          <p className="text-slate-500 text-sm">
+            {searchTerm ? `No results for "${searchTerm}"` : "No slang terms found"}
+          </p>
+        }
+      >
+        {loading ? (
+          <tr>
+            <td colSpan={6} className="px-5 py-12 text-center text-slate-500 text-sm">
+              Loading...
+            </td>
+          </tr>
+        ) : (
+          slangs.map((slang) => (
+            <Tr key={slang.id}>
+              {/* Term */}
+              <Td>
+                <div className="font-medium text-white text-sm">
+                  {slang.term}
+                  {slang.isFeatured && (
+                    <Star className="inline-block ml-1.5 w-3 h-3 text-amber-400 fill-amber-400" />
+                  )}
+                </div>
+              </Td>
 
-      {/* Slang Terms Table */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Term
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Meaning
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Category
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Submitted
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {loading ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="px-6 py-4 text-center text-gray-500"
-                  >
-                    Loading...
-                  </td>
-                </tr>
-              ) : slangs.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="px-6 py-4 text-center text-gray-500"
-                  >
-                    No slang terms found
-                  </td>
-                </tr>
-              ) : (
-                slangs.map((slang) => (
-                  <tr key={slang.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="text-sm font-medium text-gray-900">
-                          {slang.term}
-                          {slang.isFeatured && (
-                            <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                              ⭐ Featured
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900 max-w-xs truncate">
-                        {slang.meaning}
-                      </div>
-                      {slang.example && (
-                        <div className="text-xs text-gray-500 italic mt-1 max-w-xs truncate">
-                          "{slang.example}"
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        {slang.category}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(slang.status)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <div>{formatDate(slang.submittedAt)}</div>
-                      <div className="text-xs">
-                        by {slang.submittedBy || "anonymous"}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex items-center justify-end space-x-2">
-                        {slang.status === "pending" && (
-                          <>
-                            <button
-                              onClick={() => handleAction(slang.id, "approve")}
-                              className="text-green-600 hover:text-green-900 text-xs bg-green-100 hover:bg-green-200 px-2 py-1 rounded"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => handleAction(slang.id, "reject")}
-                              className="text-red-600 hover:text-red-900 text-xs bg-red-100 hover:bg-red-200 px-2 py-1 rounded"
-                            >
-                              Reject
-                            </button>
-                          </>
-                        )}
-                        {slang.status === "approved" && (
-                          <button
-                            onClick={() => handleAction(slang.id, "feature")}
-                            className={`text-xs px-2 py-1 rounded ${
-                              slang.isFeatured
-                                ? "text-yellow-600 hover:text-yellow-900 bg-yellow-100 hover:bg-yellow-200"
-                                : "text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200"
-                            }`}
-                          >
-                            {slang.isFeatured ? "Unfeature" : "Feature"}
-                          </button>
-                        )}
-                        <button
-                          onClick={() => handleDelete(slang.id)}
-                          className="text-red-600 hover:text-red-900 text-xs bg-red-100 hover:bg-red-200 px-2 py-1 rounded"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+              {/* Meaning */}
+              <Td>
+                <div className="text-sm text-slate-300 max-w-xs truncate">{slang.meaning}</div>
+                {slang.example && (
+                  <div className="text-xs text-slate-500 italic mt-0.5 max-w-xs truncate">
+                    &ldquo;{slang.example}&rdquo;
+                  </div>
+                )}
+              </Td>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-            <div className="flex-1 flex justify-between sm:hidden">
-              <button
-                onClick={() => setPage(page - 1)}
-                disabled={page <= 1}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setPage(page + 1)}
-                disabled={page >= totalPages}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Page <span className="font-medium">{page}</span> of{" "}
-                  <span className="font-medium">{totalPages}</span>
-                </p>
-              </div>
-              <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                  <button
-                    onClick={() => setPage(page - 1)}
-                    disabled={page <= 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    Previous
+              {/* Category */}
+              <Td>
+                <span className="text-xs px-2 py-0.5 bg-white/5 border border-white/8 rounded-full text-slate-400">
+                  {slang.category}
+                </span>
+              </Td>
+
+              {/* Status */}
+              <Td>
+                <StatusBadge status={slang.status} dot />
+              </Td>
+
+              {/* Submitted */}
+              <Td>
+                <div className="text-xs text-slate-400">{formatDate(slang.submittedAt)}</div>
+                <div className="text-xs text-slate-600">by {slang.submittedBy ?? "anon"}</div>
+              </Td>
+
+              {/* Actions */}
+              <Td className="text-right">
+                <div className="flex items-center justify-end gap-2 flex-wrap">
+                  {slang.status === "pending" && (
+                    <>
+                      <button onClick={() => handleAction(slang.id, "approve")}
+                        className="px-2.5 py-1 text-[10px] font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition-colors">
+                        Approve
+                      </button>
+                      <button onClick={() => handleAction(slang.id, "reject")}
+                        className="px-2.5 py-1 text-[10px] font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg transition-colors">
+                        Reject
+                      </button>
+                    </>
+                  )}
+                  {slang.status === "approved" && (
+                    <button onClick={() => handleAction(slang.id, "feature")}
+                      className={`px-2.5 py-1 text-[10px] font-semibold rounded-lg transition-colors ${
+                        slang.isFeatured
+                          ? "bg-amber-500/10 hover:bg-amber-500/20 text-amber-400"
+                          : "bg-slate-500/10 hover:bg-slate-500/20 text-slate-400"
+                      }`}>
+                      {slang.isFeatured ? "Unfeature" : "Feature"}
+                    </button>
+                  )}
+                  <button onClick={() => handleDelete(slang.id)}
+                    className="px-2.5 py-1 text-[10px] font-semibold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-lg transition-colors">
+                    Delete
                   </button>
-                  <button
-                    onClick={() => setPage(page + 1)}
-                    disabled={page >= totalPages}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    Next
-                  </button>
-                </nav>
-              </div>
-            </div>
-          </div>
+                </div>
+              </Td>
+            </Tr>
+          ))
         )}
-      </div>
+      </DataTable>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between text-sm text-slate-500">
+          <span>Page {page} of {totalPages}</span>
+          <div className="flex gap-2">
+            <button onClick={() => setPage(page - 1)} disabled={page <= 1}
+              className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-slate-300">
+              Previous
+            </button>
+            <button onClick={() => setPage(page + 1)} disabled={page >= totalPages}
+              className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-slate-300">
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
