@@ -1,5 +1,6 @@
 const BASEURL =
   process.env.NEXT_PUBLIC_BASE_URL_ADMIN || "https://admin.developer-ayush.com";
+const revalidate = Number(process.env.CACHE_REVALIDATE_TIME) || 86400;
 export type Category = {
   id: string;
   name: string;
@@ -66,7 +67,7 @@ export async function getBlogPosts(
 
     // Different fetch options based on environment
     const options: RequestInit & { next?: { revalidate: number } } = {
-      next: { revalidate: 3600 }, // Revalidate every hour for SSR
+      next: { revalidate: revalidate }, // Revalidate every hour for SSR
     };
 
     // Only add cache: 'no-store' on the client
@@ -146,7 +147,7 @@ export async function getBlogPostDetail(
       `Fetching blog post detail for slug ${BASEURL}/api/blog/${slug}`
     );
     const res = await fetch(`${BASEURL}/api/blog/${slug}`, {
-      next: { revalidate: 3600 }, // Revalidate every hour
+      next: { revalidate: revalidate }, // Revalidate every hour
     });
     if (!res.ok) throw new Error("Failed to fetch blog post detail");
     return await res.json();
