@@ -12,14 +12,14 @@ import { Metadata } from "next";
 import { processBlogContent } from "../../../lib/editorjs";
 import ClientSyntaxHighlighter from "../../../app/components/ClientSyntaxHighlighter";
 
-export async function generateStaticParams() {
-  const blogData = await getBlogPosts(1);
-  const posts = blogData.data || [];
+// export async function generateStaticParams() {
+//   const blogData = await getBlogPosts(1);
+//   const posts = blogData.data || [];
 
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
-}
+//   return posts.map((post) => ({
+//     slug: post.slug,
+//   }));
+// }
 type Params = Promise<{ slug: string }>;
 export async function generateMetadata({
   params,
