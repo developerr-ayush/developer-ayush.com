@@ -555,3 +555,22 @@ body:has(dialog[open]) {
     transform: translateX(300%);
   }
 }
+
+@keyframes nav-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+.nav-progress {
+  animation: nav-progress 1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-progress {
+    animation: none;
+    width: 100%;
+    opacity: 0.6;
+  }
+}

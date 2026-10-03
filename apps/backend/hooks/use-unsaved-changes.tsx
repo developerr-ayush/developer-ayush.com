@@ -34,6 +34,7 @@ export function useUnsavedChanges(
       if (url.pathname === window.location.pathname && url.search === window.location.search) return;
       e.preventDefault();
       e.stopPropagation();
+      window.dispatchEvent(new Event("admin:navigation-blocked"));
       confirmRef.current(url.pathname + url.search + url.hash);
     };
 

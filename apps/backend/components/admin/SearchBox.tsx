@@ -11,13 +11,10 @@ export function SearchBox({ placeholder, label }: { placeholder: string; label: 
   const params = useSearchParams();
   const initial = params.get("q") ?? "";
   const [value, setValue] = React.useState(initial);
-  const first = React.useRef(true);
 
   React.useEffect(() => {
-    if (first.current) {
-      first.current = false;
-      return;
-    }
+    // Only navigate when the text really differs from the URL (also skips the mount-time run).
+    if (value.trim() === initial.trim()) return;
     const t = setTimeout(() => {
       const next = new URLSearchParams(params.toString());
       if (value.trim()) next.set("q", value.trim());
