@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { FiDownload, FiFileText } from "react-icons/fi";
-import aboutImage from "../assets/img/personal/about-profile.png";
+import aboutImage from "../assets/img/personal/portrait-about.jpg";
 import { educationData, personalInfo } from "../data";
 import SectionHeader from "./SectionHeader";
 
@@ -20,10 +20,10 @@ export default function About() {
           <div className="relative mx-auto aspect-square max-w-[18rem] overflow-hidden rounded-full bg-surface md:max-w-none">
             <Image
               src={aboutImage}
-              alt="Ayush Shah looking up and to the side, wearing glasses"
+              alt="Ayush Shah mid-conversation in front of a blue wall with vintage clocks"
               sizes="(max-width: 768px) 18rem, 25vw"
               placeholder="blur"
-              className="h-full w-full object-cover object-top"
+              className="h-full w-full object-cover"
             />
           </div>
         </div>

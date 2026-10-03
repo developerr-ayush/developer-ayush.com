@@ -15,7 +15,7 @@ import {
   skillGroups,
   socialLinks,
 } from "./data";
-import profileImage from "./assets/img/personal/ayush-shah.png";
+import profileImage from "./assets/img/personal/portrait-hero.jpg";
 
 export default async function Home() {
   const blogData = await getBlogPosts(1);
