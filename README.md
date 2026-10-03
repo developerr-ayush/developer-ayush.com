@@ -99,7 +99,7 @@ docker compose down -v               # wipe the local database
 
 ## MCP server (`/api/mcp`)
 
-Tools: `login`, `create_blog`, `update_blog`, `get_blog`, `list_blogs`, `upload_image` (URL or base64 → Cloudinary), `list_categories`, `create_category`, `list_products`, `create_product`, `update_product`, `list_slang`, `moderate_slang`.
+Tools: `login`, `create_blog`, `update_blog`, `get_blog`, `list_blogs`, `upload_image` (URL or base64 → Cloudinary), `list_categories`, `create_category`, `list_products`, `create_product`, `update_product`, `list_slang`, `create_slang`, `moderate_slang`.
 
 Auth (any one):
 - **OAuth 2.1 (claude.ai, ChatGPT):** add `https://admin.developer-ayush.com/api/mcp` as a custom connector with no manual credentials. The client discovers `/.well-known/oauth-protected-resource`, registers itself (`/api/oauth/register`), and sends you to `/oauth/authorize` to sign in with your admin email and password and approve. Access tokens last 1 hour and refresh for 30 days; deleting a user or changing their role takes effect on the next call. Stateless: codes, tokens and clients are signed JWTs (secret: `MCP_JWT_SECRET`, else `AUTH_SECRET`; rotating it signs every connector out). Requests with no `Authorization` header get `401` + `WWW-Authenticate` (only `login` and `session_token` calls are allowed without one).

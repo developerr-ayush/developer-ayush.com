@@ -635,6 +635,48 @@ const handler = createMcpHandler(
     );
 
     server.registerTool(
+      "create_slang",
+      {
+        title: "Create Slang",
+        description:
+          "Add a slang term (admin only). Terms are stored lowercase and must be unique. Admin-created terms are approved immediately, like the admin dashboard.",
+        inputSchema: {
+          session_token: z.string().optional(),
+          term: z.string().trim().min(1).max(60),
+          meaning: z.string().trim().min(3).max(500),
+          example: z.string().trim().max(500).optional(),
+          category: z.string().trim().min(1).max(40).optional().default("General"),
+          isFeatured: z.boolean().optional().default(false),
+        },
+      },
+      async ({ session_token, term, meaning, example, category, isFeatured }) =>
+        guarded(
+          session_token,
+          async (s) => {
+            const key = term.trim().toLowerCase();
+            if (await db.slangTerm.findUnique({ where: { term: key }, select: { id: true } })) {
+              throw new Error(`"${key}" already exists. Use list_slang to find it.`);
+            }
+            const created = await db.slangTerm.create({
+              data: {
+                term: key,
+                meaning,
+                example: example || null,
+                category,
+                isFeatured,
+                status: "approved",
+                submittedBy: s.email,
+                approvedBy: s.email,
+                approvedAt: new Date(),
+              },
+            });
+            return { success: true, term: created };
+          },
+          { admin: true }
+        )
+    );
+
+    server.registerTool(
       "moderate_slang",
       {
         title: "Moderate Slang",
