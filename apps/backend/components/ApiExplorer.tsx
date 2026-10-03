@@ -1,109 +1,76 @@
 "use client";
 
-import { useState } from "react";
-import { Copy, Check, ChevronDown, Search, Terminal } from "lucide-react";
+import { useId, useState } from "react";
+import { Check, ChevronDown, Copy, Search } from "lucide-react";
 import type { Endpoint, HttpMethod } from "./products.config";
+import { cn } from "@/lib/utils";
 
-// ── Method badge ────────────────────────────────────────────────
-const METHOD_STYLES: Record<HttpMethod, string> = {
-  GET: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-  POST: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
-  PUT: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
-  PATCH: "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20",
-  DELETE: "bg-rose-500/10 text-rose-400 border border-rose-500/20",
+const METHOD_TONE: Record<HttpMethod, string> = {
+  GET: "chip-ok",
+  POST: "chip-accent",
+  PUT: "chip-warn",
+  PATCH: "chip-warn",
+  DELETE: "chip-danger",
 };
 
 function MethodBadge({ method }: { method: HttpMethod }) {
-  return (
-    <span
-      className={`flex-shrink-0 px-2 py-0.5 rounded text-[10px] font-bold tracking-wide ${METHOD_STYLES[method]}`}
-    >
-      {method}
-    </span>
-  );
+  return <span className={cn("chip w-14 justify-center font-semibold", METHOD_TONE[method])}>{method}</span>;
 }
 
-// ── Code block with copy button ──────────────────────────────────
-function CodeBlock({
-  code,
-  id,
-  label,
-  colorClass = "text-slate-300",
-}: {
-  code: string;
-  id: string;
-  label: string;
-  colorClass?: string;
-}) {
+function CodeBlock({ code, label }: { code: string; label: string }) {
   const [copied, setCopied] = useState(false);
 
-  const copy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      /* clipboard unavailable */
+    }
   };
 
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
-          {label}
-        </span>
-        <button
-          onClick={copy}
-          className="flex items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-white transition-colors"
-        >
-          {copied ? (
-            <><Check className="w-3 h-3 text-emerald-400" /> Copied</>
-          ) : (
-            <><Copy className="w-3 h-3" /> Copy</>
-          )}
+        <span className="eyebrow">{label}</span>
+        <button type="button" onClick={copy} className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted hover:text-ink">
+          {copied ? <Check className="size-3 text-ok" aria-hidden="true" /> : <Copy className="size-3" aria-hidden="true" />}
+          <span aria-live="polite">{copied ? "Copied" : "Copy"}</span>
+          <span className="sr-only"> {label}</span>
         </button>
       </div>
-      <pre
-        className={`p-3.5 bg-black/50 rounded-xl text-xs font-mono leading-relaxed overflow-x-auto border border-white/5 ${colorClass}`}
-      >
+      <pre tabIndex={0} className="mono overflow-x-auto rounded-lg border border-line bg-code p-3.5 text-xs leading-relaxed">
         {code}
       </pre>
     </div>
   );
 }
 
-// ── Query params table ───────────────────────────────────────────
-function QueryParamsTable({
-  params,
-}: {
-  params: NonNullable<Endpoint["queryParams"]>;
-}) {
+function QueryParamsTable({ params }: { params: NonNullable<Endpoint["queryParams"]> }) {
   return (
     <div className="space-y-1.5">
-      <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
-        Query Parameters
-      </span>
-      <div className="rounded-xl border border-white/5 overflow-hidden">
+      <span className="eyebrow">Query parameters</span>
+      <div className="table-scroll rounded-lg border border-line">
         <table className="w-full text-xs">
           <thead>
-            <tr className="bg-white/[0.03] border-b border-white/5">
-              <th className="px-3 py-2 text-left font-semibold text-slate-400">Param</th>
-              <th className="px-3 py-2 text-left font-semibold text-slate-400">Type</th>
-              <th className="px-3 py-2 text-left font-semibold text-slate-400">Description</th>
-              <th className="px-3 py-2 text-left font-semibold text-slate-400">Default</th>
+            <tr className="border-b border-line bg-surface-2 text-left text-muted">
+              <th scope="col" className="px-3 py-2 font-medium">Param</th>
+              <th scope="col" className="px-3 py-2 font-medium">Type</th>
+              <th scope="col" className="px-3 py-2 font-medium">Description</th>
+              <th scope="col" className="px-3 py-2 font-medium">Default</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-line">
             {params.map((p) => (
-              <tr key={p.name} className="hover:bg-white/[0.02]">
-                <td className="px-3 py-2 font-mono text-blue-300">
+              <tr key={p.name}>
+                <td className="mono px-3 py-2 text-accent">
                   {p.name}
-                  {p.required && (
-                    <span className="ml-1 text-rose-400 text-[9px]">*</span>
-                  )}
+                  {p.required ? <span className="ml-1 text-danger" title="required">*</span> : null}
                 </td>
-                <td className="px-3 py-2 text-slate-500 font-mono">{p.type}</td>
-                <td className="px-3 py-2 text-slate-400">{p.description}</td>
-                <td className="px-3 py-2 text-slate-500 font-mono">
-                  {p.default ?? "—"}
-                </td>
+                <td className="mono px-3 py-2 text-muted">{p.type}</td>
+                <td className="px-3 py-2 text-muted">{p.description}</td>
+                <td className="mono px-3 py-2 text-muted">{p.default ?? "—"}</td>
               </tr>
             ))}
           </tbody>
@@ -113,115 +80,74 @@ function QueryParamsTable({
   );
 }
 
-// ── Single endpoint row ──────────────────────────────────────────
-function EndpointRow({ endpoint, idx }: { endpoint: Endpoint; idx: number }) {
+function EndpointRow({ endpoint }: { endpoint: Endpoint }) {
   const [open, setOpen] = useState(false);
+  const uid = useId();
 
   return (
-    <div className="border-b border-white/5 last:border-0">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-start gap-3 px-5 py-4 text-left hover:bg-white/[0.02] transition-colors group"
-      >
-        <MethodBadge method={endpoint.method} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap mb-0.5">
-            <span className="text-sm font-mono text-slate-200">{endpoint.path}</span>
-            {endpoint.tags?.map((tag) => (
-              <span
-                key={tag}
-                className="px-1.5 py-0.5 bg-white/5 border border-white/5 rounded text-[9px] text-slate-500 font-medium"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-          <p className="text-xs text-slate-500 truncate">{endpoint.summary}</p>
+    <div className="border-b border-line last:border-0">
+      <h4>
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          aria-controls={`${uid}-panel`}
+          className="flex w-full items-start gap-3 px-4 py-3.5 text-left hover:bg-surface-2"
+        >
+          <MethodBadge method={endpoint.method} />
+          <span className="min-w-0 flex-1">
+            <span className="mono block truncate text-[13px]">{endpoint.path}</span>
+            <span className="block truncate text-xs text-muted">{endpoint.summary}</span>
+          </span>
+          <ChevronDown className={cn("mt-1 size-4 shrink-0 text-muted transition-transform", open && "rotate-180")} aria-hidden="true" />
+        </button>
+      </h4>
+      {open ? (
+        <div id={`${uid}-panel`} className="space-y-4 px-4 pb-5">
+          <p className="text-[13.5px] text-muted">{endpoint.description}</p>
+          {endpoint.queryParams && endpoint.queryParams.length > 0 ? <QueryParamsTable params={endpoint.queryParams} /> : null}
+          {endpoint.requestBody ? <CodeBlock label="Request body (JSON)" code={endpoint.requestBody} /> : null}
+          <CodeBlock label="Example request" code={endpoint.exampleRequest} />
+          <CodeBlock label="Example response" code={endpoint.exampleResponse} />
         </div>
-        <ChevronDown
-          className={`w-4 h-4 text-slate-500 flex-shrink-0 mt-0.5 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-        />
-      </button>
-
-      {open && (
-        <div className="px-5 pb-5 space-y-4 animate-fadeIn">
-          <p className="text-sm text-slate-400 leading-relaxed">{endpoint.description}</p>
-
-          {endpoint.queryParams && endpoint.queryParams.length > 0 && (
-            <QueryParamsTable params={endpoint.queryParams} />
-          )}
-
-          {endpoint.requestBody && (
-            <CodeBlock
-              id={`body-${idx}`}
-              label="Request Body (JSON)"
-              code={endpoint.requestBody}
-              colorClass="text-amber-200"
-            />
-          )}
-
-          <CodeBlock
-            id={`req-${idx}`}
-            label="Example Request (cURL)"
-            code={endpoint.exampleRequest}
-            colorClass="text-blue-200"
-          />
-
-          <CodeBlock
-            id={`res-${idx}`}
-            label="Example Response"
-            code={endpoint.exampleResponse}
-            colorClass="text-emerald-200"
-          />
-        </div>
-      )}
+      ) : null}
     </div>
   );
 }
 
-// ── Public component ─────────────────────────────────────────────
 export interface ApiExplorerProps {
   endpoints: Endpoint[];
 }
 
 export function ApiExplorer({ endpoints }: ApiExplorerProps) {
   const [search, setSearch] = useState("");
-
-  const filtered = endpoints?.filter(
-    (e) =>
-      e.path.toLowerCase().includes(search.toLowerCase()) ||
-      e.summary.toLowerCase().includes(search.toLowerCase())
-  );
+  const uid = useId();
+  const q = search.trim().toLowerCase();
+  const filtered = endpoints.filter((e) => e.path.toLowerCase().includes(q) || e.summary.toLowerCase().includes(q));
 
   return (
-    <div className="rounded-2xl bg-white/[0.03] border border-white/10 overflow-hidden">
-      {/* Search bar */}
-      <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2">
-        <Terminal className="w-4 h-4 text-slate-500 flex-shrink-0" />
-        <div className="relative flex-1">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
-          <input
-            type="text"
-            placeholder="Filter endpoints..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-7 pr-3 py-1.5 bg-transparent text-xs text-slate-300 placeholder-slate-600 focus:outline-none"
-          />
-        </div>
-        <span className="text-[10px] text-slate-600 flex-shrink-0">
-          {filtered?.length} endpoint{filtered?.length !== 1 ? "s" : ""}
+    <div className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface">
+      <div className="flex items-center gap-2 border-b border-line px-4">
+        <Search className="size-3.5 shrink-0 text-muted" aria-hidden="true" />
+        <label htmlFor={`${uid}-filter`} className="sr-only">
+          Filter endpoints
+        </label>
+        <input
+          id={`${uid}-filter`}
+          type="search"
+          placeholder="Filter endpoints…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="h-10 w-full bg-transparent text-[13px] outline-none placeholder:text-muted"
+        />
+        <span className="mono shrink-0 text-[11px] text-muted" aria-live="polite">
+          {filtered.length} endpoint{filtered.length === 1 ? "" : "s"}
         </span>
       </div>
-
-      {/* Endpoint list */}
-      {filtered?.length > 0 ? (
-        filtered.map((ep, idx) => (
-          <EndpointRow key={`${ep.method}-${ep.path}`} endpoint={ep} idx={idx} />
-        ))
+      {filtered.length > 0 ? (
+        filtered.map((ep) => <EndpointRow key={`${ep.method}-${ep.path}`} endpoint={ep} />)
       ) : (
-        <div className="py-10 text-center text-slate-600 text-sm">
-          No endpoints match &quot;{search}&quot;
-        </div>
+        <p className="px-4 py-10 text-center text-sm text-muted">No endpoints match “{search}”.</p>
       )}
     </div>
   );

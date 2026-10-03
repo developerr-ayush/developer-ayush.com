@@ -1,205 +1,123 @@
 "use client";
-import { useState, ChangeEvent, FormEvent } from "react";
-import { login } from "../../actions/login";
-import { LoginSchema } from "../../schemas";
+
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { AlertCircle } from "lucide-react";
+import { login } from "../../actions/login";
+import { LogoMark } from "../../components/brand/Logo";
+import { Button } from "../../components/ui/button";
+import { Field, fieldA11y } from "../../components/ui/field";
+import { Input } from "../../components/ui/input";
+import { PasswordInput } from "../../components/ui/password-input";
 import UserRegistrationForm from "../../components/UserRegistrationForm";
 
-interface LoginFormData {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-}
-
-interface LoginFormErrors {
-  email?: string;
-  password?: string;
-}
+const schema = z.object({
+  email: z.string().trim().min(1, "Enter your email address").email("That doesn't look like an email address"),
+  password: z.string().min(1, "Enter your password"),
+});
+type Values = z.infer<typeof schema>;
 
 export default function LoginPage() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: "",
-    password: "",
-    rememberMe: false,
-  });
-  const [errors, setErrors] = useState<LoginFormErrors>({});
-  const [loading, setLoading] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
+  const [mode, setMode] = React.useState<"signin" | "signup">("signin");
+  const [serverError, setServerError] = React.useState<string | null>(null);
+  const [redirecting, setRedirecting] = React.useState(false);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
-    // Clear errors when user types
-    if (errors[name as keyof LoginFormErrors]) {
-      setErrors({
-        ...errors,
-        [name]: undefined,
-      });
-    }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<Values>({ resolver: zodResolver(schema), defaultValues: { email: "", password: "" } });
+
+  const onSubmit = handleSubmit(async (values) => {
     setServerError(null);
-  };
-
-  const validateForm = () => {
-    const newErrors: LoginFormErrors = {};
-
     try {
-      // Validate login form with Zod schema
-      LoginSchema.parse({
-        email: formData.email,
-        password: formData.password,
-      });
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        error.errors.forEach((err) => {
-          if (err.path) {
-            const fieldName = err.path[0] as keyof LoginFormErrors;
-            newErrors[fieldName] = err.message;
-          }
-        });
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleLoginSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!validateForm()) return;
-
-    setLoading(true);
-    setServerError(null);
-
-    try {
-      // Use the server action for login
-      const result = await login({
-        email: formData.email,
-        password: formData.password,
-      });
+      // On success the action redirects, so this call does not return normally.
+      const result = await login(values);
       if (result?.error) {
-        setServerError(result.error);
+        setServerError(result.error === "Invalid Credentials" ? "That email and password don't match. Check them and try again." : result.error);
+        return;
       }
-      // The login action handles redirection on success
-    } catch (error) {
-      console.error("Authentication error:", error);
-    } finally {
-      setLoading(false);
+      setRedirecting(true);
+    } catch (e) {
+      // The login action signals success by throwing Next's redirect error.
+      if (e instanceof Error && (e.message === "NEXT_REDIRECT" || (e as { digest?: string }).digest?.startsWith("NEXT_REDIRECT"))) {
+        setRedirecting(true);
+        return;
+      }
+      console.error("Sign-in failed:", e);
+      setServerError("Something went wrong. Please try again.");
     }
-  };
+  });
 
-  const handleRegistrationSuccess = () => {
-    // Switch to login view after successful registration
-    setIsLogin(true);
-  };
+  const busy = isSubmitting || redirecting;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
-         {isLogin ? (
-          <form className="mt-8 space-y-6" onSubmit={handleLoginSubmit}>
-            {serverError && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-sm text-red-600">{serverError}</p>
-              </div>
-            )}
+    <main className="flex min-h-dvh flex-col items-center justify-center px-4 py-10">
+      <div className="w-full max-w-[22rem]">
+        <div className="mb-8 flex flex-col items-center text-center">
+          <LogoMark size="lg" />
+          <p className="eyebrow mt-5">Ayush Shah · Admin</p>
+          <h1 className="page-title mt-2">{mode === "signin" ? "Sign in" : "Create account"}</h1>
+        </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email address
-              </label>
-              <div className="relative">
-                <input
+        <div className="card p-5 sm:p-6">
+          {mode === "signin" ? (
+            <form onSubmit={onSubmit} noValidate className="space-y-4">
+              {serverError ? (
+                <div
+                  role="alert"
+                  className="flex items-start gap-2 rounded-[var(--radius-ctl)] border border-[color-mix(in_srgb,var(--danger)_40%,var(--line))] bg-[color-mix(in_srgb,var(--danger)_8%,var(--surface))] px-3 py-2.5 text-[13px] text-danger"
+                >
+                  <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                  <p>{serverError}</p>
+                </div>
+              ) : null}
+              <Field id="login-email" label="Email" error={errors.email?.message}>
+                <Input
+                  {...register("email", { onChange: () => setServerError(null) })}
+                  {...fieldA11y("login-email", errors.email?.message)}
                   type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                  placeholder="name@company.com"
+                  autoComplete="username"
+                  autoFocus
+                  placeholder="you@example.com"
                 />
-              </div>
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border text-black border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                  placeholder="••••••••"
+              </Field>
+              <Field id="login-password" label="Password" error={errors.password?.message}>
+                <PasswordInput
+                  {...register("password", { onChange: () => setServerError(null) })}
+                  {...fieldA11y("login-password", errors.password?.message)}
+                  autoComplete="current-password"
                 />
-              </div>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-              )}
-            </div>
+              </Field>
+              <Button type="submit" variant="default" className="w-full" loading={busy}>
+                {redirecting ? "Signing in…" : isSubmitting ? "Checking…" : "Sign in"}
+              </Button>
+            </form>
+          ) : (
+            <UserRegistrationForm
+              onSuccess={() => {
+                setMode("signin");
+              }}
+            />
+          )}
+        </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember"
-                  name="rememberMe"
-                  type="checkbox"
-                  checked={formData.rememberMe}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="remember"
-                  className="ml-2 block text-sm text-gray-700"
-                >
-                  Remember me
-                </label>
-              </div>
-
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 hover:text-blue-500"
-                >
-                  Forgot password?
-                </a>
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-70"
-              >
-                {loading ? <span>Loading...</span> : "Sign in"}
-              </button>
-            </div>
-          </form>
-        ) : (
-          <UserRegistrationForm onSuccess={handleRegistrationSuccess} />
-        )}
-
-        <div className="text-center mt-4">
+        <p className="mt-5 text-center text-[13px] text-muted">
+          {mode === "signin" ? "Need an account?" : "Already have one?"}{" "}
           <button
             type="button"
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-sm font-medium text-blue-600 hover:text-blue-500"
+            onClick={() => {
+              setServerError(null);
+              setMode(mode === "signin" ? "signup" : "signin");
+            }}
+            className="font-medium text-ink underline underline-offset-4 hover:text-accent"
           >
-            {isLogin
-              ? "Don't have an account? Sign up"
-              : "Already have an account? Sign in"}
+            {mode === "signin" ? "Create an account" : "Sign in"}
           </button>
-        </div>
+        </p>
       </div>
-    </div>
+    </main>
   );
 }

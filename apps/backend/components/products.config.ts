@@ -284,7 +284,7 @@ export const platformServices = [
   },
   {
     name: "AI Services",
-    description: "Blog drafting via Anthropic Claude, Groq, and OpenRouter. Async job queue with status polling.",
+    description: "Blog drafting and banner images via Gemini and Groq. Async job queue with status polling.",
     icon: "Sparkles",
   },
   {
