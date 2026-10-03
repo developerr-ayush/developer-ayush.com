@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import { FiArrowLeft, FiArrowUpRight } from "react-icons/fi";
 import {
   FaYoutube,
   FaXTwitter,
@@ -8,121 +9,101 @@ import {
   FaGithub,
 } from "react-icons/fa6";
 
+const description = "Connect with Ayush Shah on various social media platforms.";
+
 export const metadata: Metadata = {
-  title: "Ayush Shah – Social Media Links",
-  description: "Connect with Ayush Shah on various social media platforms",
+  title: "Social Media Links",
+  description,
+  alternates: { canonical: "/social-media" },
+  openGraph: {
+    type: "profile",
+    url: "/social-media",
+    title: "Ayush Shah — Social Media Links",
+    description,
+  },
 };
 
-interface SocialLinkProps {
-  icon: React.ReactNode;
-  platform: string;
-  handle: string;
-  href: string;
-}
-
-function SocialLink({ icon, platform, handle, href }: SocialLinkProps) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center gap-4 p-4 rounded-xl transition-all hover:bg-white/5 border border-transparent hover:border-white/10"
-    >
-      <div className="w-12 h-12 flex items-center justify-center rounded-full bg-sky-500/10 text-sky-500">
-        {icon}
-      </div>
-      <div className="flex-1">
-        <h3 className="font-medium text-lg">{platform}</h3>
-        <p className="text-foreground/75">{handle}</p>
-      </div>
-      <div className="group">
-        <span className="px-3 py-1 rounded-full text-sm bg-sky-500/10 text-sky-500 group-hover:bg-sky-500 group-hover:text-white transition-all">
-          Visit
-        </span>
-      </div>
-    </a>
-  );
-}
+const socialLinks = [
+  {
+    platform: "YouTube (Main)",
+    handle: "Ayush Shah",
+    href: "https://youtube.com/ayushshah",
+    icon: FaYoutube,
+  },
+  {
+    platform: "YouTube (Tech)",
+    handle: "@developerrayush",
+    href: "https://youtube.com/@developerrayush",
+    icon: FaYoutube,
+  },
+  {
+    platform: "Twitter (X)",
+    handle: "@developerrayush",
+    href: "https://x.com/developerrayush",
+    icon: FaXTwitter,
+  },
+  {
+    platform: "LinkedIn",
+    handle: "linkedin.com/in/developerr-ayush",
+    href: "https://linkedin.com/in/developerr-ayush",
+    icon: FaLinkedin,
+  },
+  {
+    platform: "Portfolio",
+    handle: "developer-ayush.com",
+    href: "https://developer-ayush.com",
+    icon: FaGlobe,
+  },
+  {
+    platform: "GitHub",
+    handle: "github.com/developerr-ayush",
+    href: "https://github.com/developerr-ayush",
+    icon: FaGithub,
+  },
+];
 
 export default function SocialMediaPage() {
-  const socialLinks = [
-    {
-      platform: "YouTube (Main)",
-      handle: "Ayush Shah",
-      href: "https://youtube.com/ayushshah",
-      icon: <FaYoutube className="w-6 h-6" />,
-    },
-    {
-      platform: "YouTube (Tech)",
-      handle: "@developerrayush",
-      href: "https://youtube.com/@developerrayush",
-      icon: <FaYoutube className="w-6 h-6" />,
-    },
-    {
-      platform: "Twitter (X)",
-      handle: "@developerrayush",
-      href: "https://x.com/developerrayush",
-      icon: <FaXTwitter className="w-6 h-6" />,
-    },
-    {
-      platform: "LinkedIn",
-      handle: "linkedin.com/in/developerr-ayush",
-      href: "https://linkedin.com/in/developerr-ayush",
-      icon: <FaLinkedin className="w-6 h-6" />,
-    },
-    {
-      platform: "Portfolio",
-      handle: "developer-ayush.com",
-      href: "https://developer-ayush.com",
-      icon: <FaGlobe className="w-6 h-6" />,
-    },
-    {
-      platform: "GitHub",
-      handle: "github.com/developerr-ayush",
-      href: "https://github.com/developerr-ayush",
-      icon: <FaGithub className="w-6 h-6" />,
-    },
-  ];
-
   return (
-    <main className="min-h-screen py-16 relative">
-      {/* Background decoration */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 right-1/4 w-72 h-72 rounded-full bg-sky-500/5 blur-3xl"></div>
-        <div className="absolute bottom-0 left-1/4 w-72 h-72 rounded-full bg-purple-500/5 blur-3xl"></div>
-      </div>
+    <div className="container-x max-w-3xl pb-24 pt-12 sm:pt-16">
+      <Link
+        href="/"
+        className="link-underline inline-flex items-center gap-2 text-sm"
+      >
+        <FiArrowLeft aria-hidden="true" /> Back to home
+      </Link>
 
-      <div className="container mx-auto px-4 max-w-3xl">
-        <div className="text-center mb-12">
-          <Link
-            href="/"
-            className="inline-block mb-8 text-sky-500 hover:text-sky-400"
-          >
-            ← Back to Home
-          </Link>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-sky-500 to-purple-500 bg-clip-text text-transparent">
-              Ayush Shah
-            </span>{" "}
-            – Social & Web Links
-          </h1>
-          <p className="text-foreground/75 max-w-2xl mx-auto">
-            Connect with me across various platforms
-          </p>
-        </div>
+      <h1 className="display mt-10 text-6xl sm:text-7xl">
+        Ayush Shah, <em className="text-accent">elsewhere</em>
+      </h1>
+      <p className="mt-4 text-lg text-muted">
+        Connect with me across various platforms.
+      </p>
 
-        <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 shadow-lg space-y-4">
-          {socialLinks.map((link) => (
-            <SocialLink
-              key={link.platform}
-              icon={link.icon}
-              platform={link.platform}
-              handle={link.handle}
+      <ul className="mt-12 border-t border-line">
+        {socialLinks.map((link) => (
+          <li key={link.platform} className="border-b border-line">
+            <a
               href={link.href}
-            />
-          ))}
-        </div>
-      </div>
-    </main>
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex min-h-20 items-center gap-5 py-4"
+            >
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-line transition-colors group-hover:border-accent group-hover:text-accent">
+                <link.icon aria-hidden="true" className="h-5 w-5" />
+              </span>
+              <span className="flex-1">
+                <span className="display block text-3xl">{link.platform}</span>
+                <span className="font-mono text-xs text-muted">{link.handle}</span>
+              </span>
+              <FiArrowUpRight
+                aria-hidden="true"
+                className="h-5 w-5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              />
+              <span className="sr-only">(opens in a new tab)</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
