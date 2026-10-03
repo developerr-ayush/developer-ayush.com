@@ -1,260 +1,137 @@
-"use client";
-
+import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  Terminal,
-  Activity,
-  Server,
-  Zap,
-  ShieldCheck,
-  Cloud,
-  Sparkles,
-  Upload,
-  Globe,
-  ArrowRight,
-} from "lucide-react";
-import { products, platformServices } from "../components/products.config";
+import { ArrowRight, Globe, ShieldCheck, Sparkles, Upload } from "lucide-react";
+import { platformServices, products } from "../components/products.config";
 import { ProductCard } from "../components/ProductCard";
+import { Logo } from "../components/brand/Logo";
 
-// ── Platform service icon map ────────────────────────────────────
-const SERVICE_ICONS = {
-  ShieldCheck,
-  Sparkles,
-  Upload,
-  Globe,
-} as const;
+export const metadata: Metadata = {
+  title: { absolute: "Admin — Ayush Shah" },
+  description: "Content management and API for the apps on developer-ayush.com.",
+};
 
-// ── Stats ────────────────────────────────────────────────────────
-const STATS = [
-  { label: "Uptime", value: "99.98%", icon: Server, color: "text-emerald-400" },
-  { label: "Avg Latency", value: "~50ms", icon: Zap, color: "text-amber-400" },
-  { label: "Live Products", value: `${products.length}`, icon: Activity, color: "text-blue-400" },
-  { label: "Hosting", value: "Vercel Edge", icon: Cloud, color: "text-purple-400" },
-] as const;
+const SERVICE_ICONS = { ShieldCheck, Sparkles, Upload, Globe } as const;
+const STACK = ["Next.js 15", "React 19", "Prisma", "PostgreSQL", "Auth.js", "Cloudinary"];
 
 export default function Home() {
+  const endpointCount = products.reduce((n, p) => n + p.endpoints.length, 0);
+
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-200 selection:bg-blue-500/30 selection:text-blue-200">
-
-      {/* ── Background ambient glows ─────────────────────────────── */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-blue-600/8 blur-[140px] rounded-full" />
-        <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-indigo-600/8 blur-[140px] rounded-full" />
-      </div>
-
-      {/* ── Navigation ───────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-50 border-b border-white/5 bg-[#020617]/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/25">
-              <Terminal className="w-4.5 h-4.5 text-white" />
-            </div>
-            <span className="text-base font-bold tracking-tight text-white">
-              Backend<span className="text-blue-500">Core</span>
-            </span>
-          </div>
-
-          {/* Nav links */}
-          <div className="hidden md:flex items-center gap-6 text-sm text-slate-400">
-            <button
-              onClick={() => document.getElementById("products")?.scrollIntoView({ behavior: "smooth" })}
-              className="hover:text-white transition-colors"
-            >
-              Products
-            </button>
-            <button
-              onClick={() => document.getElementById("platform")?.scrollIntoView({ behavior: "smooth" })}
-              className="hover:text-white transition-colors"
-            >
-              Platform
-            </button>
-            <Link href="/login" className="hover:text-white transition-colors">
-              Sign In
-            </Link>
-          </div>
-
-          <Link
-            href="/admin/blog"
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-semibold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
-          >
-            Dashboard
+    <>
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
+      <header className="sticky top-0 z-30 border-b border-line bg-[color-mix(in_srgb,var(--paper)_88%,transparent)] backdrop-blur">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
+          <Link href="/" aria-label="Ayush Shah — home">
+            <Logo />
           </Link>
-        </div>
-      </nav>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-28 py-20 lg:py-28">
-
-        {/* ── Hero ─────────────────────────────────────────────── */}
-        <section className="text-center space-y-7 animate-fadeIn">
-          {/* Status pill */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            All systems operational
-          </div>
-
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-tight">
-            One backend.{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
-              Multiple products.
-            </span>
-          </h1>
-
-          <p className="max-w-2xl mx-auto text-lg text-slate-400 leading-relaxed font-light">
-            A unified API backend built with Next.js 15, Prisma &amp; PostgreSQL — powering{" "}
-            <strong className="text-slate-300 font-medium">{products.length} live products</strong> across different
-            domains with shared auth, AI services, and admin tooling.
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            <button
-              onClick={() => document.getElementById("products")?.scrollIntoView({ behavior: "smooth" })}
-              className="px-7 py-3.5 bg-white text-slate-950 rounded-xl font-semibold flex items-center gap-2 shadow-xl hover:bg-slate-100 transition-all active:scale-95"
-            >
-              Explore Products <ArrowRight className="w-4 h-4" />
-            </button>
-            <Link
-              href="/admin/blog"
-              className="px-7 py-3.5 bg-slate-900 text-white border border-white/10 rounded-xl font-semibold hover:bg-slate-800 transition-all active:scale-95"
-            >
-              Admin Dashboard
+          <nav aria-label="Primary" className="flex items-center gap-1">
+            <a href="#apps" className="btn btn-ghost btn-sm hidden sm:inline-flex">
+              Apps
+            </a>
+            <a href="#platform" className="btn btn-ghost btn-sm hidden sm:inline-flex">
+              Platform
+            </a>
+            <Link href="/admin/blog" className="btn btn-sm btn-primary">
+              Open admin
             </Link>
-          </div>
-        </section>
+          </nav>
+        </div>
+      </header>
 
-        {/* ── Stats bar ─────────────────────────────────────────── */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {STATS.map((stat) => (
-            <div
-              key={stat.label}
-              className="p-6 bg-white/[0.03] border border-white/8 rounded-2xl group hover:border-white/15 transition-all"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className={`p-2 bg-slate-900 rounded-lg ${stat.color}`}>
-                  <stat.icon className="w-4 h-4" />
-                </div>
-                <span className="text-xs font-medium text-slate-500">{stat.label}</span>
+      <main id="main" tabIndex={-1} className="outline-none">
+        <section className="mx-auto max-w-6xl px-4 pb-16 pt-16 sm:px-6 sm:pt-24">
+          <p className="eyebrow">Ayush Shah · Backend</p>
+          <h1 className="mt-4 max-w-3xl font-serif text-[clamp(2.5rem,1.6rem+4vw,4.5rem)] leading-[1.02] tracking-[-0.02em]">
+            One backend for every app on the site.
+          </h1>
+          <p className="mt-5 max-w-xl text-[15px] text-muted">
+            Posts, products and the slang dictionary are written here and served as JSON to the portfolio and the apps. Sign in to manage them, or browse the
+            API below.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-2.5">
+            <Link href="/admin/blog" className="btn btn-primary">
+              Open admin <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+            <a href="#apps" className="btn">
+              Browse the API
+            </a>
+          </div>
+
+          <dl className="mt-14 grid max-w-2xl grid-cols-3 gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line">
+            {[
+              ["Apps", products.length],
+              ["Endpoints", endpointCount],
+              ["Platform services", platformServices.length],
+            ].map(([k, v]) => (
+              <div key={k} className="bg-surface p-4">
+                <dt className="eyebrow">{k}</dt>
+                <dd className="mono mt-2 text-[26px] font-medium leading-none">{v}</dd>
               </div>
-              <div className="text-2xl font-bold text-white tabular-nums">{stat.value}</div>
-            </div>
-          ))}
+            ))}
+          </dl>
+          <ul aria-label="Stack" className="mt-4 flex flex-wrap gap-1.5">
+            {STACK.map((s) => (
+              <li key={s} className="chip">
+                {s}
+              </li>
+            ))}
+          </ul>
         </section>
 
-        {/* ── Products section ────────────────────────────────────── */}
-        <section id="products" className="space-y-10">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div className="space-y-2">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-[0.15em]">
-                Product Suite
-              </p>
-              <h2 className="text-3xl font-bold text-white">What we power</h2>
-              <p className="text-slate-400 max-w-lg">
-                Each product is independently deployed with its own domain, but shares this single backend for data,
-                auth, and AI services.
-              </p>
-            </div>
-            <p className="text-xs text-slate-600 md:text-right max-w-xs">
-              To add a new product, update{" "}
-              <code className="text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">products.config.ts</code> — it
-              auto-appears here and in all admin tools.
-            </p>
-          </div>
-
-          {/* Product cards grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+        <section id="apps" aria-labelledby="apps-h" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-12 sm:px-6">
+          <p className="eyebrow">Apps</p>
+          <h2 id="apps-h" className="mt-2 font-serif text-[2.25rem] leading-tight">
+            What this backend serves
+          </h2>
+          <p className="mt-2 max-w-xl text-sm text-muted">Each app deploys on its own domain and reads from the same API. Open a card to see its endpoints.</p>
+          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {products.map((p) => (
+              <ProductCard key={p.id} product={p} />
             ))}
           </div>
         </section>
 
-        {/* ── Platform Services section ──────────────────────────── */}
-        <section id="platform" className="space-y-10">
-          <div className="space-y-2">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-[0.15em]">
-              Shared Infrastructure
-            </p>
-            <h2 className="text-3xl font-bold text-white">Platform services</h2>
-            <p className="text-slate-400 max-w-lg">
-              All products share these core platform capabilities. Build on top of them, don&apos;t re-invent them.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {platformServices.map((service) => {
-              const Icon = SERVICE_ICONS[service.icon as keyof typeof SERVICE_ICONS];
+        <section id="platform" aria-labelledby="platform-h" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-12 sm:px-6">
+          <p className="eyebrow">Platform</p>
+          <h2 id="platform-h" className="mt-2 font-serif text-[2.25rem] leading-tight">
+            Shared services
+          </h2>
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+            {platformServices.map((s) => {
+              const Icon = SERVICE_ICONS[s.icon as keyof typeof SERVICE_ICONS];
               return (
-                <div
-                  key={service.name}
-                  className="flex gap-4 p-6 bg-white/[0.03] border border-white/8 rounded-2xl hover:border-white/15 transition-all group"
-                >
-                  <div className="p-2.5 bg-slate-900 rounded-xl h-fit group-hover:scale-110 transition-transform">
-                    {Icon && <Icon className="w-5 h-5 text-slate-400" />}
-                  </div>
+                <li key={s.name} className="card flex gap-3.5 p-5">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-line bg-surface-2">
+                    {Icon ? <Icon className="size-4" aria-hidden="true" /> : null}
+                  </span>
                   <div>
-                    <h3 className="font-semibold text-white mb-1">{service.name}</h3>
-                    <p className="text-sm text-slate-400 leading-relaxed">{service.description}</p>
+                    <h3 className="text-[14px] font-semibold">{s.name}</h3>
+                    <p className="mt-1 text-[13.5px] text-muted">{s.description}</p>
                   </div>
-                </div>
+                </li>
               );
             })}
-          </div>
+          </ul>
         </section>
-
-        {/* ── Extension guide callout ─────────────────────────────── */}
-        <section className="relative overflow-hidden rounded-3xl border border-white/8 bg-gradient-to-br from-slate-900 to-[#020617] p-10 md:p-14">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-indigo-600/5 pointer-events-none" />
-          <div className="relative space-y-5 max-w-2xl">
-            <p className="text-xs font-semibold text-blue-400 uppercase tracking-[0.15em]">Developer Experience</p>
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Ready to add a new product?</h2>
-            <p className="text-slate-400 leading-relaxed">
-              The backend is designed to be extended. Create your routes under <code className="text-slate-300 bg-white/5 px-1.5 py-0.5 rounded">/app/api</code>, add an admin page under <code className="text-slate-300 bg-white/5 px-1.5 py-0.5 rounded">/app/admin</code>, and register your product in the config file — the UI, docs, and nav update automatically.
-            </p>
-            <div className="flex flex-wrap gap-3 pt-2">
-              <Link
-                href="/admin/blog"
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-all active:scale-95 inline-flex items-center gap-2"
-              >
-                <LayoutDashboard className="w-4 h-4" /> Open Dashboard
-              </Link>
-            </div>
-          </div>
-        </section>
-
       </main>
 
-      {/* ── Footer ────────────────────────────────────────────────── */}
-      <footer className="border-t border-white/5 bg-[#010413]">
-        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <Terminal className="w-4 h-4 text-blue-500" />
-            <span className="text-sm font-bold text-slate-400">
-              Backend<span className="text-blue-500">Core</span>
-            </span>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-slate-600">
+      <footer className="mt-12 border-t border-line">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-xs text-muted sm:flex-row sm:px-6">
+          <p>© {new Date().getFullYear()} Ayush Shah</p>
+          <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
             {products.map((p) => (
-              <a
-                key={p.id}
-                href={p.domain}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-slate-400 transition-colors"
-              >
-                {p.name}
-              </a>
+              <li key={p.id}>
+                <a href={p.domain} target="_blank" rel="noopener noreferrer" className="hover:text-ink">
+                  {p.name}
+                  <span className="sr-only"> (opens in a new tab)</span>
+                </a>
+              </li>
             ))}
-          </div>
-
-          <p className="text-xs text-slate-700">
-            © {new Date().getFullYear()} BackendCore — built with Next.js 15
-          </p>
+          </ul>
         </div>
       </footer>
-    </div>
+    </>
   );
 }
-
-// Disambiguate 'LayoutDashboard' — imported inline so it's available in JSX
-import { LayoutDashboard } from "lucide-react";

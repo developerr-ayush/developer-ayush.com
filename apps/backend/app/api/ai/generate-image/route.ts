@@ -1,8 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { auth } from "../../../../auth";
 import { db } from "../../../../lib/db";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import cloudinary from "../../../../lib/cloudinary";
+
+// Gemini jobs run after the response, inside this window.
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
     try {
@@ -27,7 +30,9 @@ export async function POST(req: NextRequest) {
         });
 
         // Start generation in background
-        generateImageInBackground(job.id, prompt);
+        // after() keeps the function alive until the job finishes; plain fire-and-forget
+        // is frozen once the response is sent on Vercel.
+        after(() => generateImageInBackground(job.id, prompt));
 
         return NextResponse.json({ success: true, jobId: job.id });
 

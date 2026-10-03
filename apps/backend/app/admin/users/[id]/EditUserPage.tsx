@@ -1,311 +1,121 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import * as React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UpdateUserSchema } from "../../../../schemas";
-import { getUserDetails, updateUser } from "../../../../actions/users";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { z } from "zod";
-import { User, Blog } from "@prisma/client";
-type FormValues = z.infer<typeof UpdateUserSchema>;
+import { updateUser } from "@/actions/users";
+import { Button } from "@/components/ui/button";
+import { Field, fieldA11y } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { DataTable, TableCard, Td, Th, Tr } from "@/components/admin/DataTable";
+import { StatusBadge } from "@/components/admin/StatusBadge";
+import { shortDate } from "@/lib/format";
+import { toast } from "@/lib/toast";
 
-type UserResponse = Omit<User, "password"> & {
-  blogs?: Blog[];
-};
+const schema = z.object({
+  name: z.string().trim().min(2, "Name needs at least 2 characters").max(80, "Name is too long"),
+  role: z.enum(["USER", "ADMIN", "SUPER_ADMIN"]),
+});
+type Values = z.infer<typeof schema>;
 
-export default function EditUserPage({ params }: { params: { id: string } }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<UserResponse | null>(null);
+interface UserData {
+  id: string;
+  name: string | null;
+  email: string;
+  role: "SUPER_ADMIN" | "ADMIN" | "USER";
+  blogs: { id: string; title: string | null; status: "draft" | "published" | "archived"; approved: boolean; updatedAt: string }[];
+}
+
+export default function EditUserPage({ user, viewerRole, viewerId }: { user: UserData; viewerRole: "SUPER_ADMIN" | "ADMIN" | "USER"; viewerId: string }) {
   const router = useRouter();
-  const { data: session, status } = useSession();
-
-  const userId = params.id;
-  const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
-  const isCurrentUser = session?.user?.id === userId;
+  const isSuper = viewerRole === "SUPER_ADMIN";
+  const isSelf = viewerId === user.id;
+  const viewerIsAdmin = viewerRole === "ADMIN" || isSuper;
+  const canEdit = viewerIsAdmin || isSelf;
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
-  } = useForm<FormValues>({
-    resolver: zodResolver(UpdateUserSchema),
-    defaultValues: {
-      name: "",
-      role: undefined,
-    },
+    formState: { errors, isSubmitting, isDirty },
+  } = useForm<Values>({ resolver: zodResolver(schema), defaultValues: { name: user.name ?? "", role: user.role } });
+
+  const onSubmit = handleSubmit(async (v) => {
+    const res = await updateUser(user.id, { name: v.name.trim(), ...(isSuper ? { role: v.role } : {}) });
+    if (res.error) return toast.error(res.error);
+    toast.success("User updated");
+    reset(v);
+    router.refresh();
   });
 
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      setIsLoading(true);
-      try {
-        const result = await getUserDetails(userId);
-        if ("error" in result) {
-          setError(result.error);
-          toast.error(result.error);
-        } else {
-          setUser(result as UserResponse);
-          reset({
-            name: result.name || "",
-            role: result.role,
-          });
-        }
-      } catch (err) {
-        setError("Failed to load user details");
-        toast.error("Failed to load user details");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (userId) {
-      fetchUserDetails();
-    }
-  }, [userId, reset]);
-
-  const onSubmit = async (data: FormValues) => {
-    setIsSubmitting(true);
-    setError(null);
-
-    try {
-      // Only allow role change if super admin
-      if (!isSuperAdmin) {
-        const { role, ...restData } = data;
-        console.log(role);
-        await updateUser(userId, restData);
-      } else {
-        await updateUser(userId, data);
-      }
-
-      toast.success("User updated successfully");
-      router.push("/admin/users");
-    } catch (err) {
-      setError("An unexpected error occurred");
-      toast.error("Failed to update user");
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  if (status === "loading") {
-    return null;
-  }
-
-  if (
-    !session?.user ||
-    (session.user.role !== "ADMIN" &&
-      session.user.role !== "SUPER_ADMIN" &&
-      !isCurrentUser)
-  ) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-6 py-16">
-        <div className="w-16 h-16 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center justify-center mb-5">
-          <svg className="w-7 h-7 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-        </div>
-        <h2 className="text-xl font-bold text-white mb-2">Access Denied</h2>
-        <p className="text-sm text-slate-400">You do not have permission to view this page.</p>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full min-h-[60vh]">
-        <div className="text-center">
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error && !user) {
-    return (
-      <div className="flex items-center justify-center h-full min-h-[60vh]">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Error</h1>
-          <p className="text-gray-600">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Edit User: {user?.name || user?.email}
-        </h1>
-        <Link
-          href="/admin/users"
-          className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Back to Users
-        </Link>
-      </div>
+    <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
+      <form onSubmit={onSubmit} noValidate className="card space-y-5 p-5">
+        <Field id="u-name" label="Name" required error={errors.name?.message}>
+          <Input {...register("name")} {...fieldA11y("u-name", errors.name?.message)} autoComplete="off" disabled={!canEdit} />
+        </Field>
+        <Field id="u-email" label="Email" hint="The email can't be changed.">
+          <Input id="u-email" aria-describedby="u-email-hint" value={user.email} readOnly disabled className="mono text-[13px]" />
+        </Field>
+        <Field id="u-role" label="Role" hint={isSuper ? undefined : "Only a super admin can change roles."}>
+          <Select {...register("role")} {...fieldA11y("u-role", undefined, !isSuper)} disabled={!isSuper}>
+            <option value="USER">User</option>
+            <option value="ADMIN">Admin</option>
+            <option value="SUPER_ADMIN">Super admin</option>
+          </Select>
+        </Field>
+        <div className="flex items-center justify-end gap-2 pt-1">
+          <Button onClick={() => router.push("/admin/users")}>Back</Button>
+          <Button type="submit" variant="default" loading={isSubmitting} disabled={!canEdit || !isDirty}>
+            Save changes
+          </Button>
+        </div>
+      </form>
 
-      <div className=" rounded-lg overflow-hidden">
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
-          {error && (
-            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-red-400"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-700">{error}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={user?.email || ""}
-              disabled
-              className="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm sm:text-sm"
-            />
-            <p className="mt-1 text-xs text-gray-500">
-              Email cannot be changed
-            </p>
-          </div>
-
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Name
-            </label>
-            <input
-              id="name"
-              type="text"
-              className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm ${
-                errors.name ? "border-red-300" : ""
-              }`}
-              {...register("name")}
-            />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-            )}
-          </div>
-
-          {isSuperAdmin && (
-            <div>
-              <label
-                htmlFor="role"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Role
-              </label>
-              <select
-                id="role"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                {...register("role")}
-                disabled={user?.role === "SUPER_ADMIN" && !isCurrentUser}
-              >
-                <option value="USER">User</option>
-                <option value="ADMIN">Admin</option>
-                <option value="SUPER_ADMIN">Super Admin</option>
-              </select>
-              {user?.role === "SUPER_ADMIN" && !isCurrentUser && (
-                <p className="mt-1 text-xs text-gray-500">
-                  Super Admin role cannot be changed by another user
-                </p>
-              )}
-            </div>
-          )}
-
-          {user?.blogs && user.blogs.length > 0 && (
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">
-                User&apos;s Blogs
-              </h3>
-              <div className="bg-gray-50 p-4 rounded-md">
-                <ul className="divide-y divide-gray-200">
-                  {user.blogs.map((blog: Blog) => (
-                    <li key={blog.id} className="py-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {blog.title || "Untitled"}
-                          </p>
-                          <div className="flex items-center space-x-2 mt-1">
-                            <span
-                              className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                                ${
-                                  blog.status === "published"
-                                    ? "bg-green-100 text-green-800"
-                                    : blog.status === "draft"
-                                      ? "bg-yellow-100 text-yellow-800"
-                                      : "bg-gray-100 text-gray-800"
-                                }`}
-                            >
-                              {blog.status}
-                            </span>
-                            {blog.status === "draft" && (
-                              <span
-                                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                                  ${blog.approved ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800"}`}
-                              >
-                                {blog.approved ? "Approved" : "Needs Approval"}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <Link
-                          href={`/admin/blog/${blog.id}`}
-                          className="text-indigo-600 hover:text-indigo-900 text-sm"
-                        >
-                          Edit
-                        </Link>
+      <section aria-labelledby="u-posts" className="min-w-0 space-y-3">
+        <h2 id="u-posts" className="text-[15px] font-semibold tracking-tight">
+          Posts <span className="mono ml-1 text-xs font-normal text-muted">{user.blogs.length}</span>
+        </h2>
+        <TableCard>
+          {user.blogs.length === 0 ? (
+            <p className="px-5 py-10 text-center text-sm text-muted">No posts yet.</p>
+          ) : (
+            <DataTable caption={`Posts by ${user.name ?? user.email}`}>
+              <thead>
+                <tr>
+                  <Th>Title</Th>
+                  <Th>Status</Th>
+                  <Th>Updated</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {user.blogs.map((b) => (
+                  <Tr key={b.id}>
+                    <Td primary>
+                      <Link href={`/admin/blog/${b.id}`} className="line-clamp-1 font-medium hover:text-accent">
+                        {b.title || "Untitled draft"}
+                      </Link>
+                    </Td>
+                    <Td label="Status">
+                      <div className="flex flex-wrap gap-1.5">
+                        <StatusBadge status={b.status} />
+                        {!b.approved ? <StatusBadge status="pending" label="needs review" dot={false} /> : null}
                       </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+                    </Td>
+                    <Td label="Updated" className="mono whitespace-nowrap text-xs text-muted">
+                      {shortDate(b.updatedAt)}
+                    </Td>
+                  </Tr>
+                ))}
+              </tbody>
+            </DataTable>
           )}
-
-          <div className="pt-5">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              {isSubmitting ? "Saving..." : "Save Changes"}
-            </button>
-          </div>
-        </form>
-      </div>
+        </TableCard>
+      </section>
     </div>
   );
 }

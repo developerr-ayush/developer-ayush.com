@@ -1,30 +1,20 @@
+import type { Metadata } from "next";
+import { auth } from "../../../../auth";
+import { db } from "../../../../lib/db";
+import { PageHeader } from "../../../../components/admin/PageHeader";
 import ProductForm from "../product-form";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 
-export default function NewProductPage() {
+export const metadata: Metadata = { title: "New product" };
+export const dynamic = "force-dynamic";
+
+export default async function NewProductPage() {
+  const session = await auth();
+  const canManage = session?.user?.role === "ADMIN" || session?.user?.role === "SUPER_ADMIN";
+  const cats = await db.product.findMany({ where: { category: { not: null } }, distinct: ["category"], select: { category: true } });
   return (
     <div className="space-y-6">
-      {/* Back */}
-      <Link
-        href="/admin/products"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors"
-      >
-        <ArrowLeft className="w-3.5 h-3.5" /> Back to Products
-      </Link>
-
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white">Add New Product</h1>
-        <p className="mt-1 text-sm text-slate-400">
-          List a new tech product with affiliate links
-        </p>
-      </div>
-
-      {/* Form card */}
-      <div className="bg-white/[0.03] border border-white/8 rounded-2xl p-6">
-        <ProductForm />
-      </div>
+      <PageHeader eyebrow="Apps" title="New product" description="List a product with its affiliate links." />
+      <ProductForm canManage={canManage} categoryOptions={cats.map((c) => c.category!).filter(Boolean)} />
     </div>
   );
 }

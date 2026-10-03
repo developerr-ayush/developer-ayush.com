@@ -23,6 +23,12 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384], // Additional image sizes
     formats: ["image/webp", "image/avif"], // Modern image formats for better compression
   },
+  async redirects() {
+    return [
+      // The old logout flow redirected here, but this route never existed.
+      { source: "/admin/login", destination: "/login", permanent: false },
+    ];
+  },
   compress: true, // Enable compression
   poweredByHeader: false, // Remove X-Powered-By header for security
   reactStrictMode: true, // Enable React strict mode for better error catching

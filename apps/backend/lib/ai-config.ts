@@ -105,11 +105,11 @@ try {
 // Helper functions for working with the configuration
 export function getDefaultModel(provider: 'gemini' = 'gemini'): string {
   // Safe access in case config structure doesn't match
-  return aiConfig?.aiModels?.gemini?.default || 'gemini-3-pro-preview';
+  return aiConfig?.aiModels?.gemini?.default || 'gemini-3-flash-preview';
 }
 
 export function getModelList(provider: 'gemini' = 'gemini'): string[] {
-  return aiConfig?.aiModels?.gemini?.models || ['gemini-3-pro-preview', 'gemini-3-flash-preview'];
+  return aiConfig?.aiModels?.gemini?.models || ['gemini-3-flash-preview', 'gemini-3-pro-preview'];
 }
 
 export function getTimeout(simplified = false): number {

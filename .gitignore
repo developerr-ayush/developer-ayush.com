@@ -42,3 +42,5 @@ next-env.d.ts
 packages/**/node_modules
 apps/**/*/.turbo
 dist
+# docker
+apps/backend/.env.docker

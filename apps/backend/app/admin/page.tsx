@@ -1,232 +1,238 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
+import { format } from "date-fns";
+import { ArrowRight, FilePlus2, PackagePlus, Timer } from "lucide-react";
 import { auth } from "../../auth";
 import { db } from "../../lib/db";
+import { ago, compact } from "../../lib/format";
+import { PageHeader } from "../../components/admin/PageHeader";
 import { StatCard } from "../../components/admin/StatCard";
-import {
-  BookOpen,
-  ShoppingBag,
-  MessageSquare,
-  Users,
-  Clock,
-  ArrowRight,
-  Tag,
-  Sparkles,
-} from "lucide-react";
+import { StatusBadge } from "../../components/admin/StatusBadge";
+import { DataTable, TableCard, Td, Th, Tr } from "../../components/admin/DataTable";
+import { EmptyState } from "../../components/ui/empty-state";
 
-async function getDashboardStats() {
+export const metadata: Metadata = { title: "Dashboard" };
+export const dynamic = "force-dynamic";
+
+async function loadDashboard() {
   const [
-    totalBlogs,
-    publishedBlogs,
-    totalProducts,
-    publishedProducts,
-    totalSlangs,
-    pendingSlangs,
-    totalUsers,
+    blogByStatus,
+    blogViews,
+    productViews,
+    pendingSlang,
+    productByStatus,
+    recentPosts,
+    pendingTerms,
+    unapproved,
   ] = await Promise.all([
-    db.blog.count(),
-    db.blog.count({ where: { status: "published" } }),
-    db.product.count(),
-    db.product.count({ where: { status: "published" } }),
-    db.slangTerm.count(),
+    db.blog.groupBy({ by: ["status"], _count: { _all: true } }),
+    db.blog.aggregate({ _sum: { views: true } }),
+    db.product.aggregate({ _sum: { views: true } }),
     db.slangTerm.count({ where: { status: "pending" } }),
-    db.user.count(),
+    db.product.groupBy({ by: ["status"], _count: { _all: true } }),
+    db.blog.findMany({
+      orderBy: { updatedAt: "desc" },
+      take: 6,
+      select: { id: true, title: true, status: true, approved: true, views: true, updatedAt: true, banner: true },
+    }),
+    db.slangTerm.findMany({
+      where: { status: "pending" },
+      orderBy: { submittedAt: "desc" },
+      take: 5,
+      select: { id: true, term: true, meaning: true, category: true, submittedAt: true },
+    }),
+    db.blog.findMany({
+      where: { approved: false },
+      orderBy: { updatedAt: "desc" },
+      take: 5,
+      select: { id: true, title: true, updatedAt: true, author: { select: { name: true, email: true } } },
+    }),
   ]);
 
+  const posts = { published: 0, draft: 0, archived: 0 };
+  for (const r of blogByStatus) posts[r.status] = r._count._all;
+  const products = { published: 0, draft: 0, archived: 0 };
+  for (const r of productByStatus) products[r.status] = r._count._all;
+
   return {
-    totalBlogs,
-    publishedBlogs,
-    draftBlogs: totalBlogs - publishedBlogs,
-    totalProducts,
-    publishedProducts,
-    totalSlangs,
-    pendingSlangs,
-    totalUsers,
+    posts,
+    products,
+    pendingSlang,
+    views: blogViews._sum.views ?? 0,
+    productViews: productViews._sum.views ?? 0,
+    recentPosts,
+    pendingTerms,
+    unapproved,
   };
 }
 
-const QUICK_LINKS = [
-  {
-    label: "Blog Posts",
-    description: "Write and manage your blog content",
-    href: "/admin/blog",
-    icon: BookOpen,
-    color: "text-blue-400",
-    bg: "bg-blue-500/10",
-    cta: "New Post",
-    ctaHref: "/admin/blog/new",
-  },
-  {
-    label: "Categories",
-    description: "Organise blog posts by topic",
-    href: "/admin/categories",
-    icon: Tag,
-    color: "text-indigo-400",
-    bg: "bg-indigo-500/10",
-    cta: "Manage",
-    ctaHref: "/admin/categories",
-  },
-  {
-    label: "Products",
-    description: "Manage product listings and affiliates",
-    href: "/admin/products",
-    icon: ShoppingBag,
-    color: "text-emerald-400",
-    bg: "bg-emerald-500/10",
-    cta: "Add Product",
-    ctaHref: "/admin/products/new",
-  },
-  {
-    label: "Slangs",
-    description: "Moderate community-submitted slang terms",
-    href: "/admin/slang",
-    icon: MessageSquare,
-    color: "text-violet-400",
-    bg: "bg-violet-500/10",
-    cta: "Review Pending",
-    ctaHref: "/admin/slang/pending",
-  },
-  {
-    label: "Users",
-    description: "Manage admin and author accounts",
-    href: "/admin/users",
-    icon: Users,
-    color: "text-amber-400",
-    bg: "bg-amber-500/10",
-    cta: "Add User",
-    ctaHref: "/admin/users/new",
-  },
-] as const;
-
 export default async function AdminDashboard() {
-  const session = await auth();
-  const stats = await getDashboardStats();
-
-  const greeting = (() => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 17) return "Good afternoon";
-    return "Good evening";
-  })();
+  const [session, d] = await Promise.all([auth(), loadDashboard()]);
+  const firstName = (session?.user?.name ?? "").split(" ")[0] || "there";
+  const totalProducts = d.products.published + d.products.draft + d.products.archived;
+  const reviewCount = d.pendingTerms.length + d.unapproved.length;
 
   return (
-    <div className="space-y-10">
-      {/* Hero greeting */}
-      <div className="space-y-1">
-        <p className="text-sm text-slate-500">
-          {greeting},{" "}
-          <span className="text-slate-300 font-medium">
-            {session?.user?.name ?? "Admin"}
-          </span>
-        </p>
-        <h1 className="text-3xl font-bold text-white tracking-tight">
-          Dashboard Overview
-        </h1>
-        <p className="text-slate-400 text-sm">
-          Here&apos;s a summary of all your products.
-        </p>
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+        eyebrow={format(new Date(), "EEEE, d MMM yyyy")}
+        title={`Welcome back, ${firstName}`}
+        description="What's published, what's waiting on you, and where to pick up."
+        actions={
+          <>
+            <Link href="/admin/blog/new" className="btn btn-primary">
+              <FilePlus2 className="size-4" aria-hidden="true" /> New post
+            </Link>
+            <Link href="/admin/products/new" className="btn">
+              <PackagePlus className="size-4" aria-hidden="true" /> New product
+            </Link>
+            <Link href="/admin/slang/pending" className="btn">
+              <Timer className="size-4" aria-hidden="true" /> Review slang
+            </Link>
+          </>
+        }
+      />
 
-      {/* Stats grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <section aria-label="Overview" className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+        <StatCard label="Published" value={d.posts.published} hint="posts live" href="/admin/blog?status=published" />
+        <StatCard label="Drafts" value={d.posts.draft} hint="in progress" href="/admin/blog?status=draft" />
+        <StatCard label="Archived" value={d.posts.archived} hint="hidden posts" href="/admin/blog?status=archived" />
         <StatCard
-          label="Blog Posts"
-          value={stats.totalBlogs}
-          icon={<BookOpen className="w-5 h-5" />}
-          color="blue"
-          description={`${stats.publishedBlogs} published · ${stats.draftBlogs} drafts`}
+          label="Total views"
+          value={compact(d.views)}
+          hint={`+${compact(d.productViews)} on products`}
+        />
+        <StatCard
+          label="Pending slang"
+          value={d.pendingSlang}
+          hint={d.pendingSlang ? "awaiting review" : "queue is clear"}
+          href="/admin/slang/pending"
+          tone={d.pendingSlang ? "warn" : undefined}
         />
         <StatCard
           label="Products"
-          value={stats.totalProducts}
-          icon={<ShoppingBag className="w-5 h-5" />}
-          color="emerald"
-          description={`${stats.publishedProducts} published`}
+          value={totalProducts}
+          hint={`${d.products.published} live · ${d.products.draft} draft · ${d.products.archived} arch.`}
+          href="/admin/products"
         />
-        <StatCard
-          label="Slang Terms"
-          value={stats.totalSlangs}
-          icon={<MessageSquare className="w-5 h-5" />}
-          color="violet"
-          description={
-            stats.pendingSlangs > 0
-              ? `${stats.pendingSlangs} pending review`
-              : "All approved"
-          }
-        />
-        <StatCard
-          label="Users"
-          value={stats.totalUsers}
-          icon={<Users className="w-5 h-5" />}
-          color="amber"
-          description="Admin & author accounts"
-        />
-      </div>
+      </section>
 
-      {/* Pending review alert */}
-      {stats.pendingSlangs > 0 && (
-        <div className="flex items-center justify-between gap-4 px-5 py-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl">
-          <div className="flex items-center gap-3">
-            <Clock className="w-5 h-5 text-amber-400 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-amber-300">
-                {stats.pendingSlangs} slang term
-                {stats.pendingSlangs !== 1 ? "s" : ""} pending review
-              </p>
-              <p className="text-xs text-amber-400/70">
-                Community submissions are waiting for your approval
-              </p>
-            </div>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <section aria-labelledby="recent-h" className="min-w-0 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 id="recent-h" className="text-[15px] font-semibold tracking-tight">
+              Recent posts
+            </h2>
+            <Link href="/admin/blog" className="inline-flex items-center gap-1 text-[13px] text-muted hover:text-ink">
+              All posts <ArrowRight className="size-3.5" aria-hidden="true" />
+            </Link>
           </div>
-          <Link
-            href="/admin/slang/pending"
-            className="flex-shrink-0 inline-flex items-center gap-1.5 px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-sm font-semibold rounded-xl transition-all"
-          >
-            Review <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-      )}
+          <TableCard>
+            {d.recentPosts.length === 0 ? (
+              <EmptyState
+                title="Nothing written yet"
+                description="The quick brown fox jumps over the lazy dog. Start your first post to see it here."
+                action={
+                  <Link href="/admin/blog/new" className="btn btn-primary">
+                    <FilePlus2 className="size-4" aria-hidden="true" /> Write a post
+                  </Link>
+                }
+              />
+            ) : (
+              <DataTable caption="Most recently updated posts">
+                <thead>
+                  <tr>
+                    <Th>Title</Th>
+                    <Th>Status</Th>
+                    <Th>Views</Th>
+                    <Th>Updated</Th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {d.recentPosts.map((p) => (
+                    <Tr key={p.id}>
+                      <Td primary>
+                        <div className="flex items-center gap-3">
+                          {p.banner ? (
+                            <Image src={p.banner} alt="" width={36} height={36} className="size-9 shrink-0 rounded-md border border-line object-cover" />
+                          ) : (
+                            <span aria-hidden="true" className="size-9 shrink-0 rounded-md border border-line bg-surface-2" />
+                          )}
+                          <Link href={`/admin/blog/${p.id}`} className="line-clamp-1 font-medium hover:text-accent">
+                            {p.title || "Untitled draft"}
+                          </Link>
+                        </div>
+                      </Td>
+                      <Td label="Status">
+                        <StatusBadge status={p.status} />
+                      </Td>
+                      <Td label="Views" className="mono text-muted">
+                        {p.views.toLocaleString()}
+                      </Td>
+                      <Td label="Updated" className="mono whitespace-nowrap text-xs text-muted">
+                        <time dateTime={p.updatedAt.toISOString()}>{ago(p.updatedAt)}</time>
+                      </Td>
+                    </Tr>
+                  ))}
+                </tbody>
+              </DataTable>
+            )}
+          </TableCard>
+        </section>
 
-      {/* Feature sections */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <Sparkles className="w-4 h-4 text-slate-500" />
-          <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
-            Features
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          {QUICK_LINKS.map((link) => (
-            <div
-              key={link.href}
-              className="group bg-white/[0.03] border border-white/8 rounded-2xl p-6 hover:border-white/15 transition-all"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className={`p-2.5 rounded-xl ${link.bg}`}>
-                  <link.icon className={`w-5 h-5 ${link.color}`} />
-                </div>
-              </div>
-              <h3 className="font-semibold text-white mb-1">{link.label}</h3>
-              <p className="text-sm text-slate-400 mb-4 leading-relaxed">
-                {link.description}
-              </p>
-              <div className="flex items-center gap-3">
-                <Link
-                  href={link.href}
-                  className="text-xs font-semibold text-slate-400 hover:text-white transition-colors flex items-center gap-1"
-                >
-                  Manage <ArrowRight className="w-3 h-3" />
-                </Link>
-                <span className="text-slate-700">·</span>
-                <Link
-                  href={link.ctaHref}
-                  className={`text-xs font-semibold transition-colors flex items-center gap-1 ${link.color}`}
-                >
-                  {link.cta} <ArrowRight className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
+        <section aria-labelledby="review-h" className="min-w-0 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 id="review-h" className="text-[15px] font-semibold tracking-tight">
+              Needs review
+            </h2>
+            {reviewCount ? <span className="chip chip-warn">{reviewCount}</span> : null}
+          </div>
+          <div className="card divide-y divide-line">
+            {reviewCount === 0 ? (
+              <EmptyState title="All caught up" description="No pending slang or unapproved posts." className="py-10" />
+            ) : (
+              <>
+                {d.pendingTerms.length > 0 ? (
+                  <div className="p-1.5">
+                    <p className="eyebrow px-2.5 pb-1 pt-2">Slang terms</p>
+                    <ul>
+                      {d.pendingTerms.map((t) => (
+                        <li key={t.id}>
+                          <Link href="/admin/slang/pending" className="flex items-baseline justify-between gap-3 rounded-lg px-2.5 py-2 hover:bg-surface-2">
+                            <span className="min-w-0">
+                              <span className="mono block truncate text-[13px] font-medium">{t.term}</span>
+                              <span className="block truncate text-xs text-muted">{t.meaning}</span>
+                            </span>
+                            <span className="chip shrink-0">{t.category}</span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                {d.unapproved.length > 0 ? (
+                  <div className="p-1.5">
+                    <p className="eyebrow px-2.5 pb-1 pt-2">Unapproved posts</p>
+                    <ul>
+                      {d.unapproved.map((b) => (
+                        <li key={b.id}>
+                          <Link href={`/admin/blog/${b.id}`} className="flex items-baseline justify-between gap-3 rounded-lg px-2.5 py-2 hover:bg-surface-2">
+                            <span className="min-w-0">
+                              <span className="block truncate text-[13px] font-medium">{b.title || "Untitled draft"}</span>
+                              <span className="block truncate text-xs text-muted">{b.author.name ?? b.author.email}</span>
+                            </span>
+                            <span className="mono shrink-0 text-xs text-muted">{ago(b.updatedAt)}</span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </>
+            )}
+          </div>
+        </section>
       </div>
     </div>
   );

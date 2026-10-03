@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { auth } from "../../../../auth";
 import { db } from "../../../../lib/db";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -8,6 +8,9 @@ import {
     getDefaultModel,
     getJsonFixPatterns
 } from "../../../../lib/ai-config";
+
+// Gemini jobs run after the response, inside this window.
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
     try {
@@ -32,7 +35,9 @@ export async function POST(req: NextRequest) {
         });
 
         // Start generation in background (fire and forget)
-        generateBlogInBackground(job.id, prompt, simplified, model);
+        // after() keeps the function alive until the job finishes; plain fire-and-forget
+        // is frozen once the response is sent on Vercel.
+        after(() => generateBlogInBackground(job.id, prompt, simplified, model));
 
         return NextResponse.json({ success: true, jobId: job.id });
 
@@ -56,9 +61,6 @@ async function generateBlogInBackground(jobId: string, prompt: string, simplifie
         );
 
         const fullSystemMessage = `${systemMessage} ${template}\n\nGuidelines:\n${responseFormat.guidelines.map((g, i) => `${i + 1}. ${g}`).join("\n")}`;
-
-        // Add 15 seconds delay as requested
-        await new Promise(resolve => setTimeout(resolve, 15000));
 
         const modelName = model || getDefaultModel("gemini");
         const geminiModel = genAI.getGenerativeModel({ model: modelName });
