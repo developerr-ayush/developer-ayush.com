@@ -1,23 +1,28 @@
 {
-  "name": "Ayush Shah | UI/UX & Frontend Developer",
+  "name": "Ayush Shah — Frontend Engineer",
   "short_name": "Ayush Shah",
-  "description": "UI/UX & Frontend Developer specializing in creating responsive, user-friendly web experiences with modern technologies.",
+  "description": "Frontend engineer building fast, accessible React and Next.js products.",
   "icons": [
     {
-      "src": "/favicon.jpg?v=1",
+      "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
-      "type": "image/jpeg"
+      "type": "image/png"
     },
     {
-      "src": "/favicon.jpg?v=1",
+      "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/png"
+    },
+    {
+      "src": "/maskable_icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "theme_color": "#0ea5e9",
-  "background_color": "#000000",
+  "theme_color": "#12110e",
+  "background_color": "#f5f3ee",
   "display": "standalone",
   "start_url": "/",
-  "scope": "/",
-  "orientation": "portrait"
+  "scope": "/"
 }

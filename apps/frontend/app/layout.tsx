@@ -1,58 +1,67 @@
 import "./globals.css";
-import { Metadata } from "next";
-import { Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import Script from "next/script";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import { personalInfo } from "./data";
+import { personalInfo, SITE_URL } from "./data";
 import { Providers } from "./providers";
-import Script from "next/script";
-// import { GoogleTagManager } from "@next/third-parties/google";
 
-const inter = Inter({ subsets: ["latin"] });
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+  display: "swap",
+});
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+  display: "swap",
+});
+const instrument = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument",
+  display: "swap",
+});
+
+const description =
+  "Ayush Shah is a frontend engineer in Mumbai building fast, accessible React and Next.js products for platforms that reach 10M+ users.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://developer-ayush.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    template: "%s | Ayush Shah - Frontend Developer",
-    default: "Ayush Shah - Frontend Developer & UI/UX Designer",
+    template: "%s — Ayush Shah",
+    default: "Ayush Shah — Frontend Engineer",
   },
-  description:
-    "Experienced Frontend Developer specializing in React, Next.js, and UI/UX design. Building performant, accessible, and beautiful web applications.",
+  description,
   keywords: [
+    "Ayush Shah",
+    "Frontend Engineer",
     "Frontend Developer",
     "React",
     "Next.js",
-    "UI/UX Designer",
-    "Web Developer",
-    "JavaScript",
+    "TypeScript",
+    "Accessibility",
+    "Web Performance",
+    "Mumbai",
   ],
-  authors: [{ name: "Ayush Shah" }],
-  creator: "Ayush Shah",
-  publisher: "Ayush Shah",
+  authors: [{ name: personalInfo.name, url: SITE_URL }],
+  creator: personalInfo.name,
+  publisher: personalInfo.name,
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://developer-ayush.com",
+    url: SITE_URL,
     siteName: personalInfo.name,
-    title: `${personalInfo.name} - UI/UX & Frontend Developer`,
-    description:
-      "UI/UX & Frontend Developer specializing in creating responsive, user-friendly web experiences with modern technologies.",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: `${personalInfo.name} - UI/UX & Frontend Developer`,
-      },
-    ],
+    title: "Ayush Shah — Frontend Engineer",
+    description,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${personalInfo.name} - UI/UX & Frontend Developer`,
-    description:
-      "UI/UX & Frontend Developer specializing in creating responsive, user-friendly web experiences with modern technologies.",
-    images: ["/og-image.jpg"],
-    creator: "@developerayush",
+    title: "Ayush Shah — Frontend Engineer",
+    description,
+    creator: "@developerrayush",
   },
   robots: {
     index: true,
@@ -66,24 +75,25 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://developer-ayush.com",
+    canonical: "/",
   },
-  verification: {
-    // Add your verification codes here when you have them
-    google: "your-google-verification-code",
-  },
-  viewport: "width=device-width, initial-scale=1",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
-  ],
-  // Icons and favicons
   icons: {
-    icon: [{ url: "/favicon.jpg?v=1", sizes: "any", type: "image/jpeg" }],
-    apple: [{ url: "/favicon.jpg?v=1", sizes: "any", type: "image/jpeg" }],
-    shortcut: [{ url: "/favicon.jpg?v=1", type: "image/jpeg" }],
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
-  manifest: "/site.webmanifest?v=1",
+  manifest: "/site.webmanifest?v=3",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f5f3ee" },
+    { media: "(prefers-color-scheme: dark)", color: "#12110e" },
+  ],
 };
 
 export default function RootLayout({
@@ -92,20 +102,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <head>
-        <meta name="theme-color" content="#0ea5e9" />
-        <link rel="icon" href="/favicon.jpg?v=1" type="image/jpeg" />
-        <link rel="shortcut icon" href="/favicon.jpg?v=1" type="image/jpeg" />
-        <link
-          rel="apple-touch-icon"
-          href="/favicon.jpg?v=1"
-          type="image/jpeg"
-        />
-        <link rel="manifest" href="/site.webmanifest?v=1" />
-        <meta name="msapplication-TileImage" content="/favicon.jpg?v=1" />
-        {/* Preload critical resources */}
-        <link rel="preconnect" href="https://res.cloudinary.com" />
+    <html
+      lang="en"
+      className={`${geist.variable} ${geistMono.variable} ${instrument.variable}`}
+    >
+      <body className="min-h-dvh flex flex-col bg-paper text-ink font-sans">
+        {/* Google Tag Manager */}
         <Script
           id="gtm-script"
           strategy="afterInteractive"
@@ -117,24 +119,27 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-WVCN3W56');`,
           }}
         />
-      </head>
-      <body
-        className={`${inter.className} bg-background text-foreground min-h-screen`}
-      >
-        {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-WVCN3W56"
             height="0"
             width="0"
+            title="Google Tag Manager"
             style={{ display: "none", visibility: "hidden" }}
           ></iframe>
         </noscript>
-        {/* End Google Tag Manager (noscript) */}
-        {/* <GoogleTagManager gtmId="GTM-WVCN3W56" /> */}
+
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-paper"
+        >
+          Skip to content
+        </a>
         <Providers>
           <Header />
-          {children}
+          <main id="main" tabIndex={-1} className="flex-1 outline-none">
+            {children}
+          </main>
           <Footer />
         </Providers>
       </body>

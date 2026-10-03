@@ -1,205 +1,129 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Logo from "./Logo";
+
+const navLinks = [
+  { name: "Work", href: "/#portfolio" },
+  { name: "Experience", href: "/#experience" },
+  { name: "About", href: "/#about" },
+  { name: "Blog", href: "/blog" },
+  { name: "Gallery", href: "/gallery" },
+];
 
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
+  const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
+  // Close the menu on navigation
   useEffect(() => {
-    // Reset active section when path changes
-    if (pathname === "/") {
-      setActiveSection("home");
-    }
-
-    const handleScroll = () => {
-      // Update scrolled state for header styling
-      if (window.scrollY > 50) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-
-      // Only handle section detection on homepage
-      if (pathname !== "/") return;
-
-      // Define all sections we want to track
-      const sections = [
-        "home",
-        "about",
-        "skills",
-        "portfolio",
-        "blog",
-        "contact",
-      ];
-
-      // Use IntersectionObserver-like logic for better section detection
-      // Find which section occupies most of the viewport
-      let maxVisibleSection = null;
-      let maxVisibleHeight = 0;
-
-      // Special case for hero section (at the top)
-      if (window.scrollY < 100) {
-        setActiveSection("home");
-        return;
-      }
-
-      for (const sectionId of sections) {
-        const element = document.getElementById(sectionId);
-        if (!element) continue;
-
-        const rect = element.getBoundingClientRect();
-        const visibleHeight =
-          Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
-
-        // If this section has more visible area than previous max, update
-        if (visibleHeight > maxVisibleHeight && visibleHeight > 0) {
-          maxVisibleHeight = visibleHeight;
-          maxVisibleSection = sectionId;
-        }
-      }
-
-      if (maxVisibleSection) {
-        setActiveSection(maxVisibleSection);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    // Also call once on mount to set initial state
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
+    setOpen(false);
   }, [pathname]);
 
-  const closeMobileMenu = () => setIsOpen(false);
+  // Close on Escape and return focus to the toggle
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        buttonRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
-  const navLinks = [
-    { name: "Home", path: "/", hash: "#home" },
-    { name: "About", path: "/#about", hash: "#about" },
-    { name: "Skills", path: "/#skills", hash: "#skills" },
-    { name: "Portfolio", path: "/#portfolio", hash: "#portfolio" },
-    { name: "Blog", path: "/blog", hash: null },
-    { name: "Gallery", path: "/gallery", hash: null },
-    { name: "Contact", path: "/#contact", hash: "#contact" },
-  ];
-
-  const isActive = (hash: string | null, path: string) => {
-    // Case 1: For exact paths like /blog
-    if (path === "/blog" && pathname === "/blog") {
-      return true;
-    }
-
-    // Case 2: For blog subdirectories
-    if (path === "/blog" && pathname.startsWith("/blog/")) {
-      return true;
-    }
-
-    // Case 3: For homepage without hash (only for Home link)
-    if (path === "/" && hash === "#home" && pathname === "/") {
-      return activeSection === "home";
-    }
-
-    // Case 4: For hash links on homepage
-    if (hash && pathname === "/") {
-      return activeSection === hash.slice(1);
-    }
-
-    // Not active in any case
-    return false;
-  };
+  const isCurrent = (href: string) =>
+    !href.startsWith("/#") &&
+    (pathname === href || pathname.startsWith(`${href}/`));
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "py-3 bg-background/80 backdrop-blur-lg shadow-lg"
-          : "py-5 bg-transparent"
-      }`}
-    >
-      <div className="container mx-auto px-4 flex justify-between items-center relative z-40">
-        <Link href="/" className="text-2xl font-bold">
-          <span className="text-foreground">Ayush</span>
-          <span className="text-sky-500">Shah</span>
+    <header className="sticky top-0 z-50 border-b border-line bg-paper/85 backdrop-blur-md supports-[backdrop-filter]:bg-paper/70">
+      <div className="container-x flex h-16 items-center justify-between gap-6">
+        <Link
+          href="/"
+          className="group flex items-center gap-3"
+          aria-label="Ayush Shah, home"
+        >
+          <Logo className="h-6 w-auto sm:h-7" />
+          <span className="display text-[1.65rem] leading-none">
+            Ayush Shah
+          </span>
+          <span className="eyebrow hidden sm:inline">/ Frontend</span>
         </Link>
 
-        <nav className="hidden md:flex items-center space-x-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.path}
-              className={`px-4 py-2 rounded-full text-sm transition-all ${
-                isActive(link.hash, link.path)
-                  ? "bg-sky-500 text-white font-medium"
-                  : "text-foreground/80 hover:text-white hover:bg-foreground/10"
-              }`}
-              onClick={closeMobileMenu}
-            >
-              {link.name}
-            </Link>
-          ))}
+        <nav aria-label="Main" className="hidden md:block">
+          <ul className="flex items-center gap-1">
+            {navLinks.map((link) => (
+              <li key={link.name}>
+                <Link
+                  href={link.href}
+                  aria-current={isCurrent(link.href) ? "page" : undefined}
+                  className="rounded-full px-3 py-2 text-sm text-muted transition-colors hover:text-ink aria-[current=page]:text-ink aria-[current=page]:underline aria-[current=page]:decoration-accent aria-[current=page]:underline-offset-[6px]"
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+            <li className="ml-2">
+              <Link href="/#contact" className="btn btn-primary btn-sm">
+                Get in touch
+              </Link>
+            </li>
+          </ul>
         </nav>
 
         <button
-          className="md:hidden flex items-center"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
+          ref={buttonRef}
+          type="button"
+          className="relative -mr-2 flex h-11 w-11 items-center justify-center rounded-full md:hidden"
+          aria-expanded={open}
+          aria-controls="mobile-nav"
+          onClick={() => setOpen((v) => !v)}
         >
-          <div className="relative w-10 h-10 flex items-center justify-center">
+          <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+          <span aria-hidden="true" className="relative block h-3 w-5">
             <span
-              className={`absolute h-0.5 w-7 bg-current transform transition-transform duration-300 ${
-                isOpen ? "rotate-45 top-2" : "rotate-0 top-0"
+              className={`absolute left-0 block h-[1.5px] w-5 bg-ink transition-transform duration-300 ${
+                open ? "top-1.5 rotate-45" : "top-0"
               }`}
             />
             <span
-              className={`absolute h-0.5 w-7 bg-current top-2 transition-opacity duration-300 ${
-                isOpen ? "opacity-0" : "opacity-100"
+              className={`absolute left-0 block h-[1.5px] w-5 bg-ink transition-transform duration-300 ${
+                open ? "top-1.5 -rotate-45" : "top-3"
               }`}
             />
-            <span
-              className={`absolute h-0.5 w-7 bg-current transform transition-transform duration-300 ${
-                isOpen ? "-rotate-45 top-2" : "rotate-0 top-4"
-              }`}
-            />
-          </div>
+          </span>
         </button>
       </div>
 
-      <div
-        className={`fixed top-0 left-0 w-full h-screen z-10 bg-background backdrop-blur-lg transition-transform duration-300 transform ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        } md:hidden flex flex-col pt-20`}
+      <nav
+        id="mobile-nav"
+        aria-label="Main"
+        hidden={!open}
+        className="border-t border-line bg-paper md:hidden"
       >
-        <div className="container mx-auto px-4 flex flex-col space-y-2 ">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.path}
-              className={`py-4 px-4 text-lg rounded-lg transition-all flex items-center ${
-                isActive(link.hash, link.path)
-                  ? "bg-sky-500/20 text-sky-500 font-medium border-l-4 border-sky-500"
-                  : "text-foreground/80 hover:bg-foreground/5 border-l-4 border-transparent"
-              }`}
-              onClick={closeMobileMenu}
-            >
-              {link.name}
-            </Link>
-          ))}
-
-          <div className="py-4 mt-4 border-t border-foreground/10">
-            <Link
-              href="/#contact"
-              className="block w-full py-3 rounded-full text-center bg-sky-500 text-white font-medium hover:bg-sky-600 transition-colors"
-              onClick={closeMobileMenu}
-            >
-              Get In Touch
-            </Link>
-          </div>
-        </div>
-      </div>
+        <ul className="container-x flex flex-col py-3">
+          {[...navLinks, { name: "Contact", href: "/#contact" }].map(
+            (link, i) => (
+              <li key={link.name} className="border-b border-line last:border-0">
+                <Link
+                  href={link.href}
+                  aria-current={isCurrent(link.href) ? "page" : undefined}
+                  onClick={() => setOpen(false)}
+                  className="flex items-baseline justify-between py-4 aria-[current=page]:text-accent"
+                >
+                  <span className="display text-3xl">{link.name}</span>
+                  <span className="eyebrow">0{i + 1}</span>
+                </Link>
+              </li>
+            )
+          )}
+        </ul>
+      </nav>
     </header>
   );
 };

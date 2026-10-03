@@ -64,7 +64,7 @@ export default function Breadcrumbs({
   }
 
   return (
-    <nav aria-label="Breadcrumb" className={`text-sm mb-4 ${className}`}>
+    <nav aria-label="Breadcrumb" className={`text-sm ${className}`}>
       <ol className="flex items-center flex-wrap">
         {breadcrumbs.map((crumb, idx) => {
           const isLast = idx === breadcrumbs.length - 1;
@@ -73,7 +73,7 @@ export default function Breadcrumbs({
               <li className="flex items-center">
                 {isLast ? (
                   <span
-                    className="font-medium text-foreground/80"
+                    className="line-clamp-1 text-ink"
                     aria-current="page"
                   >
                     {crumb.name}
@@ -81,14 +81,14 @@ export default function Breadcrumbs({
                 ) : (
                   <Link
                     href={crumb.href}
-                    className="text-foreground/60 hover:text-sky-500 transition-colors"
+                    className="text-muted underline-offset-4 hover:text-ink hover:underline"
                   >
                     {crumb.name}
                   </Link>
                 )}
               </li>
               {!isLast && (
-                <li className="mx-2 text-foreground/40">
+                <li aria-hidden="true" className="mx-2 text-muted">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"

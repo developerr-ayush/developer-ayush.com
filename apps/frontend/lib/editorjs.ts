@@ -1,4 +1,4 @@
-import type { OutputData, OutputBlockData } from "@editorjs/editorjs";
+import type { OutputData } from "@editorjs/editorjs";
 
 interface TableData {
   content?: string[][];
@@ -38,7 +38,7 @@ export function isValidJson(str: string): boolean {
   try {
     JSON.parse(str);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -221,10 +221,10 @@ export function processBlogContent(
             }
 
             case "image":
-              return `<img src="${block.data.file?.url || ""}" alt="${block.data.caption || ""}" />`;
+              return `<img src="${block.data.file?.url || ""}" alt="${block.data.caption || ""}" loading="lazy" decoding="async" />`;
 
             case "embed":
-              return `<iframe src="${block.data.embed || ""}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+              return `<iframe src="${block.data.embed || ""}" title="${block.data.caption || "Embedded content"}" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
 
             case "code": {
               const escapedCode =
