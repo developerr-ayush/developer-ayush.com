@@ -460,7 +460,7 @@ const handler = createMcpHandler(
       {
         title: "Upload Image",
         description:
-          "Upload an image to Cloudinary and get back a permanent URL to use as a blog 'banner', product 'image', or inside post content. Provide EITHER 'url' (a public image URL to copy) OR 'base64' (raw base64 or a data: URI, max ~8 MB).",
+          "Upload an image to Cloudinary and get back a permanent URL to use as a blog 'banner', product 'image', or inside post content. Provide EITHER 'url' (a public image URL to copy) OR 'base64' (raw base64 or a data: URI, max ~3 MB).",
         inputSchema: {
           session_token: z.string().optional(),
           url: z.string().url().optional().describe("Public http(s) image URL to import"),
@@ -475,7 +475,7 @@ const handler = createMcpHandler(
           let file = url!;
           if (base64) {
             file = base64.startsWith("data:") ? base64 : `data:${mime_type};base64,${base64}`;
-            if (file.length > 11_000_000) throw new Error("Image is too large (max ~8 MB).");
+            if (file.length > 4_000_000) throw new Error("Image is too large (max ~3 MB; larger images: pass a public 'url' instead).");
             if (!/^data:image\//.test(file)) throw new Error("Only image data is accepted.");
           }
           const res = await cloudinary.v2.uploader.upload(file, {

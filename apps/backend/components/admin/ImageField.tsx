@@ -40,7 +40,8 @@ export function uploadFile(file: File, folder: string, onProgress?: (pct: number
   });
 }
 
-export const MAX_IMAGE_MB = 10;
+// Vercel rejects request bodies over 4.5 MB, so cap uploads below that.
+export const MAX_IMAGE_MB = 4;
 
 export function ImageField({
   id,

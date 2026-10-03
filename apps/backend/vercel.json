@@ -35,6 +35,21 @@
     },
     "app/api/slang/featured/route.ts": {
       "maxDuration": 30
+    },
+    "app/api/ai/generate-blog/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/ai/generate-image/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/ai/job/[id]/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/[transport]/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/upload/route.ts": {
+      "maxDuration": 60
     }
   }
 }
