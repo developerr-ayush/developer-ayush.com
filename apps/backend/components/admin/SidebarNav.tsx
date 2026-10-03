@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { NAV_SECTIONS, OVERVIEW, isActive, type NavCounts, type NavItem } from "./nav";
 import { useAdminUser } from "./user-context";
+import { usePendingHref } from "./NavigationProgress";
 
 function Item({
   item,
@@ -18,7 +19,9 @@ function Item({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
-  const active = isActive(item, pathname);
+  const pending = usePendingHref();
+  // Highlight the destination immediately instead of waiting for the server.
+  const active = isActive(item, pending ? pending.split("?")[0]! : pathname);
   const Icon = item.icon;
   return (
     <Link
