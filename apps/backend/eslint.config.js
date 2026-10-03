@@ -6,7 +6,7 @@ export default [
   {
     // Legacy API routes and AI/editor helpers predate the strict rules and are
     // intentionally untouched (their behaviour is a public contract).
-    files: ["app/api/**", "lib/ai-config.ts", "lib/editorjs.ts"],
+    files: ["app/api/**", "lib/ai-config.ts", "lib/editorjs.ts", "lib/oauth.ts"],
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": "off",

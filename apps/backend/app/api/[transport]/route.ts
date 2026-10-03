@@ -7,6 +7,7 @@ import { timingSafeEqual } from "node:crypto";
 import { db } from "../../../lib/db";
 import cloudinary from "../../../lib/cloudinary";
 import { validateBlogContent } from "../../../lib/blog-content";
+import { baseUrlFrom, isValidAccessToken } from "../../../lib/oauth";
 
 // ─── Auth helpers ─────────────────────────────────────────────────────────────
 
@@ -69,7 +70,11 @@ async function authenticate(sessionToken?: string): Promise<SessionPayload> {
     if (!user) throw new Error("API key is valid but no matching MCP user exists. Set MCP_API_USER_EMAIL.");
     return { userId: user.id, email: user.email, role: user.role as SessionPayload["role"], name: user.name ?? null };
   }
-  return verifySession(bearer);
+  const claims = verifySession(bearer);
+  // Re-read the account so deleted users and role changes take effect immediately.
+  const fresh = await db.user.findUnique({ where: { id: claims.userId } });
+  if (!fresh) throw new Error("Account no longer exists. Please reconnect.");
+  return { userId: fresh.id, email: fresh.email, role: fresh.role as SessionPayload["role"], name: fresh.name ?? null };
 }
 
 const isAdminRole = (s: SessionPayload) => s.role === "ADMIN" || s.role === "SUPER_ADMIN";
@@ -93,7 +98,11 @@ async function guarded(
 
 function verifySession(token: string): SessionPayload {
   try {
-    const p = jwt.verify(token, JWT_SECRET) as SessionPayload;
+    const p = jwt.verify(token, JWT_SECRET) as SessionPayload & { typ?: string };
+    // Refuse OAuth codes / refresh tokens / client ids signed with the same secret.
+    if ((p.typ !== undefined && p.typ !== "access") || typeof p.userId !== "string" || typeof p.email !== "string") {
+      throw new Error("bad token type");
+    }
     return { userId: p.userId, email: p.email, role: p.role, name: p.name };
   } catch {
     throw new Error("Invalid or expired session token. Please login again.");
@@ -656,8 +665,41 @@ const handler = createMcpHandler(
   }
 );
 
-// Capture the Authorization header so tools can authenticate with a static API key.
-const withAuthHeader = (req: Request) =>
-  requestAuth.run({ authorization: req.headers.get("authorization") }, () => handler(req));
+// Authenticates at the HTTP layer so unauthenticated clients get the OAuth challenge
+// (401 + WWW-Authenticate) they need to start the connector sign-in flow.
+async function withAuthHeader(req: Request) {
+  const authorization = req.headers.get("authorization");
+  const base = baseUrlFrom(req.headers, req.url);
+  const challenge = (error?: string) =>
+    new Response(JSON.stringify({ error: error ?? "unauthorized", error_description: "Authenticate via OAuth or send a bearer API key." }), {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+        "WWW-Authenticate": `Bearer resource_metadata="${base}/.well-known/oauth-protected-resource"${error ? `, error="${error}"` : ""}`,
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Expose-Headers": "WWW-Authenticate",
+      },
+    });
+
+  if (authorization) {
+    const token = authorization.replace(/^bearer\s+/i, "").trim();
+    const apiKey = process.env.MCP_API_KEY;
+    const ok = (apiKey && safeEqual(token, apiKey)) || isValidAccessToken(token);
+    if (!ok) return challenge("invalid_token");
+  } else {
+    // Legacy flow: the `login` tool and calls carrying a session_token work without a header.
+    let legacy = false;
+    if (req.method === "POST") {
+      try {
+        const body = await req.clone().text();
+        legacy = /"name"\s*:\s*"login"/.test(body) || body.includes('"session_token"');
+      } catch {
+        /* treat as unauthenticated */
+      }
+    }
+    if (!legacy) return challenge();
+  }
+  return requestAuth.run({ authorization }, () => handler(req));
+}
 
 export { withAuthHeader as GET, withAuthHeader as POST };

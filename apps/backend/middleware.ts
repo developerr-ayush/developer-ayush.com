@@ -26,6 +26,12 @@ export default auth((req) => {
     nextUrl.pathname.startsWith("/api/mcp") ||
     nextUrl.pathname.startsWith("/api/sse");
 
+  // OAuth discovery + consent page for the MCP connector: public by design
+  // (the consent page does its own sign-in; /api/oauth/* is covered by apiAuthPrefix).
+  if (nextUrl.pathname.startsWith("/.well-known/") || nextUrl.pathname.startsWith("/oauth/")) {
+    return;
+  }
+
   // MCP route — has its own JWT auth, bypass NextAuth
   if (isMcpRoute) {
     if (req.method === "OPTIONS") {
