@@ -36,8 +36,6 @@ services:
       AUTH_SECRET: ${AUTH_SECRET:-local-dev-secret-change-me-0123456789}
       AUTH_TRUST_HOST: "true"
       NEXTAUTH_URL: http://localhost:3001
-      # The Groq route builds its client at import time and throws without a key.
-      GROQ_API_KEY: ${GROQ_API_KEY:-unused}
       SEED_ON_START: ${SEED_ON_START:-0}
     ports:
       - "3001:3001"
