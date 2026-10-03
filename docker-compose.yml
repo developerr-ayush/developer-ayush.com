@@ -1,0 +1,56 @@
+# Local development: Postgres + the admin/API on http://localhost:3001
+#   docker compose up --build
+# Optional secrets (Cloudinary, Gemini, ...) go in apps/backend/.env.docker (git-ignored).
+# Production is unchanged: Vercel plus your hosted DATABASE_URL.
+name: ayush
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ayush
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ayush"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile.dev
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - path: apps/backend/.env.docker
+        required: false
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/ayush
+      AUTH_SECRET: ${AUTH_SECRET:-local-dev-secret-change-me-0123456789}
+      AUTH_TRUST_HOST: "true"
+      NEXTAUTH_URL: http://localhost:3001
+      # The Groq route builds its client at import time and throws without a key.
+      GROQ_API_KEY: ${GROQ_API_KEY:-unused}
+      SEED_ON_START: ${SEED_ON_START:-0}
+    ports:
+      - "3001:3001"
+    volumes:
+      # Source is mounted for hot reload; node_modules stay inside the container.
+      - ./apps/backend:/app/apps/backend
+      - ./packages:/app/packages
+      - /app/node_modules
+      - /app/apps/backend/node_modules
+      - /app/apps/backend/.next
+      - /app/packages/ui/node_modules
+      - /app/packages/eslint-config/node_modules
+      - /app/packages/typescript-config/node_modules
+
+volumes:
+  pgdata:

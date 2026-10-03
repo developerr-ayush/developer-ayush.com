@@ -82,3 +82,17 @@ Learn more about the power of Turborepo:
 - [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
 - [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
 - [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+
+## Local development with Docker (admin/API)
+
+```sh
+docker compose up --build            # Postgres + apps/backend on http://localhost:3001
+SEED_ON_START=1 docker compose up    # also load slang + demo users (owner@example.com / demo-password-123)
+docker compose down -v               # wipe the local database
+```
+
+- Local runs against its **own Postgres container**; it refuses to start if `DATABASE_URL` isn't that container, so production data is never touched.
+- Put optional secrets (Cloudinary, Gemini, ...) in `apps/backend/.env.docker` (git-ignored).
+- The committed Prisma migrations don't cover the full schema, so local uses `prisma db push`.
+- After changing dependencies: `docker compose build && docker compose down -v`.
+- Production is unchanged: Vercel with your hosted `DATABASE_URL` set in project env vars.

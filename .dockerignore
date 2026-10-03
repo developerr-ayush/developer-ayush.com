@@ -1,0 +1,8 @@
+**/node_modules
+**/.next
+**/.turbo
+.git
+**/.env*
+apps/frontend
+apps/products
+apps/slangs
