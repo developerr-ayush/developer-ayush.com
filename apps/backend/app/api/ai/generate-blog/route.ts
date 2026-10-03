@@ -62,9 +62,6 @@ async function generateBlogInBackground(jobId: string, prompt: string, simplifie
 
         const fullSystemMessage = `${systemMessage} ${template}\n\nGuidelines:\n${responseFormat.guidelines.map((g, i) => `${i + 1}. ${g}`).join("\n")}`;
 
-        // Add 15 seconds delay as requested
-        await new Promise(resolve => setTimeout(resolve, 15000));
-
         const modelName = model || getDefaultModel("gemini");
         const geminiModel = genAI.getGenerativeModel({ model: modelName });
 
