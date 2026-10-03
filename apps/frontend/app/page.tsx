@@ -3,63 +3,75 @@ import About from "./components/About";
 import Experience from "./components/Experience";
 import Skills from "./components/Skills";
 import Portfolio from "./components/Portfolio";
-import Services from "./components/Services";
 import Contact from "./components/Contact";
 import BlogSection from "./components/BlogSection";
+import JsonLd from "./components/JsonLd";
 import { getBlogPosts } from "./blogData";
-import { personalInfo, socialLinks } from "./data";
-import Script from "next/script";
+import {
+  experienceData,
+  personalInfo,
+  projects,
+  SITE_URL,
+  skillGroups,
+  socialLinks,
+} from "./data";
+import profileImage from "./assets/img/personal/ayush-shah.png";
 
 export default async function Home() {
   const blogData = await getBlogPosts(1);
   const blogPosts = blogData.data || [];
 
-  // Prepare structured data for JSON-LD
+  const currentJob = experienceData[0];
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
+    url: SITE_URL,
     mainEntity: {
       "@type": "Person",
+      "@id": `${SITE_URL}/#person`,
       name: personalInfo.name,
-      alternateName: "UI/UX Developer",
-      description:
-        "UI/UX & Frontend Developer specializing in creating responsive, user-friendly web experiences with modern technologies.",
-      image: "/android-chrome-512x512.png",
-      sameAs: socialLinks.map((link) => link.url),
-      jobTitle: "UI/UX & Frontend Developer",
-      worksFor: {
-        "@type": "Organization",
-        name: "Freelance",
-      },
+      url: SITE_URL,
+      image: `${SITE_URL}${profileImage.src}`,
+      description: personalInfo.tagline,
+      jobTitle: personalInfo.title,
+      email: `mailto:${personalInfo.email}`,
+      worksFor: currentJob
+        ? { "@type": "Organization", name: currentJob.company }
+        : undefined,
       address: {
         "@type": "PostalAddress",
         addressLocality: "Mumbai",
         addressRegion: "Maharashtra",
-        addressCountry: "India",
+        addressCountry: "IN",
       },
-      email: personalInfo.email,
-      telephone: personalInfo.phone,
-      url: "https://developer-ayush.com",
+      knowsAbout: skillGroups
+        .filter((g) => g.title !== "Tools")
+        .flatMap((g) => g.items),
+      sameAs: socialLinks.map((link) => link.url),
+      owns: projects
+        .filter((p) => p.github || p.live)
+        .slice(0, 3)
+        .map((p) => ({
+          "@type": "SoftwareSourceCode",
+          name: p.title,
+          description: p.description,
+          codeRepository: p.github,
+          url: p.live ?? p.github,
+        })),
     },
   };
 
   return (
-    <main>
-      {/* JSON-LD structured data */}
-      <Script
-        id="structured-data"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-
+    <>
+      <JsonLd data={structuredData} />
       <Hero />
-      <About />
+      <Portfolio />
       <Experience />
       <Skills />
-      <Portfolio />
-      <Services />
+      <About />
       <BlogSection posts={blogPosts} />
       <Contact />
-    </main>
+    </>
   );
 }

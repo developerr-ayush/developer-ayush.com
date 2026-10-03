@@ -1,165 +1,255 @@
-"use client";
-
-import { portfolioData } from "../data";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { FiArrowUpRight, FiGithub, FiPlus } from "react-icons/fi";
+import { archive, projects, type Project } from "../data";
+import SectionHeader from "./SectionHeader";
 
-const Portfolio = () => {
-  const [activeFilter, setActiveFilter] = useState("All");
-  const [filteredProjects, setFilteredProjects] = useState(portfolioData);
-  const [visibleProjects, setVisibleProjects] = useState(6);
+function ExternalLink({
+  href,
+  label,
+  project,
+  icon,
+}: {
+  href: string;
+  label: string;
+  project: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium link-underline"
+    >
+      {icon}
+      {label}
+      <span className="sr-only">
+        {" "}
+        for {project} (opens in a new tab)
+      </span>
+    </a>
+  );
+}
 
-  // Most common skills for filter buttons
-  const popularSkills = ["React", "JavaScript", "HTML5", "SCSS", "CSS3"];
+function ProjectMedia({
+  project,
+  sizes,
+  className = "",
+}: {
+  project: Project;
+  sizes: string;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`relative overflow-hidden rounded-2xl border border-line bg-surface ${className}`}
+    >
+      {project.image ? (
+        <Image
+          src={project.image}
+          alt={project.imageAlt ?? ""}
+          fill
+          sizes={sizes}
+          placeholder="blur"
+          className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+        />
+      ) : (
+        // Typographic cover for projects without a screenshot
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 flex flex-col justify-between bg-ink p-6 text-paper sm:p-8"
+        >
+          <span className="eyebrow text-paper/60">{project.kind}</span>
+          <span className="display text-5xl sm:text-6xl [text-wrap:balance]">
+            {project.title}
+          </span>
+          <span className="flex flex-wrap gap-x-3 font-mono text-xs text-paper/60">
+            {project.stack.slice(0, 4).map((s) => (
+              <span key={s}>{s}</span>
+            ))}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
 
-  // Filter projects based on selected skill
-  useEffect(() => {
-    if (activeFilter === "All") {
-      setFilteredProjects(portfolioData);
-    } else {
-      const filtered = portfolioData.filter((project) =>
-        project.skillsUsed.includes(activeFilter)
-      );
-      setFilteredProjects(filtered);
-    }
-    setVisibleProjects(6); // Reset visible count when filter changes
-  }, [activeFilter]);
+function ProjectLinks({ project }: { project: Project }) {
+  if (!project.live && !project.github) return null;
+  return (
+    <div className="flex flex-wrap gap-x-6">
+      {project.live && (
+        <ExternalLink
+          href={project.live}
+          label="Live site"
+          project={project.title}
+          icon={<FiArrowUpRight aria-hidden="true" />}
+        />
+      )}
+      {project.github && (
+        <ExternalLink
+          href={project.github}
+          label="GitHub"
+          project={project.title}
+          icon={<FiGithub aria-hidden="true" />}
+        />
+      )}
+    </div>
+  );
+}
 
-  const loadMore = () => {
-    setVisibleProjects((prev) => Math.min(prev + 6, filteredProjects.length));
-  };
+function Stack({ items }: { items: string[] }) {
+  return (
+    <ul className="flex flex-wrap gap-1.5" aria-label="Tech stack">
+      {items.map((item) => (
+        <li key={item} className="chip">
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function ProjectMeta({ project }: { project: Project }) {
+  return (
+    <p className="eyebrow flex flex-wrap gap-x-3">
+      <span>{project.kind}</span>
+      {project.year && <span>{project.year}</span>}
+    </p>
+  );
+}
+
+function FeaturedProject({ project }: { project: Project }) {
+  return (
+    <article
+      aria-labelledby={`project-${project.slug}`}
+      className="group reveal grid gap-8 md:grid-cols-12"
+    >
+      <ProjectMedia
+        project={project}
+        sizes="(max-width: 768px) 100vw, 60vw"
+        className="aspect-[16/10] md:sticky md:top-24 md:col-span-7 md:self-start"
+      />
+      <div className="flex flex-col gap-5 md:col-span-5">
+        <ProjectMeta project={project} />
+        <h3
+          id={`project-${project.slug}`}
+          className="display text-5xl lg:text-6xl"
+        >
+          {project.title}
+        </h3>
+        <p className="leading-relaxed text-muted">{project.description}</p>
+        {project.highlights && (
+          <ul className="space-y-2 text-sm leading-relaxed">
+            {project.highlights.map((h) => (
+              <li key={h} className="flex gap-3">
+                <span aria-hidden="true" className="mt-2 h-px w-3 shrink-0 bg-accent" />
+                {h}
+              </li>
+            ))}
+          </ul>
+        )}
+        <Stack items={project.stack} />
+        <ProjectLinks project={project} />
+      </div>
+    </article>
+  );
+}
+
+function ProjectCard({ project }: { project: Project }) {
+  return (
+    <article
+      aria-labelledby={`project-${project.slug}`}
+      className="group reveal flex flex-col gap-5"
+    >
+      <ProjectMedia
+        project={project}
+        sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 600px"
+        className="aspect-[16/10]"
+      />
+      <div className="flex flex-1 flex-col gap-4">
+        <ProjectMeta project={project} />
+        <h3
+          id={`project-${project.slug}`}
+          className="display text-4xl"
+        >
+          {project.title}
+        </h3>
+        <p className="leading-relaxed text-muted">{project.description}</p>
+        <Stack items={project.stack} />
+        <div className="mt-auto">
+          <ProjectLinks project={project} />
+        </div>
+      </div>
+    </article>
+  );
+}
+
+export default function Portfolio() {
+  const [featured, ...rest] = projects;
 
   return (
-    <section id="portfolio" className="py-20 bg-black/5">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <span className="bg-gradient-to-r from-sky-500 to-sky-600 bg-clip-text text-transparent uppercase tracking-wider font-semibold">
-            Recent Work
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">
-            My Portfolio
-          </h2>
-          <p className="text-foreground/75 max-w-2xl mx-auto">
-            Check out some of my latest projects. Each project represents a
-            unique challenge I&apos;ve tackled using various technologies.
-          </p>
-        </div>
+    <section
+      id="portfolio"
+      aria-labelledby="work-title"
+      className="container-x py-20 lg:py-28"
+    >
+      <SectionHeader index="01" label="Selected work" id="work-title">
+        Things I&apos;ve <em>built</em>
+      </SectionHeader>
 
-        {/* Filter buttons */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
-          <button
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-              activeFilter === "All"
-                ? "bg-sky-500 text-white"
-                : "bg-sky-500/10 text-sky-500 hover:bg-sky-500/20"
-            }`}
-            onClick={() => setActiveFilter("All")}
-          >
-            All Projects
-          </button>
-
-          {popularSkills.map((skill) => (
-            <button
-              key={skill}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                activeFilter === skill
-                  ? "bg-sky-500 text-white"
-                  : "bg-sky-500/10 text-sky-500 hover:bg-sky-500/20"
-              }`}
-              onClick={() => setActiveFilter(skill)}
-            >
-              {skill}
-            </button>
+      <div className="mt-14 space-y-20">
+        {featured && <FeaturedProject project={featured} />}
+        <div className="grid gap-x-8 gap-y-16 sm:grid-cols-2">
+          {rest.map((project) => (
+            <ProjectCard key={project.slug} project={project} />
           ))}
         </div>
-
-        {/* Project Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.slice(0, visibleProjects).map((project, index) => (
-            <div
-              key={index}
-              className="bg-white/5 rounded-xl overflow-hidden shadow-xl hover:shadow-sky-500/10 transition-all hover:-translate-y-1 hover:bg-white/10 group"
-            >
-              <div className="relative aspect-video  w-full overflow-hidden">
-                <Image
-                  src={project.image}
-                  alt={project.title}
-                  className="object-cover transform group-hover:object-bottom object-top transition-object duration-[10s]"
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-70 transition-opacity" />
-              </div>
-              <div className="p-6">
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {project.skillsUsed.slice(0, 3).map((skill, idx) => (
-                    <span
-                      key={idx}
-                      className="text-xs px-2 py-1 rounded-full bg-sky-500/10 text-sky-500"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                  {project.skillsUsed.length > 3 && (
-                    <span className="text-xs px-2 py-1 rounded-full bg-sky-500/5 text-sky-500/80">
-                      +{project.skillsUsed.length - 3}
-                    </span>
-                  )}
-                </div>
-
-                <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-                <p className="text-foreground/70 mb-4 line-clamp-3">
-                  {project.detail}
-                </p>
-                <a
-                  href={project.redirectLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center text-sky-500 hover:text-sky-400 transition-colors"
-                >
-                  View Project
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 ml-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M14 5l7 7m0 0l-7 7m7-7H3"
-                    />
-                  </svg>
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Load More button */}
-        {visibleProjects < filteredProjects.length && (
-          <div className="text-center mt-10">
-            <button
-              onClick={loadMore}
-              className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-full font-medium transition-colors"
-            >
-              Load More Projects
-            </button>
-          </div>
-        )}
-
-        {filteredProjects.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-foreground/70">
-              No projects found with the selected filter. Try another category.
-            </p>
-          </div>
-        )}
       </div>
+
+      <details className="group/archive mt-20 border-y border-line">
+        <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 py-4 [&::-webkit-details-marker]:hidden">
+          <span>
+            <span className="display text-3xl">Earlier experiments</span>
+            <span className="eyebrow ml-3">{archive.length} projects</span>
+          </span>
+          <FiPlus
+            aria-hidden="true"
+            className="h-5 w-5 transition-transform group-open/archive:rotate-45"
+          />
+        </summary>
+        <ul className="divide-y divide-line border-t border-line">
+          {archive.map((item) => (
+            <li
+              key={item.title}
+              className="grid gap-1 py-4 sm:grid-cols-12 sm:items-center sm:gap-4"
+            >
+              <span className="font-medium sm:col-span-4">{item.title}</span>
+              <span className="text-sm text-muted sm:col-span-5">
+                {item.note}
+              </span>
+              <span className="flex gap-5 sm:col-span-3 sm:justify-end">
+                {item.live && (
+                  <ExternalLink
+                    href={item.live}
+                    label="Live"
+                    project={item.title}
+                    icon={<FiArrowUpRight aria-hidden="true" />}
+                  />
+                )}
+                {item.github && (
+                  <ExternalLink
+                    href={item.github}
+                    label="Code"
+                    project={item.title}
+                    icon={<FiGithub aria-hidden="true" />}
+                  />
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </details>
     </section>
   );
-};
-
-export default Portfolio;
+}
