@@ -1,0 +1,267 @@
+/*
+ * Writing canvas. Mirrors the live post: Instrument Serif headings, a 68ch
+ * measure, Geist body text and the same code-block treatment. Everything
+ * is token driven so it follows the light / dark theme.
+ */
+.post-canvas {
+  --measure: 68ch;
+  min-height: 420px;
+  font-size: 17px;
+  line-height: 1.72;
+  color: var(--ink);
+}
+
+.post-canvas .codex-editor__redactor {
+  padding-bottom: 120px !important;
+}
+
+.post-canvas .ce-block__content,
+.post-canvas .ce-toolbar__content {
+  max-width: var(--measure);
+  margin-left: 0;
+  margin-right: auto;
+}
+
+/* Paragraphs */
+.post-canvas .ce-paragraph {
+  line-height: 1.72;
+  padding: 0.35em 0;
+}
+.post-canvas .ce-paragraph[data-placeholder]:empty::before {
+  color: color-mix(in srgb, var(--muted) 70%, transparent);
+}
+.post-canvas .ce-paragraph a,
+.post-canvas .cdx-list a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.post-canvas .cdx-marker {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: inherit;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+/* Headings: serif, like the post page */
+.post-canvas .ce-header {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.012em;
+  line-height: 1.15;
+  padding: 0.6em 0 0.2em;
+  color: var(--ink);
+}
+.post-canvas h1.ce-header { font-size: 2.4rem; }
+.post-canvas h2.ce-header { font-size: 2rem; margin-top: 0.6em; }
+.post-canvas h3.ce-header { font-size: 1.55rem; }
+.post-canvas h4.ce-header { font-size: 1.3rem; }
+.post-canvas h5.ce-header,
+.post-canvas h6.ce-header { font-size: 1.1rem; font-family: var(--font-sans); font-weight: 600; letter-spacing: 0; }
+
+/* Lists */
+.post-canvas .cdx-list,
+.post-canvas .cdx-nested-list {
+  padding-left: 1.4em;
+  margin: 0;
+}
+.post-canvas .cdx-list__item,
+.post-canvas .cdx-nested-list__item-content {
+  padding: 0.15em 0.2em;
+  line-height: 1.65;
+}
+.post-canvas .cdx-nested-list__item::before {
+  color: var(--muted);
+}
+
+/* Quote */
+.post-canvas .cdx-quote__text,
+.post-canvas .cdx-quote__caption {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: 0.4em 0 0.4em 1.1em;
+  border-left: 2px solid var(--line);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.35rem;
+  line-height: 1.45;
+  min-height: 0;
+}
+.post-canvas .cdx-quote__caption {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.post-canvas .cdx-quote [data-placeholder]:empty::before {
+  color: color-mix(in srgb, var(--muted) 70%, transparent);
+}
+
+/* Code blocks: same look as the live post */
+.post-canvas .ce-code__textarea {
+  background: var(--code-bg);
+  border: 1px solid color-mix(in srgb, var(--ink) 16%, var(--line));
+  border-radius: 10px;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.6;
+  padding: 16px 18px;
+  min-height: 90px;
+  box-shadow: none;
+  tab-size: 2;
+}
+.post-canvas .ce-code__textarea:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+.post-canvas .ce-code__language-input,
+.post-canvas .ce-code__language-select {
+  font-family: var(--font-mono);
+}
+
+/* Delimiter */
+.post-canvas .ce-delimiter {
+  line-height: 1.6em;
+  text-align: center;
+  color: var(--muted);
+}
+.post-canvas .ce-delimiter::before {
+  content: "· · ·";
+  font-size: 1.4rem;
+  letter-spacing: 0.6em;
+  display: inline-block;
+}
+
+/* Tables */
+.post-canvas .tc-table {
+  border-color: var(--line);
+}
+.post-canvas .tc-cell {
+  border-color: var(--line);
+  padding: 8px 10px;
+  font-size: 15px;
+}
+.post-canvas .tc-row--selected,
+.post-canvas .tc-cell--selected {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.post-canvas .tc-add-row:hover::before,
+.post-canvas .tc-add-column:hover {
+  background: var(--surface-2);
+}
+.post-canvas .tc-add-row:hover::before {
+  background: var(--accent);
+}
+
+/* Images / embeds / raw */
+.post-canvas .image-tool__image-picture {
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  max-width: 100%;
+}
+.post-canvas .image-tool__caption,
+.post-canvas .cdx-input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--muted);
+  font-size: 14px;
+}
+.post-canvas .cdx-button {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 8px;
+  box-shadow: none;
+}
+.post-canvas .ce-block--selected .ce-block__content {
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  border-radius: 6px;
+}
+.post-canvas .ce-block--focused .ce-block__content {
+  background: transparent;
+}
+
+/* ── Editor.js chrome (toolbar, popovers) mapped to tokens ──── */
+.post-canvas .ce-toolbar__plus,
+.post-canvas .ce-toolbar__settings-btn {
+  color: var(--muted);
+  border-radius: 8px;
+}
+.post-canvas .ce-toolbar__plus:hover,
+.post-canvas .ce-toolbar__settings-btn:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.ce-popover,
+.ce-inline-toolbar,
+.ce-conversion-toolbar,
+.ce-settings {
+  --color-background: var(--surface);
+  --color-border: var(--line);
+  --color-text-secondary: var(--muted);
+  --color-background-item-hover: var(--surface-2);
+  --color-background-item-active: var(--surface-2);
+  --color-border-icon: var(--line);
+  --color-shadow-icon: transparent;
+  --color-background-icon-active: var(--accent);
+  --color-border-popover: var(--line);
+  --color-popover-shadow: transparent;
+}
+.ce-popover__container,
+.ce-inline-toolbar,
+.ce-conversion-toolbar,
+.ce-settings {
+  background: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 10px !important;
+  color: var(--ink) !important;
+  box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.4) !important;
+}
+.ce-popover-item,
+.ce-inline-tool,
+.ce-conversion-tool,
+.ce-settings__button {
+  color: var(--ink);
+}
+.ce-popover-item__title,
+.ce-popover-item__secondary-title {
+  font-family: var(--font-sans);
+  font-size: 13px;
+}
+.ce-popover-item__icon {
+  background: var(--surface-2) !important;
+  box-shadow: none !important;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+.ce-popover-item:hover:not(.ce-popover-item--no-hover),
+.ce-popover-item--focused:not(.ce-popover-item--no-focus) {
+  background: var(--surface-2) !important;
+}
+.ce-popover-item--active .ce-popover-item__icon {
+  background: var(--accent) !important;
+  color: var(--on-accent);
+}
+.ce-popover__search .cdx-search-field {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.ce-popover__search .cdx-search-field__input {
+  color: var(--ink);
+}
+.ce-inline-tool:hover,
+.ce-inline-tool--active,
+.ce-inline-toolbar__dropdown:hover {
+  background: var(--surface-2) !important;
+  color: var(--accent);
+}
+.ce-popover-item-separator__line {
+  background: var(--line);
+}

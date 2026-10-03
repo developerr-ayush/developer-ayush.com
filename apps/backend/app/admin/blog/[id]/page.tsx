@@ -1,88 +1,66 @@
-import { db } from "../../../../lib/db";
-import { notFound } from "next/navigation";
-import BlogForm from "../blog-form";
-import { auth } from "../../../../auth";
-import ApprovalActions from "../approval-actions";
-import DeleteButton from "../delete-button";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ShieldAlert } from "lucide-react";
-/* eslint-disable  @typescript-eslint/no-explicit-any */
+import { notFound } from "next/navigation";
+import { ShieldAlert } from "lucide-react";
+import { auth } from "../../../../auth";
+import { db } from "../../../../lib/db";
+import PostEditor from "../post-editor";
+import { EmptyState } from "../../../../components/ui/empty-state";
 
-export default async function BlogPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export const metadata: Metadata = { title: "Edit post" };
+export const dynamic = "force-dynamic";
+
+export default async function EditBlogPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await auth();
+  if (!session?.user) return null;
+  const isAdmin = session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN";
 
-  if (!session?.user) {
-    return <div className="text-slate-400 p-6">Not authenticated</div>;
-  }
-
-  const isAdmin =
-    session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN";
-
-  try {
-    const blog = await db.blog.findUnique({
+  const [blog, cats] = await Promise.all([
+    db.blog.findUnique({
       where: { id },
       include: {
-        categories: true,
-        author: {
-          select: { id: true, name: true, email: true, role: true },
-        },
+        categories: { select: { name: true } },
+        author: { select: { name: true, email: true, role: true } },
       },
-    });
+    }),
+    db.category.findMany({ orderBy: { name: "asc" }, select: { name: true } }),
+  ]);
+  if (!blog) notFound();
 
-    if (!blog) notFound();
-
-    const isAuthor = blog.author.email === session.user.email;
-    if (!isAuthor && !isAdmin) {
-      return (
-        <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-6 py-16">
-          <div className="w-16 h-16 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center justify-center mb-5">
-            <ShieldAlert className="w-7 h-7 text-rose-400" />
-          </div>
-          <h2 className="text-xl font-bold text-white mb-2">Permission Denied</h2>
-          <p className="text-sm text-slate-400">You don&apos;t have permission to edit this blog post.</p>
-        </div>
-      );
-    }
-
-    const showApprovalActions = isAdmin && !isAuthor && blog.author.role === "USER";
-
+  if (!isAdmin && blog.author.email !== session.user.email) {
     return (
-      <div className="space-y-6">
-        {/* Back */}
-        <Link href="/admin/blog"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-300 transition-colors">
-          <ArrowLeft className="w-3.5 h-3.5" /> Back to Posts
-        </Link>
-
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Edit Blog Post</h1>
-            <p className="mt-1 text-sm text-slate-400 truncate max-w-xl">{blog.title}</p>
-          </div>
-          <DeleteButton blogId={blog.id} authorEmail={blog.author.email} />
-        </div>
-
-        {/* Approval actions */}
-        {showApprovalActions && (
-          <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4">
-            <ApprovalActions blog={blog} />
-          </div>
-        )}
-
-        {/* Form card */}
-        <div className="bg-white/[0.03] border border-white/8 rounded-2xl overflow-hidden">
-          <BlogForm blog={blog as any} />
-        </div>
-      </div>
+      <EmptyState
+        icon={<ShieldAlert className="size-6 text-danger" aria-hidden="true" />}
+        title="You can't edit this post"
+        description="Only its author or an admin can open it."
+        action={
+          <Link href="/admin/blog" className="btn">
+            Back to posts
+          </Link>
+        }
+      />
     );
-  } catch (error) {
-    console.error("Error fetching blog:", error);
-    return <div className="text-slate-400 p-6">Error loading blog post</div>;
   }
+
+  return (
+    <PostEditor
+      allCategories={cats.map((c) => c.name)}
+      post={{
+        id: blog.id,
+        title: blog.title ?? "",
+        slug: blog.slug ?? "",
+        description: blog.description ?? "",
+        banner: blog.banner ?? "",
+        tags: blog.tags ?? "",
+        status: blog.status,
+        approved: blog.approved,
+        content: blog.content,
+        categories: blog.categories.map((c) => c.name),
+        authorName: blog.author.name,
+        authorEmail: blog.author.email,
+        authorRole: blog.author.role,
+      }}
+    />
+  );
 }
