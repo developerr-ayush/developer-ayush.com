@@ -1,17 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { getBlogPosts, BlogPost } from "../blogData";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { getBlogPosts, BlogPost, PaginationResponse } from "../blogData";
 import BlogCard from "./BlogCard";
-
-interface Meta {
-  totalPages?: number;
-  [key: string]: any;
-}
 
 interface BlogListProps {
   initialPosts: BlogPost[];
-  initialMeta: Meta;
+  initialMeta: Partial<PaginationResponse<BlogPost>["meta"]>;
 }
 
 const POSTS_PER_PAGE = 10;
@@ -20,14 +15,15 @@ export default function BlogList({ initialPosts, initialMeta }: BlogListProps) {
   const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(
-    initialPosts.length >= POSTS_PER_PAGE
+    initialPosts.length >= POSTS_PER_PAGE &&
+      (initialMeta.totalPages === undefined || initialMeta.totalPages > 1)
   );
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  const fetchNextPage = async () => {
+  const fetchNextPage = useCallback(async () => {
     if (isFetching || !hasNextPage) return;
     setIsFetching(true);
     setError(null);
@@ -53,66 +49,64 @@ export default function BlogList({ initialPosts, initialMeta }: BlogListProps) {
     } finally {
       setIsFetching(false);
     }
-  };
+  }, [isFetching, hasNextPage, page]);
 
   // Intersection observer for infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries.length > 0 && entries[0] && entries[0].isIntersecting && hasNextPage && !isFetching) {
+        if (entries[0]?.isIntersecting && hasNextPage && !isFetching) {
           fetchNextPage();
         }
       },
-      { threshold: 0.1 }
+      { rootMargin: "400px 0px" }
     );
 
     if (loaderRef.current) observer.observe(loaderRef.current);
     return () => observer.disconnect();
-  }, [hasNextPage, isFetching]);
-  console.log(initialPosts)
+  }, [hasNextPage, isFetching, fetchNextPage]);
+
   return (
     <>
-      {error && (
-        <div className="text-center py-8 mb-8 bg-red-500/10 rounded-lg border border-red-500/20">
-          <p className="text-red-500">{error}</p>
-          <button
-            onClick={fetchNextPage}
-            className="mt-4 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg"
-          >
-            Try Again
-          </button>
-        </div>
-      )}
-
       {posts.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <ul className="grid gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-3">
           {posts.map((post, index) => (
-            <BlogCard key={post.id || index} post={post} index={index} />
+            <li key={post.id || index}>
+              <BlogCard post={post} index={index} />
+            </li>
           ))}
-        </div>
+        </ul>
       ) : (
-        <div className="text-center py-16">
-          <h3 className="text-xl font-semibold mb-2">No blog posts found</h3>
-          <p className="text-foreground/60">Check back later for new content</p>
+        <div className="rounded-2xl border border-dashed border-line px-6 py-16 text-center">
+          <p className="display text-3xl">No posts yet</p>
+          <p className="mt-2 text-muted">Check back later for new writing.</p>
         </div>
       )}
 
-      {/* Scroll trigger */}
-      <div ref={loaderRef} className="mt-10 py-6 flex justify-center items-center">
-        {isFetching && (
-          <div className="flex items-center justify-center space-x-2">
-            <div className="w-4 h-4 rounded-full bg-sky-500 animate-pulse" />
-            <div className="w-4 h-4 rounded-full bg-sky-500 animate-pulse" style={{ animationDelay: "0.2s" }} />
-            <div className="w-4 h-4 rounded-full bg-sky-500 animate-pulse" style={{ animationDelay: "0.4s" }} />
+      {/* Scroll trigger + status */}
+      <div
+        ref={loaderRef}
+        className="mt-14 flex min-h-12 flex-col items-center justify-center gap-4 text-sm text-muted"
+        aria-live="polite"
+      >
+        {error && (
+          <div role="alert" className="flex flex-col items-center gap-3">
+            <p className="text-accent">{error}</p>
+            <button type="button" onClick={fetchNextPage} className="btn btn-ghost">
+              Try again
+            </button>
           </div>
         )}
+        {isFetching && <p>Loading more posts…</p>}
+        {!isFetching && !error && hasNextPage && (
+          <button type="button" onClick={fetchNextPage} className="btn btn-ghost">
+            Load more posts
+          </button>
+        )}
+        {!hasNextPage && posts.length > 0 && !isFetching && (
+          <p>You&apos;ve reached the end.</p>
+        )}
       </div>
-
-      {!hasNextPage && posts.length > 0 && !isFetching && (
-        <div className="mt-10 text-center text-foreground/60">
-          You&apos;ve reached the end of the blog posts
-        </div>
-      )}
     </>
   );
 }

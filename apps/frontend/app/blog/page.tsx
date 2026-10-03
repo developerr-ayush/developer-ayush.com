@@ -1,14 +1,28 @@
 import { getBlogPosts, BlogPost } from "../blogData";
 import BlogList from "../components/BlogList";
-import Script from "next/script";
+import JsonLd from "../components/JsonLd";
+import { SITE_URL } from "../data";
 import { Metadata } from "next";
 
+const description =
+  "Notes, technical guides and lessons from building fast, accessible web apps with React and Next.js.";
+
 export const metadata: Metadata = {
-  title: "Blog | Frontend Development, UI/UX, and Web Technologies",
-  description:
-    "Thoughts, technical guides, and insights about web development, programming, and my journey as a developer.",
+  title: "Blog",
+  description,
   alternates: {
-    canonical: "https://developer-ayush.com/blog",
+    canonical: "/blog",
+  },
+  openGraph: {
+    type: "website",
+    url: "/blog",
+    title: "Blog — Ayush Shah",
+    description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog — Ayush Shah",
+    description,
   },
 };
 
@@ -20,40 +34,41 @@ export default async function BlogPage() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Blog",
-    headline: "Ayush Shah's Developer Blog",
-    description:
-      "Thoughts, technical guides, and insights about web development, programming, and my journey as a developer.",
-    url: "https://developer-ayush.com/blog",
-    author: { "@type": "Person", name: "Ayush Shah" },
+    name: "Ayush Shah's blog",
+    description,
+    url: `${SITE_URL}/blog`,
+    author: { "@type": "Person", name: "Ayush Shah", url: SITE_URL },
     blogPost: initialPosts.map((post) => ({
       "@type": "BlogPosting",
       headline: post.title,
       description: post.description,
       image: post.banner,
       datePublished: post.updatedAt,
-      author: { "@type": "Person", name: post.author.name },
-      url: `https://developer-ayush.com/blog/${post.slug}`,
+      dateModified: post.updatedAt,
+      author: { "@type": "Person", name: post.author?.name ?? "Ayush Shah" },
+      url: `${SITE_URL}/blog/${post.slug}`,
     })),
   };
 
   return (
-    <div className="py-20 md:py-28">
-      <Script
-        id="blog-list-structured-data"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center mb-12 md:mb-16">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-            My <span className="text-sky-500">Blog</span>
+    <div className="container-x pb-24 pt-12 sm:pt-16 lg:pt-24">
+      <JsonLd data={structuredData} />
+
+      <header className="grid gap-6 border-b border-line pb-12 md:grid-cols-12">
+        <p className="eyebrow md:col-span-3 md:pt-4">
+          <span className="text-accent">Blog</span> — Writing
+        </p>
+        <div className="md:col-span-9">
+          <h1 className="display text-6xl sm:text-7xl lg:text-8xl">
+            Notes from the <em className="text-accent">work</em>
           </h1>
-          <p className="text-foreground/70 max-w-2xl mx-auto">
-            Thoughts, technical guides, and insights about web development,
-            programming, and my journey as a developer.
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
+            {description}
           </p>
         </div>
+      </header>
 
+      <div className="mt-14">
         <BlogList initialPosts={initialPosts} initialMeta={initialMeta} />
       </div>
     </div>

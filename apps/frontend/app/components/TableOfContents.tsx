@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 
 type Heading = {
   id: string;
@@ -27,16 +26,15 @@ export default function TableOfContents() {
       }
     });
 
-    // Extract heading data
-    const headingElements = elements.map((el) => ({
-      id: el.id,
-      text: el.textContent || "",
-      level: parseInt(el.tagName.substring(1), 10),
-    }));
+    setHeadings(
+      elements.map((el) => ({
+        id: el.id,
+        text: el.textContent || "",
+        level: parseInt(el.tagName.substring(1), 10),
+      }))
+    );
 
-    setHeadings(headingElements);
-
-    // Setup intersection observer to track active heading
+    // Track the heading currently in view
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -45,18 +43,11 @@ export default function TableOfContents() {
           }
         });
       },
-      {
-        rootMargin: "-100px 0px -60% 0px",
-        threshold: 0,
-      }
+      { rootMargin: "-100px 0px -60% 0px", threshold: 0 }
     );
 
-    // Observe all heading elements
     elements.forEach((el) => observer.observe(el));
-
-    return () => {
-      elements.forEach((el) => observer.unobserve(el));
-    };
+    return () => observer.disconnect();
   }, []);
 
   if (headings.length < 3) {
@@ -64,44 +55,28 @@ export default function TableOfContents() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5 }}
-      className="toc mb-8 p-4 bg-foreground/5 rounded-lg border border-foreground/10"
-    >
-      <h2 className="text-lg font-semibold mb-3">Table of Contents</h2>
-      <ul className="space-y-2 text-sm">
+    <nav aria-labelledby="toc-title" className="mb-10">
+      <h2 id="toc-title" className="eyebrow mb-4">
+        On this page
+      </h2>
+      <ol className="space-y-1 border-l border-line text-sm">
         {headings.map((heading) => (
           <li
             key={heading.id}
-            className={`${
-              heading.level === 2
-                ? "ml-0"
-                : heading.level === 3
-                ? "ml-4"
-                : "ml-8"
-            }`}
+            className={
+              heading.level === 3 ? "pl-4" : heading.level === 4 ? "pl-8" : ""
+            }
           >
             <a
               href={`#${heading.id}`}
-              className={`${
-                activeId === heading.id
-                  ? "text-sky-500 font-medium"
-                  : "text-foreground/70 hover:text-sky-500"
-              } transition-colors duration-200 inline-block`}
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById(heading.id)?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }}
+              aria-current={activeId === heading.id ? "location" : undefined}
+              className="-ml-px block border-l-2 border-transparent py-1 pl-4 text-muted transition-colors hover:text-ink aria-[current=location]:border-accent aria-[current=location]:text-ink"
             >
               {heading.text}
             </a>
           </li>
         ))}
-      </ul>
-    </motion.div>
+      </ol>
+    </nav>
   );
 }
