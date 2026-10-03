@@ -23,6 +23,15 @@ const nextConfig = {
   reactStrictMode: true, // Enable React strict mode for better error catching
   sourceMaps: true,
 
+  // /about and /contact were listed in the old sitemap but never existed as
+  // pages; send them to the matching home-page sections.
+  async redirects() {
+    return [
+      { source: "/about", destination: "/#about", permanent: true },
+      { source: "/contact", destination: "/#contact", permanent: true },
+    ];
+  },
+
   // // Add configuration to serve static files from the ai-images directory
   // async rewrites() {
   //   return [
