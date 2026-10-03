@@ -49,7 +49,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(post.updatedAt),
     changeFrequency: "monthly",
     priority: 0.7,
-    images: post.banner ? [post.banner] : undefined,
+    // sitemap image URLs must be absolute (CMS banners are Cloudinary URLs)
+    images: post.banner?.startsWith("http") ? [post.banner] : undefined,
   }));
 
   return [...staticRoutes, ...blogPostRoutes];
