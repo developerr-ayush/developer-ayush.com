@@ -2,7 +2,11 @@ import { createMcpHandler } from "mcp-handler";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { AsyncLocalStorage } from "node:async_hooks";
+import { timingSafeEqual } from "node:crypto";
 import { db } from "../../../lib/db";
+import cloudinary from "../../../lib/cloudinary";
+import { validateBlogContent } from "../../../lib/blog-content";
 
 // ─── Auth helpers ─────────────────────────────────────────────────────────────
 
@@ -29,6 +33,62 @@ async function loginUser(email: string, password: string) {
   };
   const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "4h" });
   return { token, user: payload };
+}
+
+// Per-request Authorization header, so tools can authenticate without a login step.
+const requestAuth = new AsyncLocalStorage<{ authorization: string | null }>();
+
+function safeEqual(a: string, b: string) {
+  const x = Buffer.from(a);
+  const y = Buffer.from(b);
+  return x.length === y.length && timingSafeEqual(x, y);
+}
+
+/**
+ * Resolves the caller. Accepted, in order:
+ *  1. `session_token` argument (JWT from the `login` tool) — original behaviour
+ *  2. `Authorization: Bearer <MCP_API_KEY>` — static key for clients like ChatGPT that
+ *     can't run a login step. Acts as MCP_API_USER_EMAIL (default: first SUPER_ADMIN).
+ *  3. `Authorization: Bearer <JWT from login>`
+ */
+async function authenticate(sessionToken?: string): Promise<SessionPayload> {
+  if (sessionToken) return verifySession(sessionToken);
+
+  const header = requestAuth.getStore()?.authorization ?? "";
+  const bearer = header.toLowerCase().startsWith("bearer ") ? header.slice(7).trim() : "";
+  if (!bearer) {
+    throw new Error("Not authenticated. Send 'Authorization: Bearer <MCP_API_KEY>' or pass a session_token from login.");
+  }
+
+  const apiKey = process.env.MCP_API_KEY;
+  if (apiKey && safeEqual(bearer, apiKey)) {
+    const email = process.env.MCP_API_USER_EMAIL;
+    const user = email
+      ? await db.user.findUnique({ where: { email } })
+      : await db.user.findFirst({ where: { role: "SUPER_ADMIN" }, orderBy: { email: "asc" } });
+    if (!user) throw new Error("API key is valid but no matching MCP user exists. Set MCP_API_USER_EMAIL.");
+    return { userId: user.id, email: user.email, role: user.role as SessionPayload["role"], name: user.name ?? null };
+  }
+  return verifySession(bearer);
+}
+
+const isAdminRole = (s: SessionPayload) => s.role === "ADMIN" || s.role === "SUPER_ADMIN";
+
+const reply = (obj: unknown) => ({ content: [{ type: "text" as const, text: JSON.stringify(obj) }] });
+
+/** Authenticate, run, and convert any thrown error into an MCP-friendly error payload. */
+async function guarded(
+  sessionToken: string | undefined,
+  fn: (s: SessionPayload) => Promise<unknown>,
+  opts: { admin?: boolean } = {}
+) {
+  try {
+    const s = await authenticate(sessionToken);
+    if (opts.admin && !isAdminRole(s)) return reply({ error: "This action requires an ADMIN or SUPER_ADMIN account." });
+    return reply(await fn(s));
+  } catch (err) {
+    return reply({ error: err instanceof Error ? err.message : "Unexpected error" });
+  }
 }
 
 function verifySession(token: string): SessionPayload {
@@ -62,15 +122,6 @@ function resolveCategories(cats: string[]) {
       create: { name: cat, slug: cat.toLowerCase().replace(/ /g, "-") },
     })),
   };
-}
-
-function serializeContent(content?: string) {
-  if (!content) return "";
-  try {
-    return JSON.stringify(JSON.parse(content));
-  } catch {
-    return content;
-  }
 }
 
 // ─── MCP Handler ──────────────────────────────────────────────────────────────
@@ -118,9 +169,9 @@ const handler = createMcpHandler(
         description:
           "Create a new blog post. 'banner' is optional when status is 'draft'. 'content' should be an EditorJS OutputData JSON string or plain text. Categories are created automatically if they don't exist.",
         inputSchema: {
-          session_token: z.string().min(1).describe("Token from login tool"),
+          session_token: z.string().optional().describe("Optional: token from the login tool. Not needed when the request carries an Authorization bearer key."),
           title: z.string().min(10).max(255).describe("Blog title (10–255 chars)"),
-          content: z.string().optional().describe("EditorJS JSON string or plain text"),
+          content: z.string().optional().describe("Editor.js JSON ({\"blocks\":[{\"type\":\"paragraph\",\"data\":{\"text\":\"...\"}}]}) or plain text. Block types: header(text,level), paragraph(text), list(style,items), table(content[][]), image(file.url), code(code,language), embed(service,source), quote, delimiter. Plain text is split on blank lines; '# ' lines become headings. Invalid content is rejected with the exact reason."),
           description: z.string().max(1000).optional().describe("Short meta description"),
           banner: z
             .string()
@@ -134,7 +185,8 @@ const handler = createMcpHandler(
           slug: z.string().optional().describe("Auto-generated from title if omitted"),
           tags: z.string().optional().describe("Comma-separated tags"),
           categories: z
-            .array(z.string())
+            .array(z.string().trim().min(1).max(40))
+            .max(10)
             .optional()
             .default([])
             .describe("Category name array, e.g. ['TypeScript', 'React']"),
@@ -143,7 +195,7 @@ const handler = createMcpHandler(
       async ({ session_token, title, content, description, banner, status, slug, tags, categories }) => {
         let session: SessionPayload;
         try {
-          session = verifySession(session_token);
+          session = await authenticate(session_token);
         } catch (err) {
           return { content: [{ type: "text" as const, text: JSON.stringify({ error: err instanceof Error ? err.message : "Unauthorized" }) }] };
         }
@@ -157,6 +209,15 @@ const handler = createMcpHandler(
           };
         }
 
+        const checked = validateBlogContent(content);
+        if (!checked.ok) return { content: [{ type: "text" as const, text: JSON.stringify({ error: checked.error }) }] };
+        if (slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+          return { content: [{ type: "text" as const, text: JSON.stringify({ error: "slug must be lowercase letters, numbers and single hyphens, e.g. my-first-post." }) }] };
+        }
+        if (await db.blog.findUnique({ where: { title }, select: { id: true } })) {
+          return { content: [{ type: "text" as const, text: JSON.stringify({ error: `A post titled "${title}" already exists. Use a different title or update_blog.` }) }] };
+        }
+
         const baseSlug = slug || generateSlug(title);
         const uniqueSlug = makeUniqueSlug(baseSlug);
 
@@ -164,7 +225,7 @@ const handler = createMcpHandler(
           const blog = await db.blog.create({
             data: {
               title,
-              content: serializeContent(content),
+              content: checked.json,
               description: description ?? "",
               status: finalStatus,
               banner: banner ?? "",
@@ -205,7 +266,7 @@ const handler = createMcpHandler(
         description:
           "Update an existing blog post by ID. Only include fields you want to change — omitted fields stay unchanged. Publishing requires a banner URL.",
         inputSchema: {
-          session_token: z.string().min(1),
+          session_token: z.string().optional(),
           id: z.string().min(1).describe("Blog ID from create_blog or list_blogs"),
           title: z.string().min(10).max(255).optional(),
           content: z.string().optional(),
@@ -220,7 +281,7 @@ const handler = createMcpHandler(
       async ({ session_token, id, title, content, description, banner, status, slug, tags, categories }) => {
         let session: SessionPayload;
         try {
-          session = verifySession(session_token);
+          session = await authenticate(session_token);
         } catch (err) {
           return { content: [{ type: "text" as const, text: JSON.stringify({ error: err instanceof Error ? err.message : "Unauthorized" }) }] };
         }
@@ -243,15 +304,33 @@ const handler = createMcpHandler(
         }
 
         const updateData: Record<string, unknown> = {};
-        if (title !== undefined) updateData.title = title;
-        if (content !== undefined) updateData.content = serializeContent(content);
+        if (title !== undefined && title !== existing.title) {
+          if (await db.blog.findUnique({ where: { title }, select: { id: true } })) {
+            return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Another post is already titled "${title}".` }) }] };
+          }
+          updateData.title = title;
+        }
+        if (content !== undefined) {
+          const checked = validateBlogContent(content);
+          if (!checked.ok) return { content: [{ type: "text" as const, text: JSON.stringify({ error: checked.error }) }] };
+          updateData.content = checked.json;
+        }
         if (description !== undefined) updateData.description = description;
         if (banner !== undefined) updateData.banner = banner;
         if (status !== undefined) {
           updateData.status = isAdmin ? status : "draft";
           if (isAdmin) updateData.approved = true;
         }
-        if (slug !== undefined) updateData.slug = slug;
+        if (slug !== undefined) {
+          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+            return { content: [{ type: "text" as const, text: JSON.stringify({ error: "slug must be lowercase letters, numbers and single hyphens." }) }] };
+          }
+          const clash = await db.blog.findUnique({ where: { slug }, select: { id: true } });
+          if (clash && clash.id !== id) {
+            return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Slug "${slug}" is already used by another post.` }) }] };
+          }
+          updateData.slug = slug;
+        }
         if (tags !== undefined) updateData.tags = tags;
         if (categories !== undefined) updateData.categories = resolveCategories(categories);
 
@@ -282,14 +361,14 @@ const handler = createMcpHandler(
         title: "Get Blog",
         description: "Fetch a single blog post by ID or slug. Provide either 'id' or 'slug'.",
         inputSchema: {
-          session_token: z.string().min(1),
+          session_token: z.string().optional(),
           id: z.string().optional().describe("Blog ID"),
           slug: z.string().optional().describe("Blog slug"),
         },
       },
       async ({ session_token, id, slug }) => {
         try {
-          verifySession(session_token);
+          await authenticate(session_token);
         } catch (err) {
           return { content: [{ type: "text" as const, text: JSON.stringify({ error: err instanceof Error ? err.message : "Unauthorized" }) }] };
         }
@@ -321,7 +400,7 @@ const handler = createMcpHandler(
         description:
           "List blog posts with optional status filter and pagination. Returns IDs you can use with update_blog.",
         inputSchema: {
-          session_token: z.string().min(1),
+          session_token: z.string().optional(),
           page: z.number().int().min(1).optional().default(1),
           pageSize: z.number().int().min(1).max(50).optional().default(10),
           status: z.enum(["draft", "published", "archived"]).optional().describe("Filter by status"),
@@ -329,7 +408,7 @@ const handler = createMcpHandler(
       },
       async ({ session_token, page, pageSize, status }) => {
         try {
-          verifySession(session_token);
+          await authenticate(session_token);
         } catch (err) {
           return { content: [{ type: "text" as const, text: JSON.stringify({ error: err instanceof Error ? err.message : "Unauthorized" }) }] };
         }
@@ -365,6 +444,209 @@ const handler = createMcpHandler(
         };
       }
     );
+
+    // ── upload_image ──────────────────────────────────────────────────────────
+    server.registerTool(
+      "upload_image",
+      {
+        title: "Upload Image",
+        description:
+          "Upload an image to Cloudinary and get back a permanent URL to use as a blog 'banner', product 'image', or inside post content. Provide EITHER 'url' (a public image URL to copy) OR 'base64' (raw base64 or a data: URI, max ~8 MB).",
+        inputSchema: {
+          session_token: z.string().optional(),
+          url: z.string().url().optional().describe("Public http(s) image URL to import"),
+          base64: z.string().optional().describe("Base64 image data, with or without the data:image/...;base64, prefix"),
+          mime_type: z.string().optional().default("image/png").describe("Used only when base64 has no data: prefix"),
+          folder: z.enum(["blog", "blog-banners", "products"]).optional().default("blog"),
+        },
+      },
+      async ({ session_token, url, base64, mime_type, folder }) =>
+        guarded(session_token, async () => {
+          if (!url === !base64) throw new Error("Provide exactly one of 'url' or 'base64'.");
+          let file = url!;
+          if (base64) {
+            file = base64.startsWith("data:") ? base64 : `data:${mime_type};base64,${base64}`;
+            if (file.length > 11_000_000) throw new Error("Image is too large (max ~8 MB).");
+            if (!/^data:image\//.test(file)) throw new Error("Only image data is accepted.");
+          }
+          const res = await cloudinary.v2.uploader.upload(file, {
+            folder,
+            resource_type: "image",
+            transformation: [{ quality: "auto:good" }, { fetch_format: "auto" }],
+          });
+          return { success: true, url: res.secure_url, public_id: res.public_id, width: res.width, height: res.height };
+        })
+    );
+
+    // ── categories ────────────────────────────────────────────────────────────
+    server.registerTool(
+      "list_categories",
+      {
+        title: "List Categories",
+        description: "List all blog categories with post counts.",
+        inputSchema: { session_token: z.string().optional() },
+      },
+      async ({ session_token }) =>
+        guarded(session_token, async () => {
+          const cats = await db.category.findMany({
+            orderBy: { name: "asc" },
+            select: { id: true, name: true, slug: true, showInHome: true, _count: { select: { blogs: true } } },
+          });
+          return { success: true, categories: cats.map((c) => ({ ...c, posts: c._count.blogs, _count: undefined })) };
+        })
+    );
+
+    server.registerTool(
+      "create_category",
+      {
+        title: "Create Category",
+        description: "Create a blog category (names are stored lowercase). Categories are also created automatically by create_blog.",
+        inputSchema: { session_token: z.string().optional(), name: z.string().min(2).max(40), showInHome: z.boolean().optional().default(false) },
+      },
+      async ({ session_token, name, showInHome }) =>
+        guarded(session_token, async () => {
+          const n = name.trim().toLowerCase();
+          const cat = await db.category.upsert({
+            where: { name: n },
+            update: {},
+            create: { name: n, slug: n.replace(/ /g, "-"), showInHome },
+          });
+          return { success: true, category: cat };
+        })
+    );
+
+    // ── products ──────────────────────────────────────────────────────────────
+    const productFields = {
+      name: z.string().min(2),
+      slug: z.string().min(2).optional().describe("Auto-generated from name if omitted"),
+      shortDescription: z.string().max(500).optional(),
+      description: z.string().optional(),
+      price: z.number().min(0).optional(),
+      salePrice: z.number().min(0).optional(),
+      image: z.string().url().optional().describe("Image URL, e.g. from upload_image"),
+      affiliateLink: z.string().url().optional(),
+      amazonLink: z.string().url().optional(),
+      flipkartLink: z.string().url().optional(),
+      instagramPost: z.string().url().optional(),
+      category: z.string().optional(),
+      brand: z.string().optional(),
+      rating: z.number().min(0).max(5).optional(),
+      tags: z.string().optional().describe("Comma-separated"),
+      status: z.enum(["draft", "published", "archived"]).optional(),
+      featured: z.boolean().optional(),
+    };
+
+    server.registerTool(
+      "list_products",
+      {
+        title: "List Products",
+        description: "List products, optionally filtered by status or a search term.",
+        inputSchema: {
+          session_token: z.string().optional(),
+          status: z.enum(["draft", "published", "archived"]).optional(),
+          search: z.string().optional(),
+          page: z.number().int().min(1).optional().default(1),
+          pageSize: z.number().int().min(1).max(50).optional().default(20),
+        },
+      },
+      async ({ session_token, status, search, page, pageSize }) =>
+        guarded(session_token, async () => {
+          const where = {
+            ...(status ? { status } : {}),
+            ...(search ? { OR: [{ name: { contains: search, mode: "insensitive" as const } }, { brand: { contains: search, mode: "insensitive" as const } }] } : {}),
+          };
+          const [total, products] = await Promise.all([
+            db.product.count({ where }),
+            db.product.findMany({ where, orderBy: { updatedAt: "desc" }, skip: (page - 1) * pageSize, take: pageSize }),
+          ]);
+          return { success: true, products, meta: { total, page, pages: Math.ceil(total / pageSize), pageSize } };
+        })
+    );
+
+    server.registerTool(
+      "create_product",
+      { title: "Create Product", description: "Create a product listing (admin only). Defaults to draft.", inputSchema: { session_token: z.string().optional(), ...productFields } },
+      async ({ session_token, ...p }) =>
+        guarded(
+          session_token,
+          async () => {
+            const product = await db.product.create({
+              data: { ...p, slug: p.slug ?? generateSlug(p.name), status: p.status ?? "draft", featured: p.featured ?? false, images: [] },
+            });
+            return { success: true, product };
+          },
+          { admin: true }
+        )
+    );
+
+    server.registerTool(
+      "update_product",
+      {
+        title: "Update Product",
+        description: "Update a product by ID (admin only). Only include fields to change.",
+        inputSchema: { session_token: z.string().optional(), id: z.string().min(1), ...Object.fromEntries(Object.entries(productFields).map(([k, v]) => [k, v.optional()])) },
+      },
+      async ({ session_token, id, ...p }) =>
+        guarded(
+          session_token,
+          async () => {
+            const product = await db.product.update({ where: { id }, data: p });
+            return { success: true, product };
+          },
+          { admin: true }
+        )
+    );
+
+    // ── slang ─────────────────────────────────────────────────────────────────
+    server.registerTool(
+      "list_slang",
+      {
+        title: "List Slang",
+        description: "List slang terms. Use status 'pending' to see the moderation queue.",
+        inputSchema: {
+          session_token: z.string().optional(),
+          status: z.enum(["pending", "approved", "rejected"]).optional(),
+          search: z.string().optional(),
+          page: z.number().int().min(1).optional().default(1),
+          pageSize: z.number().int().min(1).max(50).optional().default(20),
+        },
+      },
+      async ({ session_token, status, search, page, pageSize }) =>
+        guarded(session_token, async () => {
+          const where = {
+            ...(status ? { status } : {}),
+            ...(search ? { OR: [{ term: { contains: search, mode: "insensitive" as const } }, { meaning: { contains: search, mode: "insensitive" as const } }] } : {}),
+          };
+          const [total, terms] = await Promise.all([
+            db.slangTerm.count({ where }),
+            db.slangTerm.findMany({ where, orderBy: { submittedAt: "desc" }, skip: (page - 1) * pageSize, take: pageSize }),
+          ]);
+          return { success: true, terms, meta: { total, page, pages: Math.ceil(total / pageSize), pageSize } };
+        })
+    );
+
+    server.registerTool(
+      "moderate_slang",
+      {
+        title: "Moderate Slang",
+        description: "Approve, reject, or toggle 'featured' on a slang term by ID (admin only).",
+        inputSchema: { session_token: z.string().optional(), id: z.string().min(1), action: z.enum(["approve", "reject", "feature"]) },
+      },
+      async ({ session_token, id, action }) =>
+        guarded(
+          session_token,
+          async (s) => {
+            const term = await db.slangTerm.findUnique({ where: { id } });
+            if (!term) throw new Error("Slang term not found.");
+            const data =
+              action === "feature"
+                ? { isFeatured: !term.isFeatured }
+                : { status: action === "approve" ? ("approved" as const) : ("rejected" as const), approvedBy: s.email, approvedAt: new Date() };
+            return { success: true, term: await db.slangTerm.update({ where: { id }, data }) };
+          },
+          { admin: true }
+        )
+    );
   },
   {},
   {
@@ -374,4 +656,8 @@ const handler = createMcpHandler(
   }
 );
 
-export { handler as GET, handler as POST };
+// Capture the Authorization header so tools can authenticate with a static API key.
+const withAuthHeader = (req: Request) =>
+  requestAuth.run({ authorization: req.headers.get("authorization") }, () => handler(req));
+
+export { withAuthHeader as GET, withAuthHeader as POST };

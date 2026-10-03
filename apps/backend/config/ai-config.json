@@ -1,10 +1,10 @@
 {
   "aiModels": {
     "gemini": {
-      "default": "gemini-3-pro-preview",
+      "default": "gemini-3-flash-preview",
       "models": [
-        "gemini-3-pro-preview",
-        "gemini-3-flash-preview"
+        "gemini-3-flash-preview",
+        "gemini-3-pro-preview"
       ]
     }
   },

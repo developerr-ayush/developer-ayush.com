@@ -96,3 +96,17 @@ docker compose down -v               # wipe the local database
 - The committed Prisma migrations don't cover the full schema, so local uses `prisma db push`.
 - After changing dependencies: `docker compose build && docker compose down -v`.
 - Production is unchanged: Vercel with your hosted `DATABASE_URL` set in project env vars.
+
+## MCP server (`/api/mcp`)
+
+Tools: `login`, `create_blog`, `update_blog`, `get_blog`, `list_blogs`, `upload_image` (URL or base64 → Cloudinary), `list_categories`, `create_category`, `list_products`, `create_product`, `update_product`, `list_slang`, `moderate_slang`.
+
+Auth (any one):
+- `Authorization: Bearer <MCP_API_KEY>`: set `MCP_API_KEY` (a long random string) and optionally `MCP_API_USER_EMAIL` (the account it acts as; default: first SUPER_ADMIN). Use this for ChatGPT and other clients that can't run a login step.
+- `login` tool → pass the returned `session_token` (or send it as the bearer). Tokens last 4 hours; signed with `MCP_JWT_SECRET` (falls back to `AUTH_SECRET`).
+
+Blog `content` is validated before saving: Editor.js JSON with block types header, paragraph, list, table, image, code, embed, quote, delimiter, or plain text (split on blank lines). Invalid content is rejected with the exact block and reason. Duplicate titles and bad slugs are reported clearly.
+
+## Gemini models
+
+`GET /api/ai/models` lists the Gemini models your `GEMINI_API_KEY` can use (live from Google, cached 10 min); the AI sheet uses it. Flash is the default (`config/ai-config.json`).

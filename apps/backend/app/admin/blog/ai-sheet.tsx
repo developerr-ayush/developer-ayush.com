@@ -21,12 +21,13 @@ export interface AIResult {
   content: OutputData;
 }
 
-type ModelId = "gemini-3-pro-preview" | "gemini-3-flash-preview";
+interface ModelOption {
+  id: string;
+  label: string;
+  description?: string;
+}
 
-const MODELS: { id: ModelId; label: string; note: string }[] = [
-  { id: "gemini-3-pro-preview", label: "Gemini 3 Pro", note: "Best quality · queued job, ~30–90 s" },
-  { id: "gemini-3-flash-preview", label: "Gemini 3 Flash", note: "Faster · queued job" },
-];
+const FALLBACK_MODELS: ModelOption[] = [{ id: "gemini-3-flash-preview", label: "Gemini 3 Flash" }];
 
 type Phase = "idle" | "running" | "done" | "error";
 
@@ -81,7 +82,27 @@ export function AISheet({
   onBanner: (url: string) => void;
   confirmReplace: () => Promise<boolean>;
 }) {
-  const [model, setModel] = React.useState<ModelId>("gemini-3-pro-preview");
+  const [models, setModels] = React.useState<ModelOption[]>(FALLBACK_MODELS);
+  const [model, setModel] = React.useState<string>(FALLBACK_MODELS[0]!.id);
+  const [modelSource, setModelSource] = React.useState<"google" | "config">("config");
+  const modelsLoaded = React.useRef(false);
+
+  // Load the live Gemini model list the first time the sheet opens (Flash is the default).
+  React.useEffect(() => {
+    if (!open || modelsLoaded.current) return;
+    modelsLoaded.current = true;
+    fetch("/api/ai/models")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.success || !Array.isArray(d.models) || !d.models.length) return;
+        setModels(d.models);
+        setModel(d.default ?? d.models[0].id);
+        setModelSource(d.source);
+      })
+      .catch(() => {
+        modelsLoaded.current = false;
+      });
+  }, [open]);
   const [prompt, setPrompt] = React.useState("");
   const [longForm, setLongForm] = React.useState(false);
   const [phase, setPhase] = React.useState<Phase>("idle");
@@ -198,11 +219,19 @@ export function AISheet({
           <h3 id="ai-draft" className="eyebrow">
             Draft
           </h3>
-          <Field id="ai-model" label="Model" hint={MODELS.find((m) => m.id === model)?.note}>
-            <Select {...fieldA11y("ai-model", undefined, true)} value={model} onChange={(e) => setModel(e.target.value as ModelId)} disabled={running}>
-              {MODELS.map((m) => (
+          <Field
+            id="ai-model"
+            label="Model"
+            hint={
+              models.find((m) => m.id === model)?.description ??
+              (modelSource === "google" ? `${models.length} Gemini models available from Google` : "Configured default (live list unavailable)")
+            }
+          >
+            <Select {...fieldA11y("ai-model", undefined, true)} value={model} onChange={(e) => setModel(e.target.value)} disabled={running}>
+              {models.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.label}
+                  {/flash/.test(m.id) && m.id === models[0]?.id ? " (default)" : ""}
                 </option>
               ))}
             </Select>
