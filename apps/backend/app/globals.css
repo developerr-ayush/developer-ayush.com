@@ -7,19 +7,20 @@
 :root {
   color-scheme: light dark;
 
-  --paper: #fbfaf7;
-  --surface: #ffffff;
-  --surface-2: #f3f1ec;
-  --ink: #17171a;
-  --muted: #5d5d66;
-  --line: #e2dfd6;
-  --accent: #2748c9;
+  --paper: #f5f3ee;
+  --surface: #ece9e1;
+  --surface-2: #e3dfd4;
+  --ink: #16150f;
+  --muted: #57534a;
+  --line: #d6d1c4;
+  --accent: #b8360f;
   --on-accent: #ffffff;
-  --code-bg: #f1efe9;
+  --code-bg: #1b1a16;
+  --code-ink: #eeebe3;
 
   /* Status colours: used for text + a dot, never as the only signal */
   --ok: #1d6f46;
-  --warn: #8a5a00;
+  --warn: #7a4f00;
   --danger: #b3261e;
 
   --radius-ctl: 8px;
@@ -29,15 +30,16 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #0d0d0f;
-    --surface: #141417;
-    --surface-2: #1c1c21;
-    --ink: #ecece9;
-    --muted: #a1a1aa;
-    --line: #2b2b31;
-    --accent: #93a8ff;
-    --on-accent: #0b0d17;
-    --code-bg: #101013;
+    --paper: #12110e;
+    --surface: #1b1a16;
+    --surface-2: #24221d;
+    --ink: #eeebe3;
+    --muted: #a8a397;
+    --line: #2f2d27;
+    --accent: #ff7a45;
+    --on-accent: #12110e;
+    --code-bg: #0b0b09;
+    --code-ink: #eeebe3;
 
     --ok: #62d49a;
     --warn: #e6b94d;
@@ -55,6 +57,7 @@
   --color-accent: var(--accent);
   --color-on-accent: var(--on-accent);
   --color-code: var(--code-bg);
+  --color-code-ink: var(--code-ink);
   --color-ok: var(--ok);
   --color-warn: var(--warn);
   --color-danger: var(--danger);

@@ -40,7 +40,7 @@ function CodeBlock({ code, label }: { code: string; label: string }) {
           <span className="sr-only"> {label}</span>
         </button>
       </div>
-      <pre tabIndex={0} className="mono overflow-x-auto rounded-lg border border-line bg-code p-3.5 text-xs leading-relaxed">
+      <pre tabIndex={0} className="mono overflow-x-auto rounded-lg border border-line bg-code p-3.5 text-code-ink text-xs leading-relaxed">
         {code}
       </pre>
     </div>

@@ -99,11 +99,11 @@
 }
 
 /* Code blocks: same look as the live post */
-.post-canvas .ce-code__textarea {
+.post-canvas .ce-code .ce-code__textarea {
   background: var(--code-bg);
-  border: 1px solid color-mix(in srgb, var(--ink) 16%, var(--line));
+  border: 1px solid var(--line);
   border-radius: 10px;
-  color: var(--ink);
+  color: var(--code-ink);
   font-family: var(--font-mono);
   font-size: 13.5px;
   line-height: 1.6;
@@ -112,7 +112,7 @@
   box-shadow: none;
   tab-size: 2;
 }
-.post-canvas .ce-code__textarea:focus {
+.post-canvas .ce-code .ce-code__textarea:focus {
   border-color: var(--accent);
   outline: none;
 }
