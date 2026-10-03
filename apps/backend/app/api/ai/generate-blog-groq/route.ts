@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { auth } from "../../../../auth";
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
+// Created on first use so the build doesn't require GROQ_API_KEY (Groq is optional).
+let groqClient: Groq | null = null;
+const getGroq = () => (groqClient ??= new Groq({ apiKey: process.env.GROQ_API_KEY }));
 
 export async function POST(req: NextRequest) {
   // return NextResponse.json({
@@ -529,7 +529,7 @@ export async function POST(req: NextRequest) {
       modelToUse = "llama-3.3-70b-specdec";
     }
 
-    const groqPromise = groq.chat.completions.create({
+    const groqPromise = getGroq().chat.completions.create({
       model: modelToUse, // Use the selected model based on user preference
       messages: [
         { role: "system", content: systemMessage },
