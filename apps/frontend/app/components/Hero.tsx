@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FiArrowDownRight, FiDownload } from "react-icons/fi";
-import profileImage from "../assets/img/personal/portrait-hero.jpg";
+import profileImage from "../assets/img/personal/portrait-cutout.webp";
 import { personalInfo, stats } from "../data";
 
 export default function Hero() {
@@ -55,13 +55,18 @@ export default function Hero() {
 
         <div className="md:col-span-4 md:self-end">
           <figure className="relative mx-auto max-w-[15rem] sm:max-w-[19rem] md:ml-auto md:mr-0">
-            <div className="relative aspect-[3/4] overflow-hidden rounded-[2rem] bg-[#0b0a08]">
+            <div className="relative aspect-[3/4]">
+              {/* accent panel; the cut-out portrait breaks out of its top edge */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-x-0 bottom-0 top-[18%] rounded-[2rem] bg-accent"
+              />
               <Image
                 src={profileImage}
-                alt="Ayush Shah in profile under a spotlight, wearing glasses"
+                alt="Ayush Shah looking up, wearing glasses and a patterned T-shirt"
                 priority
                 sizes="(max-width: 640px) 15rem, (max-width: 768px) 19rem, 22vw"
-                className="h-full w-full object-cover"
+                className="absolute inset-0 h-full w-full rounded-b-[2rem] object-contain object-bottom"
                 placeholder="blur"
               />
             </div>

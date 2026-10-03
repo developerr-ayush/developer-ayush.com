@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Logo from "./Logo";
 
 const navLinks = [
   { name: "Work", href: "/#portfolio" },
@@ -44,9 +45,10 @@ const Header = () => {
       <div className="container-x flex h-16 items-center justify-between gap-6">
         <Link
           href="/"
-          className="group flex items-baseline gap-2"
+          className="group flex items-center gap-3"
           aria-label="Ayush Shah, home"
         >
+          <Logo className="h-6 w-auto sm:h-7" />
           <span className="display text-[1.65rem] leading-none">
             Ayush Shah
           </span>

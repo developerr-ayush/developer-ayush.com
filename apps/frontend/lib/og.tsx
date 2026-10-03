@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
+import { LOGO_INK_PATH, LOGO_RED, LOGO_RED_PATH, LOGO_VIEWBOX } from "./logo";
 
 export const ogSize = { width: 1200, height: 630 };
 export const ogContentType = "image/png";
@@ -65,14 +66,10 @@ export async function renderOg({
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div
-              style={{
-                width: 14,
-                height: 14,
-                borderRadius: 7,
-                background: "#b8360f",
-              }}
-            />
+            <svg width="84" height="36" viewBox={LOGO_VIEWBOX}>
+              <path fill="#16150f" d={LOGO_INK_PATH} />
+              <path fill={LOGO_RED} d={LOGO_RED_PATH} />
+            </svg>
             <span style={{ color: "#16150f" }}>Ayush Shah</span>
           </div>
           <span>{label}</span>

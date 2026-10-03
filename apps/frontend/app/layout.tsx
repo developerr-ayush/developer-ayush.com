@@ -78,11 +78,13 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: [{ url: "/favicon.jpg?v=1", sizes: "any", type: "image/jpeg" }],
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
-    shortcut: [{ url: "/favicon.jpg?v=1", type: "image/jpeg" }],
   },
-  manifest: "/site.webmanifest?v=2",
+  manifest: "/site.webmanifest?v=3",
 };
 
 export const viewport: Viewport = {
