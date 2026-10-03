@@ -1,65 +1,24 @@
-import { ReactNode } from "react";
-import Link from "next/link";
+import * as React from "react";
 
-interface PageHeaderProps {
-  title: string;
-  description?: string;
-  ctaLabel?: string;
-  ctaHref?: string;
-  /** Render a custom element instead of the default CTA link */
-  ctaSlot?: ReactNode;
-  /** Extra content to the right (e.g. filter dropdowns) */
-  rightSlot?: ReactNode;
-}
-
-/**
- * Shared page header for all admin list pages.
- * Shows a title + optional description on the left, and a CTA or custom slot on the right.
- */
 export function PageHeader({
+  eyebrow,
   title,
   description,
-  ctaLabel,
-  ctaHref,
-  ctaSlot,
-  rightSlot,
-}: PageHeaderProps) {
+  actions,
+}: {
+  eyebrow?: string;
+  title: string;
+  description?: React.ReactNode;
+  actions?: React.ReactNode;
+}) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
-      {/* Left: title + description */}
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold text-white tracking-tight">{title}</h1>
-        {description && (
-          <p className="text-sm text-slate-400">{description}</p>
-        )}
+    <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="min-w-0 space-y-2">
+        {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
+        <h1 className="page-title">{title}</h1>
+        {description ? <p className="max-w-prose text-[13.5px] text-muted">{description}</p> : null}
       </div>
-
-      {/* Right: CTA or custom slot */}
-      <div className="flex items-center gap-3 flex-shrink-0">
-        {rightSlot}
-        {ctaSlot}
-        {ctaLabel && ctaHref && (
-          <Link
-            href={ctaHref}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-600/20 transition-all active:scale-95"
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            {ctaLabel}
-          </Link>
-        )}
-      </div>
-    </div>
+      {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}
+    </header>
   );
 }
